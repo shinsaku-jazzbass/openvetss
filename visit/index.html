@@ -1,0 +1,268 @@
+<!--
+  OpenVetss — 動物病院のためのオープンソース・ツール群
+  https://www.vetss-karte.net/
+
+  受診ハブ 紹介ページ
+  Copyright (c) 2026 OpenVetss Project
+
+  MIT ライセンスで配布しています。改変も再配布も自由ですが、
+  この著作権表示とライセンス表示は残してください。
+  全文は同梱の LICENSE をご覧ください。
+
+  無保証です。診療・会計・帳簿の内容については、
+  お使いになる病院の責任でご確認ください。
+-->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1台のタブレットで、受診がひとつに。｜Vetss Lab</title>
+<meta name="description" content="受付から診療記録、会計、紙カルテまで。タブレット1台で完結する動物病院のためのオープンソース型デモ。サーバもインストールも要りません。">
+<style>
+:root{
+  --paper:#FBF9F4; --paper2:#F4F1EA; --rule:#D8D2C6;
+  --ink:#1F2A2E; --ink2:#5A6A70; --ink3:#8C8578;
+  --blue:#42606E; --blue-lo:#EAF0F1;
+  --seal:#2F7A5C; --seal-lo:#EAF3EE;
+  --Q:#3D6B8A; --K:#2F7A5C; --R:#9A5B2E; --L:#6B4C8A;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho",YuMincho,"MS PMincho",serif;
+  --gothic:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--gothic);line-height:1.9;
+  -webkit-text-size-adjust:100%}
+a{color:var(--blue)}
+h1,h2,h3{font-family:var(--mincho);font-weight:600;letter-spacing:.04em;line-height:1.5}
+.wrap{max-width:880px;margin:0 auto;padding:0 24px}
+
+.top{border-bottom:1px solid var(--rule);padding:14px 0;font-size:12px;color:var(--ink3)}
+.top a{text-decoration:none}
+.top a:hover{text-decoration:underline}
+
+/* ヒーロー */
+.hero{padding:54px 0 42px;border-bottom:1px solid var(--rule);position:relative}
+.eyebrow{font-size:11px;letter-spacing:.22em;color:var(--blue);margin-bottom:16px}
+.hero h1{font-size:clamp(27px,5.4vw,43px);margin-bottom:18px}
+.hero h1 em{font-style:normal;box-shadow:inset 0 -11px 0 var(--seal-lo)}
+.lede{font-size:clamp(15px,2.1vw,17px);color:var(--ink2);max-width:39em}
+.seal{position:absolute;top:46px;right:6px;width:92px;height:92px;border:2.5px solid var(--seal);
+  border-radius:50%;color:var(--seal);display:grid;place-content:center;text-align:center;
+  font-family:var(--mincho);font-size:15px;letter-spacing:.16em;line-height:1.35;
+  transform:rotate(-11deg);opacity:.9}
+.seal small{display:block;font-size:8.5px;letter-spacing:.1em;margin-top:3px;font-family:var(--gothic)}
+@media(max-width:660px){.seal{width:68px;height:68px;font-size:12px;top:40px;right:0}.hero h1{padding-right:76px}}
+
+.cta{display:flex;gap:11px;flex-wrap:wrap;align-items:center;margin-top:28px}
+.btn{display:inline-block;padding:13px 25px;border-radius:3px;text-decoration:none;font-size:15px;
+  letter-spacing:.06em;transition:background .15s}
+.btn.on{background:var(--seal);color:#fff}
+.btn.on:hover{background:#24634A}
+.btn.off{border:1px solid var(--rule);color:var(--ink2)}
+.btn.off:hover{background:var(--paper2)}
+.cta-note{font-size:12px;color:var(--ink3);flex-basis:100%;margin-top:2px}
+
+section{padding:44px 0;border-bottom:1px solid var(--rule)}
+section h2{font-size:22px;margin-bottom:6px}
+section h2 .num{font-family:var(--mono);font-size:11px;color:var(--blue);letter-spacing:.1em;
+  display:block;margin-bottom:8px;font-weight:400}
+.sub{color:var(--ink2);font-size:14px;margin-bottom:26px;max-width:41em}
+
+/* 流れ */
+.flow{list-style:none;counter-reset:f}
+.flow li{counter-increment:f;display:grid;grid-template-columns:2.4rem 1fr;gap:16px;
+  padding:15px 0;border-top:1px dashed var(--rule)}
+.flow li:first-child{border-top:0}
+.flow li::before{content:counter(f,decimal-leading-zero);font-family:var(--mono);font-size:12px;
+  color:var(--blue);padding-top:5px}
+.flow li>b{grid-column:2;font-family:var(--mincho);font-size:16px;display:block;margin-bottom:3px}
+.flow li>p{grid-column:2;font-size:13.5px;color:var(--ink2);max-width:none;margin:0}
+
+/* 道具 */
+.tools{display:grid;gap:16px}
+.tool{background:var(--paper2);border-radius:5px;padding:22px 24px;position:relative}
+.tool .tag{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:#fff;
+  border-radius:3px;padding:2px 8px;display:inline-block;margin-bottom:9px}
+.tool.q .tag{background:var(--Q)} .tool.k .tag{background:var(--K)}
+.tool.r .tag{background:var(--R)} .tool.l .tag{background:var(--L)}
+.tool h3{font-size:19px;margin-bottom:3px}
+.tool .cap{font-family:var(--mincho);font-size:14.5px;color:var(--blue);margin-bottom:11px}
+.tool p{font-size:13.5px;color:var(--ink2);margin-bottom:14px;max-width:40em}
+.tool .lk{display:flex;gap:8px;flex-wrap:wrap}
+.tool .lk a{padding:9px 18px;border-radius:3px;text-decoration:none;font-size:13.5px;
+  border:1px solid var(--rule);background:var(--paper);color:var(--ink2)}
+.tool .lk a.p{background:var(--seal);border-color:var(--seal);color:#fff}
+
+/* 現場の話 */
+.field{background:var(--blue-lo);border-radius:5px;padding:26px 28px}
+.field h3{font-size:17px;margin-bottom:10px}
+.field p{font-size:14px;color:var(--ink2);margin-bottom:12px}
+.field p:last-child{margin-bottom:0}
+.field strong{color:var(--ink)}
+.field .box{background:var(--paper);border-radius:4px;padding:13px 16px;margin:14px 0;
+  font-family:var(--mono);font-size:12.5px;color:var(--ink2);line-height:1.9}
+
+table.spec{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:4px}
+table.spec th,table.spec td{border-bottom:1px solid var(--rule);padding:11px 4px;text-align:left;vertical-align:top}
+table.spec th{width:10em;font-weight:400;color:var(--ink3);font-size:12px;letter-spacing:.06em}
+code{font-family:var(--mono);font-size:12.5px;background:var(--paper2);padding:1px 5px;border-radius:3px}
+
+.honest{border-left:3px solid var(--rule);padding-left:20px}
+.honest li{font-size:13.5px;color:var(--ink2);margin-bottom:9px;list-style:none;position:relative;padding-left:1.1em}
+.honest li::before{content:"—";position:absolute;left:0;color:var(--ink3)}
+
+.start{list-style:none;counter-reset:s}
+.start li{counter-increment:s;font-size:14px;color:var(--ink2);padding:9px 0 9px 2.2rem;
+  position:relative;border-bottom:1px dashed var(--rule)}
+.start li:last-child{border-bottom:0}
+.start li::before{content:counter(s);position:absolute;left:0;top:9px;font-family:var(--mono);
+  font-size:11px;color:#fff;background:var(--blue);width:1.5rem;height:1.5rem;border-radius:50%;
+  display:grid;place-content:center}
+.start li b{color:var(--ink)}
+
+.contact{text-align:center;padding:52px 0}
+.contact h2{font-size:20px;margin-bottom:12px}
+.contact p{font-size:14px;color:var(--ink2);max-width:33em;margin:0 auto 24px}
+footer{padding:30px 0 48px;font-size:12px;color:var(--ink3);text-align:center}
+footer a{color:var(--ink3)}
+</style>
+</head>
+<body>
+
+<div class="top"><div class="wrap"><a href="/">Vetss Lab</a> ／ Lab Tools ／ 受診ハブ</div></div>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="seal">動く<small>DEMO</small></div>
+    <div class="eyebrow">LAB TOOLS ／ 04</div>
+    <h1>1台のタブレットで、<br><em>受診がひとつに</em>なる。</h1>
+    <p class="lede">カルテホルダーのQRを読み、問診を書いてもらい、S・O・A・P を組み立て、会計を打ち、その日の診療録を紙で刷る。ここまでを、サーバもインストールもなしに、タブレット1台で通します。すべて実際に動くものです。</p>
+    <div class="cta">
+      <a class="btn on" href="/visit/visit.html">受診ハブを開く</a>
+      <a class="btn off" href="/visit/qrlabel.html">QRラベルを作る</a>
+      <a class="btn off" href="/netregi/">ネットレジについて</a>
+      <span class="cta-note">iPad・Android・PC のブラウザで動きます。通信をしません。</span>
+    </div>
+  </header>
+
+  <section>
+    <h2><span class="num">HOW</span>受診の一日</h2>
+    <p class="sub">同じ診察券番号が、受付から会計まで一本の線を通します。番号を渡すだけなので、通信もサーバも要りません。</p>
+    <ol class="flow">
+      <li><b>カルテホルダーのQRを読む</b><p>タブレットのカメラにかざすだけ。診察券番号と呼び名が入り、その日の受診がはじまります。バーコードリーダーでも、番号を打っても構いません。</p></li>
+      <li><b>待合で問診を書いてもらう</b><p>タブレットを飼主さんに渡します。同じサイトの整形外科 検査問診ツール（97項目）を使い、書かれた内容はそのまま主訴（S）や所見（O）の下書きになります。</p></li>
+      <li><b>診察室で S・O・A・P を組み立てる</b><p>1,800件の文例をボタンで押していくだけ。押した文例の番号も一緒に残るので、あとから「嘔吐を主訴とした症例が何件か」を数えられます。</p></li>
+      <li><b>受付で会計を打つ</b><p>単価を打って品名を押す。消費税と釣銭が出て、そのまま画面を飼主さんに向けて確認していただけます。</p></li>
+      <li><b>その日の診療録を紙で刷る</b><p>1件ずつでも、その日の全件まとめてでも。刷った1枚をホルダーに綴じれば、次の来院でまたQRから始まります。</p></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2><span class="num">TOOLS</span>四つの道具</h2>
+    <p class="sub">それぞれ単独でも使えます。受診ハブから開くと、同じ診察券番号で記録が結びつきます。</p>
+    <div class="tools">
+
+      <article class="tool q">
+        <span class="tag">HUB</span>
+        <h3>受診ハブ</h3>
+        <p class="cap">一日を束ねて、紙にする。</p>
+        <p>診察券のQRを読み、問診・カルテ・会計の進み具合を見て、診療録を印刷します。カルテホルダー用のQRラベルもここから刷れます。受診の一覧は日付をさかのぼって確認できます。</p>
+        <p class="lk"><a class="p" href="/visit/visit.html">開く</a></p>
+      </article>
+
+      <article class="tool k">
+        <span class="tag">KARTE</span>
+        <h3>ボタンカルテ</h3>
+        <p class="cap">打たずに、押して書く。</p>
+        <p>主訴・所見・診断・方針を、文例ボタンで組み立てます。文例は54分類・1,837件。部分一致で探せ、よく使うものは自動で前に出ます。体重・体温は数値として別に記録します。</p>
+        <p class="lk"><a class="p" href="/karte/karte.html">開く</a></p>
+      </article>
+
+      <article class="tool r">
+        <span class="tag">REGISTER</span>
+        <h3>ネットレジ</h3>
+        <p class="cap">タブレット1台で、診療明細を渡す。</p>
+        <p>20年ほど前に書き、実際の窓口で使われ続けてきたレジを、置き場所だけ変えて載せ直したものです。日計は伝票別・品名別の両方で、CSV と Excel に書き出せます。明細の修正・再発行・取消もできます。</p>
+        <p class="lk"><a class="p" href="/netregi/netregi.html">開く</a><a href="/netregi/setup.html">自院の品名で組み立てる</a><a href="/netregi/guide.html">使い方</a></p>
+      </article>
+
+      <article class="tool l">
+        <span class="tag">LABEL</span>
+        <h3>QRラベル発行</h3>
+        <p class="cap">カルテホルダーが、診察券になる。</p>
+        <p>診察券番号と呼び名からQRラベルを作り、A4に並べて印刷します。既存のカルテを一気にラベル化する場合は、名簿を貼り付けるだけ。重複した番号は警告します。</p>
+        <p class="lk"><a class="p" href="/visit/qrlabel.html">開く</a></p>
+      </article>
+
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">FIELD</span>現場で起きたこと</h2>
+    <div class="field">
+      <h3>深夜、日付をまたいだ</h3>
+      <p>試作を触っていた最中に、日付が変わりました。編集していた受診の日付と、端末の日付がずれる——<strong>その瞬間、その日の売上が2日に割れました。</strong></p>
+      <div class="box">
+        8/8 23:50 に始めた会計 → 8/8 の記録<br>
+        8/9 00:10 に確定した会計 → 8/9 の記録（明細番号も振り直し）
+      </div>
+      <p>暦の日付で締めていたのが間違いでした。動物病院は夜間に日をまたぎます。そこで<strong>「営業日」で束ねる</strong>ようにしました。設定を1つ変えれば、朝4時までは前日として記録されます。</p>
+      <p>過去の日にさかのぼって確認・印刷・集計もできるようにしました。机の上では気づけないことで、こういうものが現場から出てきます。</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">SPEC</span>できること</h2>
+    <table class="spec">
+      <tr><th>動作環境</th><td>iPad・Android タブレット・PC のブラウザ。オフラインでも動きます</td></tr>
+      <tr><th>患者の特定</th><td>ホルダーのQR（カメラ）、診察券バーコード、番号入力、URL からの受け渡し</td></tr>
+      <tr><th>診療記録</th><td>S・O・A・P をボタンで組み立て、押した文例の番号も保存。体重・体温は数値で分離</td></tr>
+      <tr><th>会計</th><td>数量・％値引・非課税・外税内税・端数処理・現金／クレジット。明細の修正・再発行・取消</td></tr>
+      <tr><th>集計</th><td>日計（伝票別／品名別）、部門別、CSV・Excel 出力、複数台の合算、明細番号の欠番検出</td></tr>
+      <tr><th>印刷</th><td>診療録（1件／その日の全件）、診療明細書、カルテホルダー用QRラベル</td></tr>
+      <tr><th>営業日</th><td>「何時までを前日とするか」を設定でき、深夜診療でも記録が2日に割れません</td></tr>
+      <tr><th>受け渡しの形式</th><td>公開仕様の JSON（<code>vetss-visit</code> / <code>vetss-karte</code> / <code>vetss-receipt</code>）</td></tr>
+      <tr><th>扱う個人情報</th><td>診察券番号と呼び名だけ。氏名・住所・連絡先は端末に持ちません</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2><span class="num">START</span>はじめかた</h2>
+    <p class="sub">導入というより、まず触ってみる形です。合わなければやめるだけで、どこにもデータは残りません。</p>
+    <ol class="start">
+      <li><b>受診ハブをホーム画面に追加します。</b>これは必須です。ブラウザのタブのままだと、しばらく開かないうちに保存内容が整理されることがあります。</li>
+      <li><b>QRラベルを1枚刷って、ホルダーに貼ります。</b>まずは1人分で構いません。</li>
+      <li><b>そのQRを読んで、一通り通してみてください。</b>問診・カルテ・会計・紙カルテ。10分ほどです。</li>
+      <li><b>自院の品名を設定します。</b>気に入ったら、レジの設定ツールで品名を並べてファイルを持ち帰ってください。</li>
+      <li><b>一日の終わりに書き出します。</b>診療録を刷り、日計を書き出す。端末の中は作業用の控えで、<b>原本は刷った紙と書き出したファイル</b>です。</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2><span class="num">HONEST</span>今できないこと</h2>
+    <p class="sub">試作段階です。隠さずに書いておきます。</p>
+    <ul class="honest">
+      <li>ペット保険の窓口精算にはまだ対応していません（負担率と限度額の設計を検討中です）</li>
+      <li>問診ツールからハブへの自動の書き戻しはまだありません。書き終えたらファイルで取り込んでください</li>
+      <li>1台にまとめると、診察中に受付で会計を打つことはできません。複数台に分ける運用も選べます</li>
+      <li>クレジット決済端末との連動はありません。区分の記録のみです</li>
+      <li>iPad のカメラで読めるのは QR コードのみです（一次元バーコードはリーダーをお使いください）</li>
+      <li>端末の中の記録は控えです。帳簿としては、書き出したファイルと刷った紙を原本としてお考えください</li>
+    </ul>
+  </section>
+
+  <div class="contact">
+    <h2>試してみて、話しませんか</h2>
+    <p>実際に通してみたご感想、現場に合わない点、こう動いてほしいという要望——どれも次の版に反映していきます。導入や電子カルテとの連携のご相談も承ります。</p>
+    <a class="btn on" href="/visit/visit.html">受診ハブを開く</a>
+  </div>
+
+  <footer>
+    OpenVetss ／ <a href="/license.html">ライセンス（MIT）</a> ／ <a href="/">動くもので、語る。</a>
+  </footer>
+
+</div>
+</body>
+</html>

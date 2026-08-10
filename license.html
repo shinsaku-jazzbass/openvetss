@@ -1,0 +1,223 @@
+<!--
+  OpenVetss - 動物病院のためのオープンソース・ツール群
+  https://www.vetss-karte.net/
+
+  ライセンスのご案内
+  Copyright (c) 2026 OpenVetss Project
+
+  MIT ライセンスで配布しています。改変も再配布も自由ですが、
+  この著作権表示とライセンス表示は残してください。
+  全文は同梱の LICENSE をご覧ください。無保証です。
+-->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ライセンス — OpenVetss ｜ Vetss Lab</title>
+<meta name="description" content="OpenVetss は MIT ライセンスで配布しています。動物病院が自由に使い、直し、配ることができます。">
+<style>
+:root{
+  --paper:#FBF9F4; --paper2:#F4F1EA; --rule:#D8D2C6;
+  --ink:#1F2A2E; --ink2:#5A6A70; --ink3:#8C8578;
+  --blue:#42606E; --blue-lo:#EAF0F1;
+  --seal:#2F7A5C; --seal-lo:#EAF3EE; --warn:#9A4030; --warn-lo:#FBEEE9;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho",YuMincho,serif;
+  --gothic:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--gothic);line-height:1.9;
+  -webkit-text-size-adjust:100%}
+a{color:var(--blue)}
+h1,h2,h3{font-family:var(--mincho);font-weight:600;letter-spacing:.04em;line-height:1.5}
+.wrap{max-width:800px;margin:0 auto;padding:0 24px}
+
+.top{border-bottom:1px solid var(--rule);padding:14px 0;font-size:12px;color:var(--ink3)}
+.top a{text-decoration:none}
+
+header.hd{padding:44px 0 30px;border-bottom:1px solid var(--rule)}
+.eyebrow{font-size:11px;letter-spacing:.2em;color:var(--blue);margin-bottom:13px}
+header.hd h1{font-size:clamp(25px,4.6vw,35px);margin-bottom:14px}
+header.hd p{font-size:15px;color:var(--ink2);max-width:39em}
+
+section{padding:38px 0;border-bottom:1px solid var(--rule)}
+section h2{font-size:20px;margin-bottom:6px}
+section h2 .n{font-family:var(--mono);font-size:11px;color:var(--blue);letter-spacing:.1em;
+  display:block;margin-bottom:7px;font-weight:400}
+.sub{font-size:14px;color:var(--ink2);margin-bottom:22px;max-width:41em}
+section p{font-size:14px;color:var(--ink2);margin-bottom:13px;max-width:41em}
+section p:last-child{margin-bottom:0}
+section strong{color:var(--ink);font-weight:600}
+
+/* できる・できない */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:640px){.two{grid-template-columns:1fr}}
+.card{border-radius:5px;padding:20px 22px}
+.card.yes{background:var(--seal-lo)}
+.card.no{background:var(--warn-lo)}
+.card h3{font-size:16px;margin-bottom:11px}
+.card.yes h3{color:var(--seal)}
+.card.no h3{color:var(--warn)}
+.card ul{list-style:none}
+.card li{font-size:13.5px;color:var(--ink2);padding-left:1.3em;position:relative;margin-bottom:7px;line-height:1.8}
+.card.yes li::before{content:"○";position:absolute;left:0;color:var(--seal);font-size:11px;top:.35em}
+.card.no li::before{content:"×";position:absolute;left:0;color:var(--warn);font-size:11px;top:.35em}
+
+table.t{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}
+table.t th{text-align:left;font-weight:400;font-size:11px;letter-spacing:.06em;color:var(--ink3);
+  border-bottom:1.5px solid var(--ink);padding:0 6px 6px;white-space:nowrap}
+table.t td{border-bottom:1px solid var(--rule);padding:10px 6px;vertical-align:top;color:var(--ink2)}
+table.t td:first-child{color:var(--ink);white-space:nowrap}
+code{font-family:var(--mono);font-size:12.5px;background:var(--paper2);padding:1px 5px;border-radius:3px}
+
+pre{background:var(--paper2);border-radius:4px;padding:16px 18px;overflow:auto;
+  font-family:var(--mono);font-size:11.5px;line-height:1.75;color:#2A3438;margin:14px 0}
+
+.callout{background:var(--blue-lo);border-radius:5px;padding:18px 22px;margin:18px 0}
+.callout b{font-family:var(--mincho);font-size:15px;display:block;margin-bottom:5px}
+.callout p{font-size:13.5px;margin-bottom:0}
+.warnbox{background:var(--warn-lo);border:1px solid #E0B4A8;border-radius:5px;padding:16px 20px;margin:18px 0}
+.warnbox b{font-family:var(--mincho);font-size:15px;display:block;margin-bottom:5px;color:var(--warn)}
+.warnbox p{font-size:13.5px;margin-bottom:0}
+
+dl.qa dt{font-family:var(--mincho);font-size:15px;margin-top:22px;margin-bottom:3px}
+dl.qa dt:first-child{margin-top:0}
+dl.qa dd{font-size:13.5px;color:var(--ink2);margin-left:0;line-height:1.85}
+
+footer{padding:30px 0 48px;font-size:12px;color:var(--ink3);text-align:center}
+footer a{color:var(--ink3)}
+</style>
+</head>
+<body>
+
+<div class="top"><div class="wrap"><a href="/">Vetss Lab</a> ／ OpenVetss ／ ライセンス</div></div>
+
+<div class="wrap">
+
+<header class="hd">
+  <div class="eyebrow">OPENVETSS LICENSE</div>
+  <h1>自由に使い、直し、配ってください。</h1>
+  <p>OpenVetss は MIT ライセンスで配布しています。オープンソースというのは「無料で公開している」という意味ではなく、<strong>使う側に権利をはっきり渡している</strong>という意味です。何をしてよいかを、まず平たく書きます。</p>
+</header>
+
+<section>
+  <h2><span class="n">01</span>できること・守っていただくこと</h2>
+  <div class="two">
+    <div class="card yes">
+      <h3>自由にできます</h3>
+      <ul>
+        <li>院内で使う（診療でも会計でも、制限はありません）</li>
+        <li>自院に合わせて中身を書き換える</li>
+        <li>ほかの動物病院に渡す</li>
+        <li>自院のサーバに置いて公開する</li>
+        <li>これを組み込んだ製品を作り、有償で売る</li>
+        <li>使用料の支払いも、事前の連絡も要りません</li>
+      </ul>
+    </div>
+    <div class="card no">
+      <h3>ここだけ守ってください</h3>
+      <ul>
+        <li>著作権表示とライセンス表示を消さないこと（各ファイル先頭のコメントと <code>LICENSE</code>）</li>
+        <li>同梱ライブラリの表示も残すこと（<code>THIRD-PARTY-NOTICES.txt</code>）</li>
+        <li>不具合や損害の責任は負いません。無保証です</li>
+        <li>OpenVetss が公認・認証を受けたものであるかのような表示をしないこと</li>
+      </ul>
+    </div>
+  </div>
+  <p style="margin-top:20px">つまり、<strong>表示さえ残せば、あとは自由</strong>です。ファイルの先頭にあるコメントを消さないでいただければ、それでほぼ足ります。</p>
+</section>
+
+<section>
+  <h2><span class="n">02</span>無保証ということ</h2>
+  <div class="warnbox">
+    <b>診療と会計の内容は、病院の責任でご確認ください。</b>
+    <p>OpenVetss は現状のまま提供され、いかなる保証もありません。計算違い、記録の消失、印刷の不備などが起きても、作者は責任を負えません。これは MIT ライセンスの定めであり、無償で配るものの共通した条件です。</p>
+  </div>
+  <p>そのうえで、実務上の注意を2つ。<strong>端末の中の記録は控えです。</strong>ブラウザの保存領域は、しばらく開かないと整理されることがあります。一日の終わりに書き出したファイルと、刷った紙を原本としてお考えください。</p>
+  <p>そして<strong>消費税と保険の扱いは、必ずご自身で検算してください。</strong>税率・端数処理は設定で変えられますが、その設定が自院の運用に合っているかまでは、こちらでは判断できません。</p>
+</section>
+
+<section>
+  <h2><span class="n">03</span>同梱しているもの</h2>
+  <p class="sub">OpenVetss の各ファイルには、オフラインで動かすために外部の部品を埋め込んでいます。それぞれの表示を残す義務があります。</p>
+  <table class="t">
+    <tr><th>部品</th><th>用途</th><th>ライセンス</th></tr>
+    <tr><td>jsQR 1.4.0</td><td>カメラでQRコードを読む</td><td>Apache License 2.0<br><span style="font-size:12px;color:var(--ink3)">Copyright (c) Cosmo Wolfe</span></td></tr>
+    <tr><td>qrcode-generator</td><td>QRラベルを作る</td><td>MIT License<br><span style="font-size:12px;color:var(--ink3)">Copyright (c) Kazuhiko Arase</span></td></tr>
+  </table>
+  <p style="margin-top:16px">再配布される場合は、<code>THIRD-PARTY-NOTICES.txt</code> を必ず一緒にお渡しください。これは礼儀ではなく、ライセンス上の義務です。</p>
+</section>
+
+<section>
+  <h2><span class="n">04</span>文例マスタについて</h2>
+  <p>ボタンカルテに同梱している <code>karte_master.json</code>（54分類・1,837件）も、同じ MIT ライセンスです。書き換えて自院の文例にしていただいて構いませんし、それを他院に配っても構いません。</p>
+  <div class="callout">
+    <b>ただし、内容の正しさは保証しません。</b>
+    <p>長年の実務から積み上がった文例ですが、獣医学的な妥当性を第三者が検証したものではありません。導入前に、必ず院内で目を通してください。</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">05</span>VetssWeb との関係</h2>
+  <p><strong>OpenVetss は単独で動きます。</strong>VetssWeb がなくても、タブレット1台で受付から会計までを通せます。</p>
+  <p>一方、VetssWeb（電子カルテ本体）は OpenVetss には含まれず、オープンソースでもありません。両方をお使いの病院向けに連携用のファイルを用意していますが、そちらは VetssWeb と組み合わせて初めて動くものです。</p>
+</section>
+
+<section>
+  <h2><span class="n">06</span>よくある質問</h2>
+  <dl class="qa">
+    <dt>お金はかかりますか</dt>
+    <dd>かかりません。使用料も、連絡の義務もありません。</dd>
+
+    <dt>自院で書き換えたものを、知り合いの病院に渡してもいいですか</dt>
+    <dd>構いません。ファイル先頭の著作権表示と <code>LICENSE</code>、<code>THIRD-PARTY-NOTICES.txt</code> を一緒にお渡しください。</dd>
+
+    <dt>書き換えたものを公開する義務はありますか</dt>
+    <dd>ありません。自院だけで使い続けても構いません（この点が GPL などとの違いです）。</dd>
+
+    <dt>ベンダーが自社製品に組み込んでもいいですか</dt>
+    <dd>構いません。有償製品でも問題ありません。ただし著作権表示は残してください。</dd>
+
+    <dt>不具合を見つけたら</dt>
+    <dd>教えていただけると助かります。直したものはまた公開します。修正版を送っていただいても構いません。</dd>
+
+    <dt>「OpenVetss を使っている」と表示してもいいですか</dt>
+    <dd>歓迎します。ただし「OpenVetss 公認」「認証済み」といった表示はご遠慮ください。</dd>
+  </dl>
+</section>
+
+<section>
+  <h2><span class="n">07</span>ライセンス全文</h2>
+  <p class="sub">法的に効力を持つのは、下記の英文です。上の日本語は読みやすさのための説明で、内容が食い違う場合は英文が優先します。</p>
+<pre>MIT License
+
+Copyright (c) 2026 OpenVetss Project
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</pre>
+  <p>このページは法律の助言ではありません。判断に迷われる場合は、専門家にご確認ください。</p>
+</section>
+
+<footer>
+  OpenVetss ／ <a href="/">Vetss Lab</a>
+</footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,425 @@
+<!--
+  OpenVetss — 動物病院のためのオープンソース・ツール群
+  https://www.vetss-karte.net/
+
+  ネットレジ 設定ツール  v0.1
+  Copyright (c) 2026 OpenVetss Project
+
+  MIT ライセンスで配布しています。改変も再配布も自由ですが、
+  この著作権表示とライセンス表示は残してください。
+  全文は同梱の LICENSE をご覧ください。
+
+  無保証です。診療・会計・帳簿の内容については、
+  お使いになる病院の責任でご確認ください。
+-->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ネットレジ 設定ツール ｜ Vetss Lab</title>
+<style>
+:root{
+  --paper:#FBF9F4; --paper2:#F4F1EA; --rule:#D8D2C6;
+  --ink:#1F2A2E; --ink2:#5A6A70; --ink3:#8C8578;
+  --blue:#42606E; --blue-lo:#EAF0F1;
+  --seal:#2F7A5C; --seal-lo:#EAF3EE; --warn:#9A4030; --warn-lo:#FBEEE9;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho",YuMincho,serif;
+  --gothic:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--gothic);line-height:1.8;
+  -webkit-text-size-adjust:100%}
+h1,h2{font-family:var(--mincho);font-weight:600;letter-spacing:.04em}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--seal);outline-offset:1px}
+.wrap{max-width:980px;margin:0 auto;padding:0 22px}
+
+.top{border-bottom:1px solid var(--rule);padding:13px 0;font-size:12px;color:var(--ink3)}
+.top a{color:var(--blue);text-decoration:none}
+
+header.hd{padding:38px 0 26px;border-bottom:1px solid var(--rule)}
+.eyebrow{font-size:11px;letter-spacing:.2em;color:var(--blue);margin-bottom:12px}
+header.hd h1{font-size:clamp(24px,4.4vw,34px);margin-bottom:12px}
+header.hd p{font-size:14.5px;color:var(--ink2);max-width:42em}
+.steps{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px;font-size:12.5px;color:var(--ink2)}
+.steps b{font-family:var(--mono);color:var(--blue);margin-right:5px}
+.steps span{background:var(--paper2);border-radius:3px;padding:6px 12px}
+
+section{padding:34px 0;border-bottom:1px solid var(--rule)}
+section h2{font-size:19px;margin-bottom:4px}
+section h2 .n{font-family:var(--mono);font-size:11px;color:var(--blue);letter-spacing:.1em;
+  display:block;margin-bottom:6px;font-weight:400}
+.sub{font-size:13.5px;color:var(--ink2);margin-bottom:20px;max-width:44em}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px 18px}
+label.f{display:block}
+label.f span{display:block;font-size:11px;letter-spacing:.06em;color:var(--ink3);margin-bottom:4px}
+label.f input,label.f select{width:100%;padding:9px 11px;border:1px solid var(--rule);border-radius:3px;
+  background:#fff;font-size:14.5px}
+label.f small{display:block;font-size:11px;color:var(--ink3);margin-top:3px;line-height:1.6}
+
+/* 品名表 */
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.btn{padding:9px 17px;border-radius:3px;border:1px solid var(--rule);background:#fff;
+  font-size:13.5px;color:var(--ink2)}
+.btn:hover{background:var(--paper2)}
+.btn.on{background:var(--seal);border-color:var(--seal);color:#fff}
+.btn.on:hover{background:#24634A}
+.btn.danger{color:var(--warn);border-color:#E0B4A8}
+.count{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--ink3)}
+
+.tbl-wrap{border:1px solid var(--rule);border-radius:4px;overflow:auto;max-height:52vh;background:#fff}
+table.it{width:100%;border-collapse:collapse;font-size:13.5px}
+table.it th{position:sticky;top:0;background:var(--paper2);text-align:left;font-weight:400;
+  font-size:11px;letter-spacing:.06em;color:var(--ink3);padding:8px 7px;border-bottom:1px solid var(--rule);
+  white-space:nowrap;z-index:1}
+table.it td{border-bottom:1px solid var(--rule);padding:3px 5px;vertical-align:middle}
+table.it tr:last-child td{border-bottom:0}
+table.it input,table.it select{width:100%;padding:6px 7px;border:1px solid transparent;border-radius:3px;
+  background:transparent;font-size:13.5px}
+table.it input:hover,table.it select:hover{border-color:var(--rule)}
+table.it input:focus,table.it select:focus{border-color:var(--seal);background:#fff}
+table.it .no{font-family:var(--mono);font-size:11px;color:var(--ink3);text-align:right;padding-right:8px;width:2.6rem}
+table.it .act{white-space:nowrap;width:1px}
+.mini{padding:4px 8px;border-radius:3px;border:1px solid var(--rule);background:#fff;
+  font-size:12px;color:var(--ink2);margin-left:3px;line-height:1.2}
+.mini:hover{background:var(--paper2)}
+.mini.x{color:var(--warn);border-color:#E0B4A8}
+
+/* プレビュー */
+.pv-frame{background:#16302F;border-radius:6px;padding:10px}
+.pv{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
+.pv b{background:#EDE7DB;color:#1A1C1B;border-bottom:3px solid #C4BBA9;border-radius:6px;
+  min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:12px;font-weight:400;text-align:center;padding:3px;line-height:1.2;word-break:break-all}
+.pv b.ex{background:#BFC8CB;border-bottom-color:#93A0A4}
+.pv b em{font-style:normal;font-size:9px;color:#7C766A;margin-top:2px}
+.pv b.blank{background:transparent;border:1px dashed rgba(237,231,219,.18);border-bottom:1px dashed rgba(237,231,219,.18)}
+.pv-bar{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:12px;color:var(--ink3)}
+.pv-bar .pg{font-family:var(--mono)}
+
+/* 取込 */
+textarea.csv{width:100%;min-height:130px;padding:11px;border:1px solid var(--rule);border-radius:3px;
+  background:#fff;font-family:var(--mono);font-size:12.5px;line-height:1.7;resize:vertical}
+.hint{font-size:12px;color:var(--ink3);line-height:1.8;margin-top:8px}
+.hint code{background:var(--paper2);padding:1px 5px;border-radius:3px;font-family:var(--mono);font-size:11.5px}
+
+/* 完成 */
+.done{background:var(--seal-lo);border-radius:4px;padding:26px 28px;text-align:center}
+.done p{font-size:14px;color:var(--ink2);margin-bottom:18px;max-width:34em;margin-left:auto;margin-right:auto}
+.done .btn.on{padding:13px 30px;font-size:15px}
+.warnbox{background:var(--warn-lo);border:1px solid #E0B4A8;color:var(--warn);border-radius:4px;
+  padding:11px 14px;font-size:12.5px;line-height:1.8;margin-bottom:16px}
+
+footer{padding:28px 0 46px;font-size:12px;color:var(--ink3);text-align:center}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);
+  color:var(--paper);padding:9px 20px;border-radius:20px;font-size:13px;opacity:0;
+  transition:opacity .2s;pointer-events:none;z-index:50;max-width:90vw;text-align:center}
+.toast.on{opacity:1}
+@media(max-width:640px){
+  .pv{grid-template-columns:repeat(4,1fr)}
+  table.it th:nth-child(5),table.it td:nth-child(5){display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="top"><div class="wrap"><a href="/">Vetss Lab</a> ／ <a href="/netregi/">ネットレジ</a> ／ 設定ツール</div></div>
+
+<div class="wrap">
+
+<header class="hd">
+  <div class="eyebrow">NETREGI SETUP</div>
+  <h1>自院の品名で、レジを組み立てる。</h1>
+  <p>この画面で品名を並べて、設定ファイルを1つ持ち帰ってください。ネットレジに読み込ませれば、その日から自院仕様のレジになります。入力した内容がこのサイトに送られることはありません。すべてお使いのブラウザの中で処理されます。</p>
+  <div class="steps">
+    <span><b>01</b>病院の情報を入れる</span>
+    <span><b>02</b>品名を並べる</span>
+    <span><b>03</b>設定ファイルを保存</span>
+    <span><b>04</b>レジで読み込む</span>
+  </div>
+</header>
+
+<section>
+  <h2><span class="n">01</span>病院の情報</h2>
+  <p class="sub">明細書の右上と、消費税の計算に使われます。あとから変更できます。</p>
+  <div class="grid">
+    <label class="f"><span>病院名</span><input id="fName" placeholder="○○動物病院"></label>
+    <label class="f"><span>電話番号</span><input id="fTel" placeholder="03-0000-0000"></label>
+    <label class="f" style="grid-column:span 2"><span>住所</span><input id="fAddr" placeholder="東京都…"></label>
+    <label class="f"><span>適格請求書 登録番号</span><input id="fInv" placeholder="T1234567890123">
+      <small>お持ちの場合のみ。明細書に印字されます</small></label>
+    <label class="f"><span>診察券の呼び方</span><input id="fIdLabel" placeholder="診察券ID">
+      <small>「カルテ番号」「診察券番号」など</small></label>
+    <label class="f"><span>端末記号</span><input id="fTerm" maxlength="3" placeholder="A">
+      <small>複数台で使うとき、明細番号の頭に付きます</small></label>
+    <label class="f"><span>消費税</span>
+      <select id="fMode"><option value="exclusive">外税（本体価格に加算）</option>
+      <option value="inclusive">内税（価格に含む）</option></select></label>
+    <label class="f"><span>端数処理</span>
+      <select id="fRound"><option value="floor">切り捨て</option><option value="round">四捨五入</option>
+      <option value="floor10">10円未満切り捨て</option><option value="round10">10円未満四捨五入</option></select>
+      <small>合計に対して一度だけ処理します</small></label>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">02</span>品名を並べる</h2>
+  <p class="sub">単価は会計のたびに入力するので、ここでは登録しません。名前だけです。上にあるものほど画面の左上に並びます。よく使う項目を上へ。</p>
+
+  <div class="bar">
+    <button class="btn on" id="bAdd">＋ 品名を追加</button>
+    <button class="btn" id="bSample">サンプルから始める</button>
+    <button class="btn" id="bCsv">まとめて取り込む</button>
+    <button class="btn danger" id="bClear">全部消す</button>
+    <span class="count"><b id="cnt">0</b> 件</span>
+  </div>
+
+  <div class="tbl-wrap">
+    <table class="it">
+      <thead><tr>
+        <th></th><th>品名</th><th>よみ（半角カナ）</th><th style="width:7.5rem">税区分</th>
+        <th style="width:9rem">部門</th><th></th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+
+  <div id="csvBox" style="display:none;margin-top:16px">
+    <textarea class="csv" id="csv" placeholder="眼科検査,ｶﾞﾝｶｹﾝｻ&#10;再診料,ｻｲｼﾝﾘｮｳ&#10;狂犬病予防注射,ｷｮｳｹﾝﾋﾞｮｳ,1"></textarea>
+    <p class="hint">1行に1品目。<code>品名,よみ,税区分,部門</code> の順で、よみ以降は省略できます。税区分は <code>0</code>=課税・<code>1</code>=非課税。Excel からコピーして貼り付けることもできます（タブ区切りにも対応）。</p>
+    <div class="bar" style="margin-top:12px">
+      <button class="btn on" id="bCsvGo">取り込む</button>
+      <button class="btn" id="bCsvCancel">やめる</button>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">03</span>キー面の確認</h2>
+  <p class="sub">実際のレジと同じ並びです。指がよく動く左上に、使用頻度の高いものが来ているか確かめてください。</p>
+  <div class="pv-frame"><div class="pv" id="pv"></div></div>
+  <div class="pv-bar">
+    <button class="mini" id="pvPrev">◀ 前</button>
+    <span class="pg" id="pvPg">1/1</span>
+    <button class="mini" id="pvNext">次 ▶</button>
+    <span style="margin-left:auto">グレーのキーは非課税の品目です</span>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">04</span>設定ファイルを保存</h2>
+  <div id="valid"></div>
+  <div class="done">
+    <p>このファイル1つで、病院の情報・消費税の設定・品名がすべて揃います。複数のタブレットで使う場合は、同じファイルを各台に読み込ませてください（端末記号だけ台ごとに変えます）。</p>
+    <button class="btn on" id="bSave">設定ファイルを保存する</button>
+    <div class="bar" style="justify-content:center;margin-top:18px;margin-bottom:0">
+      <button class="btn" id="bLoad">保存した設定を読み込んで続きから編集</button>
+      <input type="file" id="fFile" accept=".json,application/json" hidden>
+    </div>
+  </div>
+</section>
+
+<footer>Vetss Lab ／ <a href="/netregi/">ネットレジについて</a></footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const esc = s => String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let T; const toast=m=>{const e=$("toast");e.textContent=m;e.classList.add("on");
+  clearTimeout(T);T=setTimeout(()=>e.classList.remove("on"),1900);};
+
+const DEPT = ["診療・処置","物品・フード","トリミング","値引・調整","公的費用など"];
+let ITEMS = [];
+let PV = 0;
+const PER = 36;
+
+/* ── 表 ── */
+function drawRows(){
+  $("cnt").textContent = ITEMS.length;
+  $("rows").innerHTML = ITEMS.map((it,i)=>
+    '<tr>'+
+    '<td class="no">'+(i+1)+'</td>'+
+    '<td><input data-i="'+i+'" data-k="name" value="'+esc(it.name)+'" placeholder="品名"></td>'+
+    '<td><input data-i="'+i+'" data-k="kana" value="'+esc(it.kana)+'" placeholder="ｶﾅ"></td>'+
+    '<td><select data-i="'+i+'" data-k="zeiku">'+
+      '<option value="0"'+(it.zeiku?"":" selected")+'>課税</option>'+
+      '<option value="1"'+(it.zeiku?" selected":"")+'>非課税</option></select></td>'+
+    '<td><select data-i="'+i+'" data-k="ku">'+
+      DEPT.map((d,n)=>'<option value="'+n+'"'+(it.ku===n?" selected":"")+'>'+d+'</option>').join("")+
+      '</select></td>'+
+    '<td class="act">'+
+      '<button class="mini" data-mv="'+i+'" data-d="-1" title="上へ">↑</button>'+
+      '<button class="mini" data-mv="'+i+'" data-d="1" title="下へ">↓</button>'+
+      '<button class="mini x" data-del="'+i+'" title="削除">✕</button>'+
+    '</td></tr>').join("");
+  drawPv();
+  validate();
+}
+$("rows").addEventListener("input", e=>{
+  const t=e.target, i=t.dataset.i, k=t.dataset.k;
+  if(i===undefined) return;
+  ITEMS[+i][k] = (k==="zeiku"||k==="ku") ? +t.value : t.value;
+  if(k==="zeiku"||k==="ku") drawPv();
+  if(k==="name") drawPv();
+});
+$("rows").addEventListener("click", e=>{
+  const mv=e.target.dataset.mv, del=e.target.dataset.del;
+  if(mv!==undefined){
+    const i=+mv, d=+e.target.dataset.d, j=i+d;
+    if(j<0||j>=ITEMS.length) return;
+    [ITEMS[i],ITEMS[j]]=[ITEMS[j],ITEMS[i]];
+    drawRows();
+  }else if(del!==undefined){
+    ITEMS.splice(+del,1); drawRows();
+  }
+});
+$("bAdd").onclick = ()=>{
+  ITEMS.push({name:"",kana:"",zeiku:0,ku:0});
+  drawRows();
+  const rows=$("rows").querySelectorAll('input[data-k="name"]');
+  const last=rows[rows.length-1]; if(last){ last.focus(); last.scrollIntoView({block:"center"}); }
+};
+$("bClear").onclick = ()=>{
+  if(!ITEMS.length) return;
+  if(confirm("品名をすべて削除します。よろしいですか？")){ ITEMS=[]; drawRows(); }
+};
+
+/* ── サンプル ── */
+const SAMPLE = [
+  ["初診料","ｼｮｼﾝﾘｮｳ",0,0],["再診料","ｻｲｼﾝﾘｮｳ",0,0],["時間外料","ｼﾞｶﾝｶﾞｲﾘｮｳ",0,0],
+  ["一般身体検査","ｼﾝﾀｲｹﾝｻ",0,0],["血液検査","ｹﾂｴｷｹﾝｻ",0,0],["生化学検査","ｾｲｶｶﾞｸ",0,0],
+  ["尿検査","ﾆｮｳｹﾝｻ",0,0],["糞便検査","ﾌﾝﾍﾞﾝｹﾝｻ",0,0],["皮膚検査","ﾋﾌｹﾝｻ",0,0],
+  ["レントゲン検査","ﾚﾝﾄｹﾞﾝ",0,0],["超音波検査","ｴｺｰ",0,0],["眼科検査","ｶﾞﾝｶｹﾝｻ",0,0],
+  ["耳科処置","ｼﾞｶｼｮﾁ",0,0],["皮下点滴","ﾋｶﾃﾝﾃｷ",0,0],["静脈点滴","ｼﾞｮｳﾐｬｸﾃﾝﾃｷ",0,0],
+  ["皮下注射","ﾋｶﾁｭｳｼｬ",0,0],["筋肉注射","ｷﾝﾆｸﾁｭｳｼｬ",0,0],["静脈注射","ｼﾞｮｳﾐｬｸﾁｭｳｼｬ",0,0],
+  ["内服薬","ﾅｲﾌｸﾔｸ",0,0],["外用薬","ｶﾞｲﾖｳﾔｸ",0,0],["注射薬","ﾁｭｳｼｬﾔｸ",0,0],
+  ["処置料","ｼｮﾁﾘｮｳ",0,0],["創傷処置","ｿｳｼｮｳｼｮﾁ",0,0],["爪切り","ﾂﾒｷﾘ",0,0],
+  ["肛門腺処置","ｺｳﾓﾝｾﾝ",0,0],["麻酔","ﾏｽｲ",0,0],["手術料","ｼｭｼﾞｭﾂﾘｮｳ",0,0],
+  ["入院料","ﾆｭｳｲﾝﾘｮｳ",0,0],["混合ワクチン","ﾜｸﾁﾝ",0,0],["狂犬病予防注射","ｷｮｳｹﾝﾋﾞｮｳ",0,0],
+  ["フィラリア予防薬","ﾌｨﾗﾘｱ",0,0],["ノミダニ予防薬","ﾉﾐﾀﾞﾆ",0,0],
+  ["処方食","ｼｮﾎｳｼｮｸ",0,1],["ペットフード","ﾌｰﾄﾞ",0,1],["ペット用品","ﾖｳﾋﾝ",0,1],
+  ["シャンプー","ｼｬﾝﾌﾟｰ",0,2],["シャンプーカット","ｼｬﾝﾌﾟｰｶｯﾄ",0,2],
+  ["畜犬登録料","ﾁｸｹﾝﾄｳﾛｸ",1,4],["注射済票交付料","ｽﾐﾋｮｳ",1,4],
+  ["診断書","ｼﾝﾀﾞﾝｼｮ",0,0],["証明書","ｼｮｳﾒｲｼｮ",0,0],["死体処理","ｼﾀｲｼｮﾘ",0,0]
+];
+$("bSample").onclick = ()=>{
+  if(ITEMS.length && !confirm("現在の品名を、サンプルで置き換えます。よろしいですか？")) return;
+  ITEMS = SAMPLE.map(a=>({name:a[0],kana:a[1],zeiku:a[2],ku:a[3]}));
+  drawRows(); toast(ITEMS.length+"件を読み込みました。自院に合わせて直してください");
+};
+
+/* ── CSV取込 ── */
+$("bCsv").onclick = ()=>{ const b=$("csvBox"); b.style.display = b.style.display==="none"?"block":"none";
+  if(b.style.display==="block") $("csv").focus(); };
+$("bCsvCancel").onclick = ()=>{ $("csvBox").style.display="none"; };
+$("bCsvGo").onclick = ()=>{
+  const txt=$("csv").value.trim();
+  if(!txt){ toast("貼り付けてから押してください"); return; }
+  let add=0;
+  for(const line of txt.split(/\r?\n/)){
+    if(!line.trim()) continue;
+    const c=line.split(/\t|,/).map(s=>s.trim().replace(/^"|"$/g,""));
+    if(!c[0]) continue;
+    ITEMS.push({ name:c[0], kana:c[1]||"", zeiku:+(c[2]||0)?1:0, ku:Math.min(4,Math.max(0,+(c[3]||0)))||0 });
+    add++;
+  }
+  $("csv").value=""; $("csvBox").style.display="none";
+  drawRows(); toast(add+"件を追加しました");
+};
+
+/* ── プレビュー ── */
+function drawPv(){
+  const pages=Math.max(1,Math.ceil(ITEMS.length/PER));
+  PV=(PV+pages)%pages;
+  const sl=ITEMS.slice(PV*PER,(PV+1)*PER);
+  let h="";
+  for(let i=0;i<PER;i++){
+    const it=sl[i];
+    h += it
+      ? '<b class="'+(it.zeiku?"ex":"")+'">'+esc(it.name||"（未入力）")+
+        (it.kana?'<em>'+esc(it.kana)+'</em>':'')+'</b>'
+      : '<b class="blank"></b>';
+  }
+  $("pv").innerHTML=h;
+  $("pvPg").textContent=(PV+1)+"/"+pages;
+}
+$("pvPrev").onclick=()=>{PV--;drawPv();};
+$("pvNext").onclick=()=>{PV++;drawPv();};
+
+/* ── 検証 ── */
+function validate(){
+  const w=[];
+  if(!$("fName").value.trim()) w.push("病院名が空です。明細書の発行元として印字されます。");
+  if(!ITEMS.length) w.push("品名が1件もありません。");
+  const empty=ITEMS.filter(i=>!i.name.trim()).length;
+  if(empty) w.push("名前が空の品名が "+empty+" 件あります。");
+  const names=ITEMS.map(i=>i.name.trim()).filter(Boolean);
+  const dup=[...new Set(names.filter((n,i)=>names.indexOf(n)!==i))];
+  if(dup.length) w.push("同じ品名が重複しています：" + dup.slice(0,5).join("、"));
+  const inv=$("fInv").value.trim();
+  if(inv && !/^T\d{13}$/.test(inv)) w.push("登録番号は T のあとに数字13桁です。");
+  $("valid").innerHTML = w.length
+    ? '<div class="warnbox">'+w.map(esc).join("<br>")+'</div>' : "";
+}
+["fName","fInv"].forEach(id=>$(id).addEventListener("input",validate));
+
+/* ── 保存・読込 ── */
+function buildSetup(){
+  return {
+    schema:"vetss-setup/0.1",
+    createdAt:new Date().toISOString().slice(0,10),
+    hospital:{
+      name:$("fName").value.trim(), addr:$("fAddr").value.trim(),
+      tel:$("fTel").value.trim(), invoiceNo:$("fInv").value.trim(),
+      idLabel:$("fIdLabel").value.trim()||"診察券ID",
+      terminal:($("fTerm").value.trim()||"A").toUpperCase()
+    },
+    tax:{ mode:$("fMode").value, rounding:$("fRound").value, scope:"total" },
+    items: ITEMS.filter(i=>i.name.trim()).map((i,n)=>({
+      id:1001+n, name:i.name.trim(), kana:(i.kana||"").trim(),
+      zeiku:i.zeiku?1:0, ku:i.ku||0
+    }))
+  };
+}
+$("bSave").onclick = ()=>{
+  const o=buildSetup();
+  if(!o.items.length){ toast("品名を1件以上登録してください"); return; }
+  const slug=(o.hospital.name||"netregi").replace(/[^\wぁ-んァ-ヶ一-龠ー]/g,"").slice(0,20)||"netregi";
+  const blob=new Blob([JSON.stringify(o,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob); a.download="netregi_setup_"+slug+".json"; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  toast("保存しました。ネットレジの「設定」から読み込んでください");
+};
+$("bLoad").onclick = ()=> $("fFile").click();
+$("fFile").onchange = async e=>{
+  const f=e.target.files[0]; if(!f) return;
+  try{
+    const o=JSON.parse(await f.text());
+    const hp=o.hospital||{}, tx=o.tax||{};
+    $("fName").value=hp.name||""; $("fAddr").value=hp.addr||"";
+    $("fTel").value=hp.tel||""; $("fInv").value=hp.invoiceNo||"";
+    $("fIdLabel").value=hp.idLabel||""; $("fTerm").value=hp.terminal||"A";
+    if(tx.mode) $("fMode").value=tx.mode;
+    if(tx.rounding) $("fRound").value=tx.rounding;
+    ITEMS=(o.items||[]).map(i=>({name:i.name||"",kana:i.kana||"",zeiku:i.zeiku?1:0,ku:i.ku||0}));
+    drawRows(); toast("読み込みました（"+ITEMS.length+"件）");
+  }catch(err){ toast("このファイルは読み込めませんでした"); }
+  e.target.value="";
+};
+
+/* 誤って閉じたときの保険 */
+window.addEventListener("beforeunload", e=>{
+  if(ITEMS.length){ e.preventDefault(); e.returnValue=""; }
+});
+
+drawRows();
+</script>
+</body>
+</html>

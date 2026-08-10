@@ -1,0 +1,741 @@
+<!--
+  OpenVetss — 動物病院のためのオープンソース・ツール群
+  https://www.vetss-karte.net/
+
+  整形外科学的検査カルテ — デジタル問診ツール  v0.6
+  Copyright (c) 2026 OpenVetss Project
+
+  MIT ライセンスで配布しています。改変も再配布も自由ですが、
+  この著作権表示とライセンス表示は残してください。
+  全文は同梱の LICENSE をご覧ください。
+
+  無保証です。日本獣医麻酔外科学会 整形外科委員会 ver.1 に準拠して
+  作成していますが、学会の公認を受けたものではありません。
+
+  端末外へデータを送信しません。受診ハブ（visit.html）から
+  ?visit= 付きで開かれたときだけ、同じ端末内の受診記録へ書き戻します。
+-->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>整形外科学的検査カルテ — デジタル問診ツール</title>
+<style>
+  :root{
+    --ink:#22333B;        /* 深い青灰(診察室の落ち着き) */
+    --paper:#F5F6F4;      /* 冷たすぎない診療紙 */
+    --card:#FFFFFF;
+    --line:#D8DCD9;
+    --accent:#0E7C66;     /* 検査済みの緑(カルテの検印色) */
+    --accent-soft:#E3F1ED;
+    --right:#B65C2E;      /* 右=暖 */
+    --left:#3D6B9E;       /* 左=寒 */
+    --muted:#7A8580;
+    --danger:#A64B3C;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; background:var(--paper); color:var(--ink);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",system-ui,sans-serif;
+    font-size:16px; line-height:1.55;}
+  header.app{
+    background:var(--ink); color:#F2F4F1; padding:14px 18px 12px;
+    position:sticky; top:0; z-index:30; box-shadow:0 2px 8px rgba(0,0,0,.18);}
+  header.app h1{
+    margin:0; font-family:"Hiragino Mincho ProN","Yu Mincho",serif;
+    font-size:1.25rem; font-weight:600; letter-spacing:.06em;}
+  header.app .src{font-size:.72rem; opacity:.75; letter-spacing:.04em; margin-top:2px;}
+  header.app .loadrow{margin-top:8px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+  .btn{
+    border:1px solid var(--line); background:var(--card); color:var(--ink);
+    border-radius:8px; padding:8px 14px; font-size:.9rem; cursor:pointer;}
+  .btn:active{transform:translateY(1px);}
+  .btn.primary{background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600;}
+  .btn.ghost{background:transparent; color:#F2F4F1; border-color:#5b6a66;}
+  .banner{
+    background:#FBF3E2; border:1px solid #E4D2A8; color:#6b5518;
+    padding:8px 12px; font-size:.85rem; border-radius:8px; margin:12px 16px 0;}
+  /* ページ・ステッパー(検査手順=実際の順序を持つ) */
+  nav.steps{
+    display:flex; gap:6px; overflow-x:auto; padding:10px 16px; position:sticky;
+    top:64px; background:var(--paper); z-index:20; border-bottom:1px solid var(--line);}
+  nav.steps button{
+    flex:0 0 auto; border:1px solid var(--line); background:var(--card); color:var(--ink);
+    border-radius:999px; padding:6px 14px; font-size:.85rem; cursor:pointer; white-space:nowrap;}
+  nav.steps button.on{background:var(--ink); color:#fff; border-color:var(--ink);}
+  nav.steps button .n{
+    display:inline-block; font-size:.7rem; opacity:.65; margin-right:5px;}
+  main{max-width:860px; margin:0 auto; padding:8px 16px 120px;}
+  section.group{background:var(--card); border:1px solid var(--line); border-radius:12px;
+    margin:14px 0; overflow:hidden;}
+  section.group > h2{
+    margin:0; padding:10px 16px; font-size:.95rem; letter-spacing:.05em;
+    background:linear-gradient(0deg,#fff, #FAFBFA); border-bottom:1px solid var(--line);
+    display:flex; align-items:baseline; gap:10px;}
+  section.group > h2 .pg{font-size:.7rem; color:var(--muted); font-weight:400;}
+  .q{padding:12px 16px; border-bottom:1px dashed #E7EAE7;}
+  .q:last-child{border-bottom:none;}
+  .q.answered{background:var(--accent-soft);}
+  .q .label{font-size:.95rem; margin-bottom:8px; font-weight:600; display:flex; gap:8px; align-items:baseline;}
+  .q .label .req{color:var(--danger); font-size:.72rem; font-weight:400;}
+  .q .label .done{color:var(--accent); font-size:.8rem; font-weight:400; margin-left:auto;}
+  .opts{display:flex; flex-wrap:wrap; gap:8px;}
+  .opt{
+    border:1px solid var(--line); background:#fff; border-radius:8px;
+    padding:9px 14px; font-size:.92rem; cursor:pointer; user-select:none;}
+  .opt.sel{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .opt.sel.side-r{background:var(--right); border-color:var(--right);}
+  .opt.sel.side-l{background:var(--left); border-color:var(--left);}
+  input.free{margin-top:8px; width:100%;}
+  input[type=text], input[type=number], input[type=date]{
+    border:1px solid var(--line); border-radius:8px; padding:9px 12px; font-size:1rem;
+    background:#fff; color:var(--ink); width:100%; max-width:340px;}
+  .numrow{display:flex; align-items:center; gap:8px;}
+  .numrow .unit{color:var(--muted); font-size:.9rem;}
+  /* 左右(lr): 整形外科の本質=左右比較。対の帯で示す */
+  .lr{display:grid; grid-template-columns:2.6em 1fr; gap:8px 10px; align-items:center;}
+  .lr .side{font-weight:700; font-size:.85rem; text-align:center; border-radius:6px; padding:6px 0; color:#fff;}
+  .lr .side.r{background:var(--right);}
+  .lr .side.l{background:var(--left);}
+  .lr .side.b{background:#6C7A75;}
+  .scale{max-width:420px;}
+  .scale .val{font-size:1.4rem; font-weight:700; min-width:2.2em; display:inline-block;}
+  .scale .val.na{color:var(--muted); font-size:.9rem; font-weight:400;}
+  input[type=range]{width:100%;}
+  /* 下部バー */
+  footer.bar{
+    position:fixed; left:0; right:0; bottom:0; z-index:40;
+    background:rgba(34,51,59,.97); color:#fff; padding:10px 16px;
+    display:flex; gap:12px; align-items:center;}
+  footer.bar .prog{font-size:.85rem; opacity:.85;}
+  footer.bar .sp{flex:1;}
+  /* 出力パネル(カルテ貼付票) */
+  #outWrap{display:none; position:fixed; inset:0; background:rgba(20,28,32,.55); z-index:50;
+    padding:20px; overflow:auto;}
+  #outCard{
+    background:#FFFDF7; max-width:720px; margin:0 auto; border-radius:10px;
+    border:1px solid #CFC9B8; box-shadow:0 12px 40px rgba(0,0,0,.35); overflow:hidden;}
+  #outCard .head{padding:12px 18px; border-bottom:1px solid #E4DFCE; display:flex; gap:10px; align-items:center;}
+  #outCard .head h3{margin:0; font-family:"Hiragino Mincho ProN","Yu Mincho",serif; font-size:1.02rem;}
+  #outCard .head .sp{flex:1;}
+  #outText{
+    white-space:pre-wrap; font-family:"Hiragino Kaku Gothic ProN",monospace;
+    font-size:.92rem; padding:16px 18px; margin:0; max-height:60vh; overflow:auto;}
+  #outCard .foot{padding:12px 18px; border-top:1px solid #E4DFCE; display:flex; gap:10px; flex-wrap:wrap;}
+  .toast{
+    position:fixed; bottom:86px; left:50%; transform:translateX(-50%);
+    background:var(--accent); color:#fff; padding:8px 18px; border-radius:999px;
+    font-size:.9rem; z-index:60; opacity:0; transition:opacity .25s;}
+  .toast.show{opacity:1;}
+  @media (max-width:560px){
+    main{padding:8px 10px 120px;}
+    .q{padding:12px;}
+  }
+  @media (prefers-reduced-motion: reduce){ *{transition:none !important;} }
+</style>
+</head>
+<body>
+
+<header class="app">
+  <h1 id="ttl">整形外科学的検査カルテ</h1>
+  <div class="src" id="src">日本獣医麻酔外科学会 整形外科委員会 ver.1 準拠 ／ 端末外へデータを送信・保存しません</div>
+  <div class="src" id="metaLine" style="display:none; color:#CFE8DF; font-size:.82rem; margin-top:4px;"></div>
+  <div class="loadrow">
+    <!-- <button class="btn ghost" onclick="document.getElementById('jsonFile').click()">定義JSONを差し替え</button> -->
+    <input type="file" id="jsonFile" accept=".json,application/json" style="display:none">
+    <span id="loadState" style="font-size:.78rem; opacity:.8;"></span>
+    <button class="btn primary" id="hubBtn" style="display:none" onclick="backToHub()">ハブへ戻る</button>
+    <a class="btn primary" href="../index.html" target="blank">戻る</a>
+    <a class="btn primary" href="./json_rd.html" target="blank">定義JSONを差し替え</a>
+  </div>
+</header>
+
+
+<nav class="steps" id="steps"></nav>
+<main id="form"></main>
+
+<footer class="bar">
+  <span class="prog" id="prog">回答 0 / 0</span>
+  <span class="sp"></span>
+  <button class="btn" onclick="resetAll()">クリア</button>
+  <button class="btn primary" onclick="showOutput()">テキスト化</button>
+</footer>
+
+<div id="outWrap" onclick="if(event.target===this) hideOutput()">
+  <div id="outCard">
+    <div class="head">
+      <h3>カルテ貼付テキスト(回答済み項目のみ)</h3>
+      <span class="sp"></span>
+      <button class="btn" onclick="hideOutput()">閉じる</button>
+    </div>
+    <pre id="outText"></pre>
+    <div class="foot">
+      <button class="btn primary" onclick="copyOutput()">コピー</button>
+      <button class="btn" onclick="downloadOutput()">.txt ダウンロード</button>
+      <button class="btn" onclick="downloadJson()">.json ダウンロード</button>
+      <button class="btn primary" id="hubSaveBtn" style="display:none" onclick="saveToHub(true)">ハブに記録して戻る</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ============================================================
+   定義: 配布版ではここに97問のJSONを丸ごと内蔵する。
+   v0.1 は判明済みのサンプル2問のみ。実運用テストは
+   「定義JSONを読み込む」から ortho_exam_v1.json を開く。
+   ============================================================ */
+let DEF = {"name":"整形外科学的検査カルテ","source":"日本獣医麻酔外科学会 整形外科委員会 ver.1","type":1,"questions":[{"id":123,"name":"動物種","answer_type":"radio","required":1,"group_name":"シグナルメント","page_no":1,"sort_order":1,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":536,"label":"犬","value":"犬","allow_text":0,"sort_order":1},{"id":537,"label":"猫","value":"猫","allow_text":0,"sort_order":2}]},{"id":124,"name":"性別","answer_type":"radio","required":1,"group_name":"シグナルメント","page_no":1,"sort_order":2,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":539,"label":"雄","value":"雄","allow_text":0,"sort_order":1},{"id":540,"label":"雌","value":"雌","allow_text":0,"sort_order":2},{"id":541,"label":"去勢雄","value":"去勢雄","allow_text":0,"sort_order":3},{"id":542,"label":"不妊雌","value":"不妊雌","allow_text":0,"sort_order":4}]},{"id":125,"name":"品種","answer_type":"text","required":0,"group_name":"シグナルメント","page_no":1,"sort_order":3,"placeholder":"例：ラブラドール","unit":null,"scale_min":null,"scale_max":null,"options":[]},{"id":126,"name":"年齢（歳）","answer_type":"number","required":0,"group_name":"シグナルメント","page_no":1,"sort_order":4,"placeholder":"0","unit":"歳","scale_min":null,"scale_max":null,"options":[]},{"id":127,"name":"年齢（ヵ月）","answer_type":"number","required":0,"group_name":"シグナルメント","page_no":1,"sort_order":5,"placeholder":"0","unit":"ヵ月","scale_min":null,"scale_max":null,"options":[]},{"id":128,"name":"体重","answer_type":"number","required":0,"group_name":"シグナルメント","page_no":1,"sort_order":6,"placeholder":"0.0","unit":"kg","scale_min":null,"scale_max":null,"options":[]},{"id":129,"name":"BCS","answer_type":"radio","required":0,"group_name":"シグナルメント","page_no":1,"sort_order":7,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":546,"label":"1","value":"1","allow_text":0,"sort_order":1},{"id":547,"label":"2","value":"2","allow_text":0,"sort_order":2},{"id":548,"label":"3","value":"3","allow_text":0,"sort_order":3},{"id":549,"label":"4","value":"4","allow_text":0,"sort_order":4},{"id":550,"label":"5","value":"5","allow_text":0,"sort_order":5}]},{"id":130,"name":"発症前の散歩（分/回）","answer_type":"number","required":0,"group_name":"シグナルメント","page_no":1,"sort_order":8,"placeholder":"30","unit":"分/回","scale_min":null,"scale_max":null,"options":[]},{"id":131,"name":"散歩回数（回/日）","answer_type":"number","required":0,"group_name":"シグナルメント","page_no":1,"sort_order":9,"placeholder":"2","unit":"回/日","scale_min":null,"scale_max":null,"options":[]},{"id":132,"name":"運動種別","answer_type":"radio","required":0,"group_name":"シグナルメント","page_no":1,"sort_order":10,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":553,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":554,"label":"ドッグラン","value":"ドッグラン","allow_text":0,"sort_order":2},{"id":555,"label":"水泳","value":"水泳","allow_text":0,"sort_order":3},{"id":556,"label":"スポーツ","value":"スポーツ","allow_text":0,"sort_order":4}]},{"id":133,"name":"発症タイプ","answer_type":"radio","required":1,"group_name":"主訴・問診","page_no":2,"sort_order":1,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":560,"label":"常時","value":"常時","allow_text":0,"sort_order":1},{"id":561,"label":"起立時","value":"起立時","allow_text":0,"sort_order":2},{"id":562,"label":"運動時","value":"運動時","allow_text":0,"sort_order":3},{"id":563,"label":"運動後","value":"運動後","allow_text":0,"sort_order":4}]},{"id":134,"name":"進行性","answer_type":"radio","required":1,"group_name":"主訴・問診","page_no":2,"sort_order":2,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":567,"label":"急性","value":"急性","allow_text":0,"sort_order":1},{"id":568,"label":"緩徐","value":"緩徐","allow_text":0,"sort_order":2},{"id":569,"label":"慢性","value":"慢性","allow_text":0,"sort_order":3},{"id":570,"label":"間欠的","value":"間欠的","allow_text":0,"sort_order":4},{"id":571,"label":"改善傾向","value":"改善傾向","allow_text":0,"sort_order":5}]},{"id":135,"name":"外傷歴","answer_type":"radio","required":0,"group_name":"主訴・問診","page_no":2,"sort_order":3,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":574,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":575,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":136,"name":"外傷歴詳細","answer_type":"text","required":0,"group_name":"主訴・問診","page_no":2,"sort_order":4,"placeholder":"外傷の内容","unit":null,"scale_min":null,"scale_max":null,"options":[]},{"id":137,"name":"治療効果","answer_type":"radio","required":0,"group_name":"主訴・問診","page_no":2,"sort_order":5,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":577,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":578,"label":"あり","value":"あり","allow_text":0,"sort_order":2},{"id":579,"label":"悪化","value":"悪化","allow_text":0,"sort_order":3}]},{"id":138,"name":"現在の治療","answer_type":"check","required":0,"group_name":"主訴・問診","page_no":2,"sort_order":6,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":580,"label":"NSAIDs","value":"NSAIDs","allow_text":0,"sort_order":1},{"id":581,"label":"ステロイド","value":"ステロイド","allow_text":0,"sort_order":2},{"id":582,"label":"サプリメント","value":"サプリメント","allow_text":0,"sort_order":3},{"id":583,"label":"他の薬剤","value":"他の薬剤","allow_text":0,"sort_order":4}]},{"id":139,"name":"他の薬剤名","answer_type":"text","required":0,"group_name":"主訴・問診","page_no":2,"sort_order":7,"placeholder":"例：メロキシカム","unit":null,"scale_min":null,"scale_max":null,"options":[]},{"id":140,"name":"VAS（疼痛）","answer_type":"scale","required":0,"group_name":"主訴・問診","page_no":2,"sort_order":8,"placeholder":null,"unit":null,"scale_min":0,"scale_max":100,"options":[]},{"id":141,"name":"NRS（疼痛）","answer_type":"scale","required":0,"group_name":"主訴・問診","page_no":2,"sort_order":9,"placeholder":null,"unit":null,"scale_min":0,"scale_max":10,"options":[]},{"id":142,"name":"立位姿勢","answer_type":"radio","required":0,"group_name":"視診","page_no":3,"sort_order":1,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":587,"label":"正常","value":"正常","allow_text":0,"sort_order":1},{"id":588,"label":"前傾","value":"前傾","allow_text":0,"sort_order":2},{"id":589,"label":"後傾","value":"後傾","allow_text":0,"sort_order":3},{"id":590,"label":"背弯","value":"背弯","allow_text":0,"sort_order":4},{"id":591,"label":"側弯","value":"側弯","allow_text":0,"sort_order":5}]},{"id":143,"name":"脚変形","answer_type":"radio","required":0,"group_name":"視診","page_no":3,"sort_order":2,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":594,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":595,"label":"あり（前左）","value":"あり（前左）","allow_text":0,"sort_order":2},{"id":596,"label":"あり（前右）","value":"あり（前右）","allow_text":0,"sort_order":3},{"id":597,"label":"あり（後左）","value":"あり（後左）","allow_text":0,"sort_order":4},{"id":598,"label":"あり（後右）","value":"あり（後右）","allow_text":0,"sort_order":5}]},{"id":144,"name":"蹠行","answer_type":"radio","required":0,"group_name":"視診","page_no":3,"sort_order":3,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":601,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":602,"label":"あり（前左）","value":"あり（前左）","allow_text":0,"sort_order":2},{"id":603,"label":"あり（前右）","value":"あり（前右）","allow_text":0,"sort_order":3},{"id":604,"label":"あり（後左）","value":"あり（後左）","allow_text":0,"sort_order":4},{"id":605,"label":"あり（後右）","value":"あり（後右）","allow_text":0,"sort_order":5}]},{"id":145,"name":"ナックリング","answer_type":"radio","required":0,"group_name":"視診","page_no":3,"sort_order":4,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":608,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":609,"label":"あり（前左）","value":"あり（前左）","allow_text":0,"sort_order":2},{"id":610,"label":"あり（前右）","value":"あり（前右）","allow_text":0,"sort_order":3},{"id":611,"label":"あり（後左）","value":"あり（後左）","allow_text":0,"sort_order":4},{"id":612,"label":"あり（後右）","value":"あり（後右）","allow_text":0,"sort_order":5}]},{"id":146,"name":"着肢位置","answer_type":"radio","required":0,"group_name":"視診","page_no":3,"sort_order":5,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":615,"label":"正常","value":"正常","allow_text":0,"sort_order":1},{"id":616,"label":"異常（前左）","value":"異常（前左）","allow_text":0,"sort_order":2},{"id":617,"label":"異常（前右）","value":"異常（前右）","allow_text":0,"sort_order":3},{"id":618,"label":"異常（後左）","value":"異常（後左）","allow_text":0,"sort_order":4},{"id":619,"label":"異常（後右）","value":"異常（後右）","allow_text":0,"sort_order":5}]},{"id":147,"name":"負重状態","answer_type":"radio","required":0,"group_name":"視診","page_no":3,"sort_order":6,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":622,"label":"正常","value":"正常","allow_text":0,"sort_order":1},{"id":623,"label":"弱い（前左）","value":"弱い（前左）","allow_text":0,"sort_order":2},{"id":624,"label":"弱い（前右）","value":"弱い（前右）","allow_text":0,"sort_order":3},{"id":625,"label":"なし（前左）","value":"なし（前左）","allow_text":0,"sort_order":4},{"id":626,"label":"なし（前右）","value":"なし（前右）","allow_text":0,"sort_order":5},{"id":627,"label":"弱い（後左）","value":"弱い（後左）","allow_text":0,"sort_order":6},{"id":628,"label":"弱い（後右）","value":"弱い（後右）","allow_text":0,"sort_order":7},{"id":629,"label":"なし（後左）","value":"なし（後左）","allow_text":0,"sort_order":8},{"id":630,"label":"なし（後右）","value":"なし（後右）","allow_text":0,"sort_order":9}]},{"id":148,"name":"お座り試験","answer_type":"radio","required":0,"group_name":"視診","page_no":3,"sort_order":7,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":637,"label":"正常","value":"正常","allow_text":0,"sort_order":1},{"id":638,"label":"異常（左）","value":"異常（左）","allow_text":0,"sort_order":2},{"id":639,"label":"異常（右）","value":"異常（右）","allow_text":0,"sort_order":3}]},{"id":149,"name":"跛行スコア","answer_type":"scale","required":1,"group_name":"歩様","page_no":3,"sort_order":8,"placeholder":null,"unit":null,"scale_min":0,"scale_max":5,"options":[]},{"id":150,"name":"頭部の上下動","answer_type":"radio","required":0,"group_name":"歩様","page_no":3,"sort_order":9,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":640,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":641,"label":"あり（頭上位：左前）","value":"あり（頭上位：左前）","allow_text":0,"sort_order":2},{"id":642,"label":"あり（頭上位：右前）","value":"あり（頭上位：右前）","allow_text":0,"sort_order":3}]},{"id":151,"name":"臀部の上下動","answer_type":"radio","required":0,"group_name":"歩様","page_no":3,"sort_order":10,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":643,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":644,"label":"あり（臀部上位：左後）","value":"あり（臀部上位：左後）","allow_text":0,"sort_order":2},{"id":645,"label":"あり（臀部上位：右後）","value":"あり（臀部上位：右後）","allow_text":0,"sort_order":3}]},{"id":152,"name":"歩幅・接地時間の短縮","answer_type":"radio","required":0,"group_name":"歩様","page_no":3,"sort_order":11,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":646,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":647,"label":"あり（前左）","value":"あり（前左）","allow_text":0,"sort_order":2},{"id":648,"label":"あり（前右）","value":"あり（前右）","allow_text":0,"sort_order":3},{"id":649,"label":"あり（後左）","value":"あり（後左）","allow_text":0,"sort_order":4},{"id":650,"label":"あり（後右）","value":"あり（後右）","allow_text":0,"sort_order":5}]},{"id":153,"name":"肩甲部筋肉量","answer_type":"lr","required":0,"group_name":"触診立位（前肢）","page_no":4,"sort_order":1,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":653,"label":"正常","value":"正常","allow_text":0,"sort_order":1},{"id":658,"label":"萎縮","value":"萎縮","allow_text":0,"sort_order":2}]},{"id":154,"name":"肩関節の腫脹","answer_type":"lr","required":0,"group_name":"触診立位（前肢）","page_no":4,"sort_order":2,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":668,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":696,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":155,"name":"大結節の位置","answer_type":"lr","required":0,"group_name":"触診立位（前肢）","page_no":4,"sort_order":3,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":825,"label":"正常","value":"正常","allow_text":0,"sort_order":1},{"id":829,"label":"異常","value":"異常","allow_text":0,"sort_order":2}]},{"id":156,"name":"上腕部筋肉量","answer_type":"lr","required":0,"group_name":"触診立位（前肢）","page_no":4,"sort_order":4,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":654,"label":"正常","value":"正常","allow_text":0,"sort_order":1},{"id":659,"label":"萎縮","value":"萎縮","allow_text":0,"sort_order":2}]},{"id":157,"name":"上腕三頭筋腱 腫脹・緊張低下","answer_type":"lr","required":0,"group_name":"触診立位（前肢）","page_no":4,"sort_order":5,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":669,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":697,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":158,"name":"肘関節の腫脹","answer_type":"lr","required":0,"group_name":"触診立位（前肢）","page_no":4,"sort_order":6,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":670,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":698,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":159,"name":"前腕の筋肉量","answer_type":"lr","required":0,"group_name":"触診立位（前肢）","page_no":4,"sort_order":7,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":655,"label":"正常","value":"正常","allow_text":0,"sort_order":1},{"id":660,"label":"萎縮","value":"萎縮","allow_text":0,"sort_order":2}]},{"id":160,"name":"手根関節の腫脹","answer_type":"lr","required":0,"group_name":"触診立位（前肢）","page_no":4,"sort_order":8,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":673,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":701,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":161,"name":"肩甲骨の位置","answer_type":"lr","required":0,"group_name":"触診立位（前肢）","page_no":4,"sort_order":9,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":826,"label":"正常","value":"正常","allow_text":0,"sort_order":1},{"id":830,"label":"異常","value":"異常","allow_text":0,"sort_order":2}]},{"id":162,"name":"腸骨稜・坐骨結節の位置","answer_type":"lr","required":0,"group_name":"触診立位（後肢）","page_no":4,"sort_order":10,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":827,"label":"正常","value":"正常","allow_text":0,"sort_order":1},{"id":831,"label":"異常","value":"異常","allow_text":0,"sort_order":2}]},{"id":163,"name":"大転子の位置（三角試験）","answer_type":"lr","required":0,"group_name":"触診立位（後肢）","page_no":4,"sort_order":11,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":828,"label":"正常","value":"正常","allow_text":0,"sort_order":1},{"id":832,"label":"異常","value":"異常","allow_text":0,"sort_order":2}]},{"id":164,"name":"股関節の腫脹","answer_type":"lr","required":0,"group_name":"触診立位（後肢）","page_no":4,"sort_order":12,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":674,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":702,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":165,"name":"大腿部の筋肉量","answer_type":"lr","required":0,"group_name":"触診立位（後肢）","page_no":4,"sort_order":13,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":656,"label":"正常","value":"正常","allow_text":0,"sort_order":1},{"id":661,"label":"萎縮","value":"萎縮","allow_text":0,"sort_order":2}]},{"id":166,"name":"膝蓋骨脱臼の有無（立位）","answer_type":"lr","required":0,"group_name":"触診立位（後肢）","page_no":4,"sort_order":14,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":840,"label":"内外方","value":"内外方","allow_text":0,"sort_order":4},{"id":841,"label":"外方","value":"外方","allow_text":0,"sort_order":3},{"id":842,"label":"内方","value":"内方","allow_text":0,"sort_order":2},{"id":843,"label":"なし","value":"なし","allow_text":0,"sort_order":1}]},{"id":167,"name":"膝蓋骨脱臼グレード（立位）","answer_type":"lr","required":0,"group_name":"触診立位（後肢）","page_no":4,"sort_order":15,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":855,"label":"Grade 4","value":"4","allow_text":0,"sort_order":4},{"id":856,"label":"Grade 3","value":"3","allow_text":0,"sort_order":3},{"id":857,"label":"Grade 2","value":"2","allow_text":0,"sort_order":2},{"id":858,"label":"Grade 1","value":"1","allow_text":0,"sort_order":1}]},{"id":168,"name":"膝関節の腫脹","answer_type":"lr","required":0,"group_name":"触診立位（後肢）","page_no":4,"sort_order":16,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":676,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":704,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":169,"name":"膝内側の肥厚 Medial Buttress","answer_type":"lr","required":0,"group_name":"触診立位（後肢）","page_no":4,"sort_order":17,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":678,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":706,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":170,"name":"下腿の筋肉量","answer_type":"lr","required":0,"group_name":"触診立位（後肢）","page_no":4,"sort_order":18,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":657,"label":"正常","value":"正常","allow_text":0,"sort_order":1},{"id":662,"label":"萎縮","value":"萎縮","allow_text":0,"sort_order":2}]},{"id":171,"name":"足根関節の腫脹","answer_type":"lr","required":0,"group_name":"触診立位（後肢）","page_no":4,"sort_order":19,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":679,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":707,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":172,"name":"アキレス腱 腫脹・緊張低下","answer_type":"lr","required":0,"group_name":"触診立位（後肢）","page_no":4,"sort_order":20,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":681,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":709,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":173,"name":"触診立位メモ","answer_type":"text","required":0,"group_name":"触診立位（後肢）","page_no":4,"sort_order":21,"placeholder":"メモ","unit":null,"scale_min":null,"scale_max":null,"options":[]},{"id":174,"name":"股関節 バーデン試験","answer_type":"lr","required":0,"group_name":"触診横臥位（股関節）","page_no":5,"sort_order":1,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":731,"label":"陰性","value":"陰性","allow_text":0,"sort_order":1},{"id":741,"label":"陽性","value":"陽性","allow_text":0,"sort_order":2}]},{"id":175,"name":"股関節 オルトラニ試験","answer_type":"lr","required":0,"group_name":"触診横臥位（股関節）","page_no":5,"sort_order":2,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":732,"label":"陰性","value":"陰性","allow_text":0,"sort_order":1},{"id":742,"label":"陽性","value":"陽性","allow_text":0,"sort_order":2}]},{"id":176,"name":"股関節 外転試験","answer_type":"lr","required":0,"group_name":"触診横臥位（股関節）","page_no":5,"sort_order":3,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":733,"label":"陰性","value":"陰性","allow_text":0,"sort_order":1},{"id":743,"label":"陽性","value":"陽性","allow_text":0,"sort_order":2}]},{"id":177,"name":"股関節 屈伸可動域","answer_type":"lr","required":0,"group_name":"触診横臥位（股関節）","page_no":5,"sort_order":4,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":762,"label":"正常","value":"正常","allow_text":0,"sort_order":1},{"id":773,"label":"増","value":"増","allow_text":0,"sort_order":2},{"id":784,"label":"減","value":"減","allow_text":0,"sort_order":3}]},{"id":178,"name":"股関節 内外転可動域","answer_type":"lr","required":0,"group_name":"触診横臥位（股関節）","page_no":5,"sort_order":5,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":763,"label":"正常","value":"正常","allow_text":0,"sort_order":1},{"id":774,"label":"増","value":"増","allow_text":0,"sort_order":2},{"id":785,"label":"減","value":"減","allow_text":0,"sort_order":3}]},{"id":179,"name":"股関節 熱感・腫脹・疼痛","answer_type":"lr","required":0,"group_name":"触診横臥位（股関節）","page_no":5,"sort_order":6,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":671,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":699,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":180,"name":"大腿骨の圧痛","answer_type":"lr","required":0,"group_name":"触診横臥位（股関節）","page_no":5,"sort_order":7,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":672,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":700,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":181,"name":"膝関節 前方引き出し徴候","answer_type":"lr","required":0,"group_name":"触診横臥位（膝関節）","page_no":5,"sort_order":8,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":734,"label":"陰性","value":"陰性","allow_text":0,"sort_order":1},{"id":744,"label":"陽性","value":"陽性","allow_text":0,"sort_order":2}]},{"id":182,"name":"膝関節 脛骨圧迫試験","answer_type":"lr","required":0,"group_name":"触診横臥位（膝関節）","page_no":5,"sort_order":9,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":735,"label":"陰性","value":"陰性","allow_text":0,"sort_order":1},{"id":745,"label":"陽性","value":"陽性","allow_text":0,"sort_order":2}]},{"id":183,"name":"膝蓋骨脱臼の有無（横臥）","answer_type":"lr","required":0,"group_name":"触診横臥位（膝関節）","page_no":5,"sort_order":10,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":844,"label":"内外方","value":"内外方","allow_text":0,"sort_order":4},{"id":845,"label":"外方","value":"外方","allow_text":0,"sort_order":3},{"id":846,"label":"内方","value":"内方","allow_text":0,"sort_order":2},{"id":847,"label":"なし","value":"なし","allow_text":0,"sort_order":1}]},{"id":184,"name":"膝蓋骨脱臼グレード（横臥）","answer_type":"lr","required":0,"group_name":"触診横臥位（膝関節）","page_no":5,"sort_order":11,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":859,"label":"Grade 4","value":"4","allow_text":0,"sort_order":4},{"id":860,"label":"Grade 3","value":"3","allow_text":0,"sort_order":3},{"id":861,"label":"Grade 2","value":"2","allow_text":0,"sort_order":2},{"id":862,"label":"Grade 1","value":"1","allow_text":0,"sort_order":1}]},{"id":185,"name":"膝関節 クリック音","answer_type":"lr","required":0,"group_name":"触診横臥位（膝関節）","page_no":5,"sort_order":12,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":736,"label":"陰性","value":"陰性","allow_text":0,"sort_order":1},{"id":746,"label":"陽性","value":"陽性","allow_text":0,"sort_order":2}]},{"id":186,"name":"膝関節 屈伸可動域","answer_type":"lr","required":0,"group_name":"触診横臥位（膝関節）","page_no":5,"sort_order":13,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":764,"label":"正常","value":"正常","allow_text":0,"sort_order":1},{"id":775,"label":"増","value":"増","allow_text":0,"sort_order":2},{"id":786,"label":"減","value":"減","allow_text":0,"sort_order":3}]},{"id":187,"name":"膝関節 内外反可動域","answer_type":"lr","required":0,"group_name":"触診横臥位（膝関節）","page_no":5,"sort_order":14,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":765,"label":"正常","value":"正常","allow_text":0,"sort_order":1},{"id":776,"label":"増","value":"増","allow_text":0,"sort_order":2},{"id":787,"label":"減","value":"減","allow_text":0,"sort_order":3}]},{"id":188,"name":"膝関節 熱感・腫脹・疼痛","answer_type":"lr","required":0,"group_name":"触診横臥位（膝関節）","page_no":5,"sort_order":15,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":675,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":703,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":189,"name":"脛骨・腓骨の圧痛","answer_type":"lr","required":0,"group_name":"触診横臥位（足根関節）","page_no":5,"sort_order":16,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":677,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":705,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":190,"name":"足根関節 屈伸可動域","answer_type":"lr","required":0,"group_name":"触診横臥位（足根関節）","page_no":5,"sort_order":17,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":766,"label":"正常","value":"正常","allow_text":0,"sort_order":1},{"id":777,"label":"増","value":"増","allow_text":0,"sort_order":2},{"id":788,"label":"減","value":"減","allow_text":0,"sort_order":3}]},{"id":191,"name":"足根関節 内外反・内外旋可動域","answer_type":"lr","required":0,"group_name":"触診横臥位（足根関節）","page_no":5,"sort_order":18,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":767,"label":"正常","value":"正常","allow_text":0,"sort_order":1},{"id":778,"label":"増","value":"増","allow_text":0,"sort_order":2},{"id":789,"label":"減","value":"減","allow_text":0,"sort_order":3}]},{"id":192,"name":"足根関節 熱感・腫脹・疼痛","answer_type":"lr","required":0,"group_name":"触診横臥位（足根関節）","page_no":5,"sort_order":19,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":680,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":708,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":193,"name":"アキレス腱 腫脹・緊張低下（横臥）","answer_type":"lr","required":0,"group_name":"触診横臥位（足根関節）","page_no":5,"sort_order":20,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":682,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":710,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":194,"name":"趾骨・中足骨の圧痛","answer_type":"lr","required":0,"group_name":"触診横臥位（足根関節）","page_no":5,"sort_order":21,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":683,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":711,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":195,"name":"中足趾関節の疼痛・違和感","answer_type":"lr","required":0,"group_name":"触診横臥位（足根関節）","page_no":5,"sort_order":22,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":684,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":712,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":196,"name":"趾の底側・背側の異常","answer_type":"lr","required":0,"group_name":"触診横臥位（足根関節）","page_no":5,"sort_order":23,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":685,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":713,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":197,"name":"肩関節 二頭筋腱試験","answer_type":"lr","required":0,"group_name":"触診横臥位（肩関節）","page_no":5,"sort_order":24,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":737,"label":"陰性","value":"陰性","allow_text":0,"sort_order":1},{"id":747,"label":"陽性","value":"陽性","allow_text":0,"sort_order":2}]},{"id":198,"name":"肩関節 屈伸可動域","answer_type":"lr","required":0,"group_name":"触診横臥位（肩関節）","page_no":5,"sort_order":25,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":768,"label":"正常","value":"正常","allow_text":0,"sort_order":1},{"id":779,"label":"増","value":"増","allow_text":0,"sort_order":2},{"id":790,"label":"減","value":"減","allow_text":0,"sort_order":3}]},{"id":199,"name":"肩関節 外転試験","answer_type":"lr","required":0,"group_name":"触診横臥位（肩関節）","page_no":5,"sort_order":26,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":738,"label":"陰性","value":"陰性","allow_text":0,"sort_order":1},{"id":748,"label":"陽性","value":"陽性","allow_text":0,"sort_order":2}]},{"id":200,"name":"肩関節 熱感・腫脹・疼痛","answer_type":"lr","required":0,"group_name":"触診横臥位（肩関節）","page_no":5,"sort_order":27,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":686,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":714,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":201,"name":"上腕骨の圧痛","answer_type":"lr","required":0,"group_name":"触診横臥位（肩関節）","page_no":5,"sort_order":28,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":687,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":715,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":202,"name":"上腕三頭筋腱 腫脹・緊張低下（横臥）","answer_type":"lr","required":0,"group_name":"触診横臥位（肩関節）","page_no":5,"sort_order":29,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":688,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":716,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":203,"name":"肘関節 キャンベル試験（回内）","answer_type":"lr","required":0,"group_name":"触診横臥位（肘関節）","page_no":5,"sort_order":30,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":739,"label":"陰性","value":"陰性","allow_text":0,"sort_order":1},{"id":749,"label":"陽性","value":"陽性","allow_text":0,"sort_order":2}]},{"id":204,"name":"肘関節 キャンベル試験（回外）","answer_type":"lr","required":0,"group_name":"触診横臥位（肘関節）","page_no":5,"sort_order":31,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":740,"label":"陰性","value":"陰性","allow_text":0,"sort_order":1},{"id":750,"label":"陽性","value":"陽性","allow_text":0,"sort_order":2}]},{"id":205,"name":"内側鉤状突起領域の圧痛","answer_type":"lr","required":0,"group_name":"触診横臥位（肘関節）","page_no":5,"sort_order":32,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":689,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":717,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":206,"name":"肘関節 屈伸可動域","answer_type":"lr","required":0,"group_name":"触診横臥位（肘関節）","page_no":5,"sort_order":33,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":769,"label":"正常","value":"正常","allow_text":0,"sort_order":1},{"id":780,"label":"増","value":"増","allow_text":0,"sort_order":2},{"id":791,"label":"減","value":"減","allow_text":0,"sort_order":3}]},{"id":207,"name":"肘関節 内外反可動域","answer_type":"lr","required":0,"group_name":"触診横臥位（肘関節）","page_no":5,"sort_order":34,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":770,"label":"正常","value":"正常","allow_text":0,"sort_order":1},{"id":781,"label":"増","value":"増","allow_text":0,"sort_order":2},{"id":792,"label":"減","value":"減","allow_text":0,"sort_order":3}]},{"id":208,"name":"肘関節 熱感・腫脹・疼痛","answer_type":"lr","required":0,"group_name":"触診横臥位（肘関節）","page_no":5,"sort_order":35,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":690,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":718,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":209,"name":"橈骨・尺骨の圧痛","answer_type":"lr","required":0,"group_name":"触診横臥位（手根関節）","page_no":5,"sort_order":36,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":691,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":719,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":210,"name":"手根関節 屈伸可動域","answer_type":"lr","required":0,"group_name":"触診横臥位（手根関節）","page_no":5,"sort_order":37,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":771,"label":"正常","value":"正常","allow_text":0,"sort_order":1},{"id":782,"label":"増","value":"増","allow_text":0,"sort_order":2},{"id":793,"label":"減","value":"減","allow_text":0,"sort_order":3}]},{"id":211,"name":"手根関節 内外反可動域","answer_type":"lr","required":0,"group_name":"触診横臥位（手根関節）","page_no":5,"sort_order":38,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":772,"label":"正常","value":"正常","allow_text":0,"sort_order":1},{"id":783,"label":"増","value":"増","allow_text":0,"sort_order":2},{"id":794,"label":"減","value":"減","allow_text":0,"sort_order":3}]},{"id":212,"name":"手根関節 熱感・腫脹・疼痛","answer_type":"lr","required":0,"group_name":"触診横臥位（手根関節）","page_no":5,"sort_order":39,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":692,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":720,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":213,"name":"指骨・中手骨の圧痛","answer_type":"lr","required":0,"group_name":"触診横臥位（手根関節）","page_no":5,"sort_order":40,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":693,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":721,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":214,"name":"中手指関節の疼痛・違和感","answer_type":"lr","required":0,"group_name":"触診横臥位（手根関節）","page_no":5,"sort_order":41,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":694,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":722,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":215,"name":"指の掌側・背側の異常","answer_type":"lr","required":0,"group_name":"触診横臥位（手根関節）","page_no":5,"sort_order":42,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":695,"label":"なし","value":"なし","allow_text":0,"sort_order":1},{"id":723,"label":"あり","value":"あり","allow_text":0,"sort_order":2}]},{"id":216,"name":"触診横臥位メモ","answer_type":"text","required":0,"group_name":"触診横臥位（手根関節）","page_no":5,"sort_order":43,"placeholder":"メモ","unit":null,"scale_min":null,"scale_max":null,"options":[]},{"id":217,"name":"次の検査","answer_type":"check","required":0,"group_name":"判定・鑑別疾患","page_no":6,"sort_order":1,"placeholder":null,"unit":null,"scale_min":null,"scale_max":null,"options":[{"id":870,"label":"関節鏡検査","value":"関節鏡検査","allow_text":0,"sort_order":7},{"id":871,"label":"CT・MRI検査","value":"CT・MRI検査","allow_text":0,"sort_order":6},{"id":872,"label":"関節液検査","value":"関節液検査","allow_text":0,"sort_order":5},{"id":873,"label":"血液検査","value":"血液検査","allow_text":0,"sort_order":4},{"id":874,"label":"超音波検査","value":"超音波検査","allow_text":0,"sort_order":3},{"id":875,"label":"X線検査","value":"X線検査","allow_text":0,"sort_order":2},{"id":876,"label":"神経検査","value":"神経検査","allow_text":0,"sort_order":1}]},{"id":218,"name":"病変部位","answer_type":"text","required":0,"group_name":"判定・鑑別疾患","page_no":6,"sort_order":2,"placeholder":"例：左膝関節","unit":null,"scale_min":null,"scale_max":null,"options":[]},{"id":219,"name":"鑑別疾患リスト","answer_type":"text","required":0,"group_name":"判定・鑑別疾患","page_no":6,"sort_order":3,"placeholder":"例：左膝前十字靭帯断裂","unit":null,"scale_min":null,"scale_max":null,"options":[]}]};
+
+const S = {};          // 回答状態: qid -> answer
+let PAGES = [];        // [{no, label, groups:[{name, questions:[]}]}]
+let CUR = 1;
+
+/* ============================================================
+   GET パラメータ連携(既存システムからのプリセット)— 仕様公開用
+   ・patient_id / patient_name / krt_id / examiner : 文脈情報(画面と出力に記載)
+   ・q.<設問名>=<値>            : 設問名の完全一致でデフォルト値を設定
+   ・q.<設問名>.右= / .左=      : lr(左右)設問の側指定
+   ・radio/lr選択式: 選択肢の label または value に一致で選択
+   ・check: カンマ区切りで複数選択
+   ・値はURLエンコード必須。プリセットは編集可能(ロックしない)
+   ============================================================ */
+const PARAMS = new URLSearchParams(location.search);
+/* 受診ハブ（visit.html）からは karteId / alias / visit で渡ってきます。
+   既存システムからの patient_id / patient_name / krt_id もそのまま受けます。 */
+const META = {
+  patient_id:   PARAMS.get('patient_id')   || PARAMS.get('karteId') || '',
+  patient_name: PARAMS.get('patient_name') || PARAMS.get('alias')   || '',
+  krt_id:       PARAMS.get('krt_id')       || '',
+  examiner:     PARAMS.get('examiner')     || ''
+};
+const VISIT = PARAMS.get('visit') || '';   /* 受診ハブのキー。無ければ単独動作 */
+function applyMeta(){
+  const parts = [];
+  if(META.patient_id)   parts.push('患者ID: ' + META.patient_id);
+  if(META.patient_name) parts.push(META.patient_name);
+  if(META.krt_id)       parts.push('受付ID: ' + META.krt_id);
+  if(META.examiner)     parts.push('検査者: ' + META.examiner);
+  const el = document.getElementById('metaLine');
+  if(parts.length){ el.style.display='block'; el.textContent = parts.join(' ／ '); }
+}
+function applyPresets(){
+  let n = 0;
+  PARAMS.forEach((val, key)=>{
+    if(!key.startsWith('q.')) return;
+    let name = key.slice(2), side = null;
+    if(name.endsWith('.右')){ side='右'; name = name.slice(0, -2); }
+    else if(name.endsWith('.左')){ side='左'; name = name.slice(0, -2); }
+    const q = DEF.questions.find(x=>x.name === name);
+    if(!q) return;
+    const t = q.answer_type;
+    if(t==='radio' || t==='check' || (t==='lr' && (q.options||[]).length)){
+      const vals = (t==='check') ? val.split(',') : [val];
+      vals.forEach(v=>{
+        const o = (q.options||[]).find(o=>o.label===v || o.value===v);
+        if(o && !isSel(q, side||'_', o)) { toggle(q, side||'_', o, t==='check'); n++; }
+      });
+    } else if(t==='lr'){
+      ensureLR(q); S[q.id][side||'右'].text = val; n++;
+    } else if(t==='scale'){
+      S[q.id] = {type:'scale', value:val}; n++;
+    } else if(t==='number'){
+      S[q.id] = {type:'number', value:val}; n++;
+    } else {
+      S[q.id] = {type:(t==='date'?'date':'text'), value:val}; n++;
+    }
+  });
+  return n;
+}
+
+/* ---------- 定義の読み込み ---------- */
+document.getElementById('jsonFile').addEventListener('change', function(ev){
+  const f = ev.target.files[0];
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = function(){
+    try{
+      const d = JSON.parse(r.result);
+      if(!d.questions || !d.questions.length) throw new Error('questions がありません');
+      DEF = d;
+      for(const k in S) delete S[k];
+      const _b=document.getElementById('sampleBanner'); if(_b) _b.style.display='none';
+      document.getElementById('loadState').textContent = '読込済: ' + d.name + '(' + d.questions.length + '問)';
+      build();
+      toast('定義を読み込みました(' + d.questions.length + '問)');
+    }catch(e){ toast('JSONの読み込みに失敗: ' + e.message); }
+  };
+  r.readAsText(f, 'utf-8');
+});
+
+/* ---------- 構造化 ---------- */
+function build(){
+  document.getElementById('ttl').textContent = DEF.name || '検査カルテ';
+  document.getElementById('src').textContent =
+    (DEF.source || '') + ' 準拠 ／ 端末外へデータを送信・保存しません';
+  const byPage = {};
+  DEF.questions.slice().sort((a,b)=>(a.page_no-b.page_no)||(a.sort_order-b.sort_order)||(a.id-b.id))
+    .forEach(q=>{
+      (byPage[q.page_no] = byPage[q.page_no] || []).push(q);
+    });
+  PAGES = Object.keys(byPage).map(Number).sort((a,b)=>a-b).map(no=>{
+    const qs = byPage[no];
+    const groups = [];
+    qs.forEach(q=>{
+      const gname = q.group_name || 'その他';
+      let g = groups[groups.length-1];
+      if(!g || g.name !== gname){ g = {name:gname, questions:[]}; groups.push(g); }
+      g.questions.push(q);
+    });
+    let label;
+    const gnames = groups.map(g=>g.name);
+    if(gnames.length===1) label = gnames[0];
+    else{
+      let pre = gnames[0];
+      gnames.forEach(nm=>{ let i=0; while(i<pre.length && pre[i]===nm[i]) i++; pre = pre.slice(0,i); });
+      pre = pre.replace(/[（(]+$/,'');
+      label = (pre.length>=2) ? pre : gnames.join('・');
+    }
+    return {no, label: label || ('ページ'+no), groups};
+  });
+  if(!PAGES.find(p=>p.no===CUR)) CUR = PAGES.length ? PAGES[0].no : 1;
+  const preset = applyPresets();
+  renderSteps(); renderPage(); renderProg();
+  if(preset) toast('連携システムから ' + preset + ' 項目をプリセットしました');
+}
+
+function renderSteps(){
+  const nav = document.getElementById('steps');
+  nav.innerHTML = '';
+  PAGES.forEach(p=>{
+    const b = document.createElement('button');
+    b.innerHTML = '<span class="n">' + p.no + '</span>' + esc(p.label);
+    if(p.no===CUR) b.classList.add('on');
+    b.onclick = ()=>{ CUR = p.no; renderSteps(); renderPage(); window.scrollTo(0,0); };
+    nav.appendChild(b);
+  });
+}
+
+/* ---------- 描画 ---------- */
+function renderPage(){
+  const main = document.getElementById('form');
+  main.innerHTML = '';
+  const page = PAGES.find(p=>p.no===CUR);
+  if(!page) return;
+  page.groups.forEach(g=>{
+    const sec = document.createElement('section'); sec.className='group';
+    sec.innerHTML = '<h2>' + esc(g.name) + ' <span class="pg">P.' + page.no + '</span></h2>';
+    g.questions.forEach(q=> sec.appendChild(renderQ(q)));
+    main.appendChild(sec);
+  });
+}
+
+function renderQ(q){
+  const box = document.createElement('div');
+  box.className = 'q' + (isAnswered(q) ? ' answered' : '');
+  box.id = 'q' + q.id;
+  const lbl = document.createElement('div'); lbl.className='label';
+  lbl.innerHTML = esc(q.name)
+    + (q.required ? ' <span class="req">※必須</span>' : '')
+    + (isAnswered(q) ? ' <span class="done">✓ 記入済</span>' : '');
+  box.appendChild(lbl);
+  const t = q.answer_type;
+  if(t==='radio' || t==='check')      box.appendChild(renderOpts(q, t==='check'));
+  else if(t==='lr')                   box.appendChild(renderLR(q));
+  else if(t==='number')               box.appendChild(renderNumber(q));
+  else if(t==='scale')                box.appendChild(renderScale(q));
+  else if(t==='date')                 box.appendChild(renderInput(q,'date'));
+  else                                box.appendChild(renderInput(q,'text'));
+  return box;
+}
+
+function renderOpts(q, multi, side){
+  const wrap = document.createElement('div'); wrap.className='opts';
+  const key = side ? side : '_';
+  (q.options||[]).slice().sort((a,b)=>(a.sort_order-b.sort_order)||(a.id-b.id)).forEach(o=>{
+    const b = document.createElement('div');
+    b.className = 'opt' + (side==='右'?' sr':'') ;
+    b.textContent = o.label;
+    if(isSel(q,key,o)) b.classList.add('sel', side==='右'?'side-r':(side==='左'?'side-l':'x'));
+    b.onclick = ()=>{ toggle(q,key,o,multi); refreshQ(q); };
+    wrap.appendChild(b);
+    if(o.allow_text && isSel(q,key,o)){
+      const inp = document.createElement('input');
+      inp.type='text'; inp.className='free'; inp.placeholder='補足を入力';
+      inp.value = getFree(q,key,o);
+      inp.oninput = ()=>{ setFree(q,key,o,inp.value); renderProg(); };
+      inp.onclick = e=>e.stopPropagation();
+      wrap.appendChild(inp);
+    }
+  });
+  return wrap;
+}
+
+function setBoth(q,o,on){
+  ensureLR(q);
+  ['右','左'].forEach(sd=>{
+    const s = S[q.id][sd];
+    if(on){ s.sel = {}; s.sel[o.id] = o; }
+    else { if(s.sel) delete s.sel[o.id]; }
+  });
+  const a = S[q.id];
+  if(Object.keys(a['右'].sel||{}).length===0 && Object.keys(a['左'].sel||{}).length===0
+     && !a['右'].text && !a['左'].text) delete S[q.id];
+  renderProg();
+}
+function renderLR(q){
+  const grid = document.createElement('div'); grid.className='lr';
+  if((q.options||[]).length){
+    const btag = document.createElement('div'); btag.className='side b'; btag.textContent='両';
+    grid.appendChild(btag);
+    const bwrap = document.createElement('div'); bwrap.className='opts';
+    (q.options||[]).slice().sort((a,b)=>(a.sort_order-b.sort_order)||(a.id-b.id)).forEach(o=>{
+      const bt = document.createElement('div'); bt.className='opt';
+      const both = isSel(q,'右',o) && isSel(q,'左',o);
+      if(both) bt.classList.add('sel');
+      bt.textContent = o.label;
+      bt.onclick = ()=>{ setBoth(q, o, !both); refreshQ(q); };
+      bwrap.appendChild(bt);
+    });
+    grid.appendChild(bwrap);
+  }
+  [['右','r'],['左','l']].forEach(([side,cls])=>{
+    const tag = document.createElement('div'); tag.className='side '+cls; tag.textContent=side;
+    grid.appendChild(tag);
+    if((q.options||[]).length){
+      grid.appendChild(renderOpts(q, false, side));
+    }else{
+      const inp = document.createElement('input'); inp.type='text';
+      inp.placeholder = q.placeholder || '';
+      inp.value = (S[q.id] && S[q.id][side] && S[q.id][side].text) || '';
+      inp.oninput = ()=>{ ensureLR(q); S[q.id][side].text = inp.value; renderProg(); markQ(q); };
+      grid.appendChild(inp);
+    }
+  });
+  return grid;
+}
+
+function renderNumber(q){
+  const row = document.createElement('div'); row.className='numrow';
+  const inp = document.createElement('input'); inp.type='number'; inp.inputMode='decimal';
+  inp.placeholder = q.placeholder || '';
+  inp.value = (S[q.id] && S[q.id].value != null) ? S[q.id].value : '';
+  inp.oninput = ()=>{ S[q.id] = inp.value==='' ? undefined : {type:'number', value:inp.value}; if(inp.value==='') delete S[q.id]; renderProg(); markQ(q); };
+  row.appendChild(inp);
+  if(q.unit){ const u=document.createElement('span'); u.className='unit'; u.textContent=q.unit; row.appendChild(u); }
+  return row;
+}
+
+function renderScale(q){
+  const wrap = document.createElement('div'); wrap.className='scale';
+  const min = (q.scale_min!=null)? Number(q.scale_min):0;
+  const max = (q.scale_max!=null)? Number(q.scale_max):10;
+  const cur = S[q.id] ? Number(S[q.id].value) : null;
+  const val = document.createElement('span');
+  val.className = 'val' + (cur==null?' na':'');
+  val.textContent = cur==null ? '未回答' : cur;
+  const rng = document.createElement('input'); rng.type='range';
+  rng.min=min; rng.max=max; rng.step=1; rng.value = cur==null? Math.round((min+max)/2) : cur;
+  rng.oninput = ()=>{ S[q.id]={type:'scale', value:rng.value}; val.className='val'; val.textContent=rng.value; renderProg(); markQ(q); };
+  const lab = document.createElement('div');
+  lab.style.cssText='display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted)';
+  lab.innerHTML = '<span>'+min+'</span><span>'+max+'</span>';
+  wrap.appendChild(val); wrap.appendChild(rng); wrap.appendChild(lab);
+  return wrap;
+}
+
+function renderInput(q, kind){
+  const inp = document.createElement('input'); inp.type=kind;
+  inp.placeholder = q.placeholder || '';
+  inp.value = (S[q.id] && S[q.id].value) || '';
+  inp.oninput = ()=>{ if(inp.value==='') delete S[q.id]; else S[q.id]={type:kind, value:inp.value}; renderProg(); markQ(q); };
+  return inp;
+}
+
+/* ---------- 状態 ---------- */
+function ensureLR(q){ if(!S[q.id]) S[q.id]={type:'lr','右':{}, '左':{}}; if(!S[q.id]['右'])S[q.id]['右']={}; if(!S[q.id]['左'])S[q.id]['左']={}; }
+function isSel(q,key,o){
+  const a=S[q.id]; if(!a) return false;
+  if(a.type==='lr'){ const s=a[key]; return !!(s && s.sel && s.sel[o.id]); }
+  return !!(a.sel && a.sel[o.id]);
+}
+function getFree(q,key,o){
+  const a=S[q.id]; if(!a) return '';
+  const holder = a.type==='lr' ? a[key] : a;
+  return (holder && holder.free && holder.free[o.id]) || '';
+}
+function setFree(q,key,o,v){
+  const a=S[q.id]; if(!a) return;
+  const holder = a.type==='lr' ? a[key] : a;
+  holder.free = holder.free || {}; holder.free[o.id]=v;
+}
+function toggle(q,key,o,multi){
+  if(key!=='_'){ // lr
+    ensureLR(q);
+    const s=S[q.id][key]; s.sel=s.sel||{};
+    if(s.sel[o.id]) delete s.sel[o.id];
+    else { if(!multi) s.sel={}; s.sel[o.id]=o; }
+    if(Object.keys(S[q.id]['右'].sel||{}).length===0 && Object.keys(S[q.id]['左'].sel||{}).length===0
+       && !(S[q.id]['右'].text) && !(S[q.id]['左'].text)) delete S[q.id];
+    renderProg(); return;
+  }
+  let a=S[q.id];
+  if(!a){ a=S[q.id]={type:multi?'check':'radio', sel:{}}; }
+  if(a.sel[o.id]) delete a.sel[o.id];
+  else { if(!multi) a.sel={}; a.sel[o.id]=o; }
+  if(Object.keys(a.sel).length===0) delete S[q.id];
+  renderProg();
+}
+function isAnswered(q){ return S[q.id] !== undefined; }
+function markQ(q){
+  const el=document.getElementById('q'+q.id); if(!el) return;
+  el.className='q'+(isAnswered(q)?' answered':'');
+  const d=el.querySelector('.done');
+  if(isAnswered(q) && !d) el.querySelector('.label').insertAdjacentHTML('beforeend',' <span class="done">✓ 記入済</span>');
+  if(!isAnswered(q) && d) d.remove();
+}
+function refreshQ(q){
+  const old=document.getElementById('q'+q.id);
+  if(old) old.replaceWith(renderQ(q));
+}
+function renderProg(){
+  const total = DEF.questions.length;
+  const done  = DEF.questions.filter(isAnswered).length;
+  document.getElementById('prog').textContent = '回答 ' + done + ' / ' + total;
+}
+function resetAll(){
+  if(!confirm('入力内容をすべてクリアします。よろしいですか?')) return;
+  for(const k in S) delete S[k];
+  renderPage(); renderProg();
+}
+
+/* ---------- 出力: 回答済み項目のみテキスト化 ---------- */
+function answerText(q){
+  const a = S[q.id]; if(!a) return null;
+  const optJoin = holder=>{
+    if(!holder || !holder.sel) return '';
+    return Object.values(holder.sel)
+      .map(o=>'['+o.label+']' + ((holder.free && holder.free[o.id]) ? holder.free[o.id] : ''))
+      .join(' ');
+  };
+  switch(a.type){
+    case 'radio': case 'check': return optJoin(a);
+    case 'number': return a.value + (q.unit ? ' ' + q.unit : '');
+    case 'scale':  return a.value + (q.unit ? ' ' + q.unit : '')
+                      + '(' + ((q.scale_min!=null)?q.scale_min:0) + '〜' + ((q.scale_max!=null)?q.scale_max:10) + ')';
+    case 'lr': {
+      const parts=[];
+      ['右','左'].forEach(sd=>{
+        const s=a[sd]; if(!s) return;
+        const t = (s.sel && Object.keys(s.sel).length) ? optJoin(s) : (s.text||'');
+        if(t) parts.push('(' + sd + ')' + t);
+      });
+      return parts.join(' ');
+    }
+    default: return a.value;
+  }
+}
+function buildText(){
+  const now = new Date();
+  const z = n=>String(n).padStart(2,'0');
+  const stamp = now.getFullYear()+'-'+z(now.getMonth()+1)+'-'+z(now.getDate())+' '+z(now.getHours())+':'+z(now.getMinutes());
+  let out = '■ ' + (DEF.name||'') + '\n記録日時: ' + stamp + '\n';
+  if(META.patient_id || META.patient_name || META.krt_id){
+    out += '患者: ' + [META.patient_id, META.patient_name].filter(Boolean).join(' ')
+         + (META.krt_id ? '  受付ID: ' + META.krt_id : '') + '\n';
+  }
+  if(META.examiner) out += '検査者: ' + META.examiner + '\n';
+  let lastGroup = null, wrote = 0;
+  DEF.questions.slice().sort((a,b)=>(a.page_no-b.page_no)||(a.sort_order-b.sort_order)||(a.id-b.id))
+    .forEach(q=>{
+      const t = answerText(q);
+      if(t==null || t==='') return;
+      const g = q.group_name || 'その他';
+      if(g !== lastGroup){ out += '【' + g + '】\n'; lastGroup = g; }
+      out += '・' + q.name + ': ' + t + '\n';
+      wrote++;
+    });
+  if(!wrote) out += '(回答済みの項目はありません)\n';
+  out += '――――\n' + (DEF.source||'') + ' 準拠(' + wrote + '項目記入)\n';
+  return out;
+}
+function showOutput(){
+  document.getElementById('outText').textContent = buildText();
+  document.getElementById('outWrap').style.display = 'block';
+}
+function hideOutput(){ document.getElementById('outWrap').style.display = 'none'; }
+function copyOutput(){
+  const t = document.getElementById('outText').textContent;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(()=>toast('コピーしました — カルテに貼り付けてください'),
+      ()=>fallbackCopy(t));
+  } else fallbackCopy(t);
+}
+function fallbackCopy(t){
+  const ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta);
+  ta.select(); try{ document.execCommand('copy'); toast('コピーしました'); }catch(e){ toast('コピーに失敗しました'); }
+  ta.remove();
+}
+function downloadOutput(){
+  const blob = new Blob([document.getElementById('outText').textContent], {type:'text/plain;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'ortho_exam_' + new Date().toISOString().slice(0,10) + '.txt';
+  a.click(); URL.revokeObjectURL(a.href);
+}
+function toast(msg){
+  const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 2200);
+}
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+/* ============================================================
+   受診ハブ（visit.html）との連携
+   ・?visit=キー を付けて開かれたときだけ働きます。
+   ・同じドメインの端末内ストレージ（vetss / visits）を共有します。
+   ・単独で使うときは何も起きません。通信はしません。
+   ============================================================ */
+const HUB = { h:null, ok:false };
+function hubOpen(){
+  return new Promise(res=>{
+    if(!VISIT) return res(null);
+    let q; try{ q = indexedDB.open("vetss",1); }catch(e){ return res(null); }
+    q.onupgradeneeded = e=>{ const d=e.target.result;
+      if(!d.objectStoreNames.contains("visits")) d.createObjectStore("visits",{keyPath:"key"}); };
+    q.onsuccess=()=>res(q.result); q.onerror=()=>res(null); q.onblocked=()=>res(null);
+    setTimeout(()=>res(null),3000);
+  });
+}
+const pad2 = n => String(n).padStart(2,'0');
+function isoLocal(d){
+  const o=-d.getTimezoneOffset(), s=o>=0?'+':'-', a=Math.abs(o);
+  return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate())+'T'+
+    pad2(d.getHours())+':'+pad2(d.getMinutes())+':'+pad2(d.getSeconds())+
+    s+pad2(Math.floor(a/60))+':'+pad2(a%60);
+}
+
+/* 回答を機械可読な形にまとめます（テキストは従来どおり別に作ります） */
+function buildJson(){
+  const list = [];
+  DEF.questions.slice()
+    .sort((a,b)=>(a.page_no-b.page_no)||(a.sort_order-b.sort_order)||(a.id-b.id))
+    .forEach(q=>{
+      const t = answerText(q);
+      if(t==null || t==='') return;
+      list.push({ id:q.id, group:q.group_name||'', name:q.name,
+                  type:q.answer_type, text:t });
+    });
+  return {
+    schema: 'vetss-enquete/0.1',
+    form:   DEF.name || '',
+    source: DEF.source || '',
+    recordedAt: isoLocal(new Date()),
+    patient: { karteId: META.patient_id, alias: META.patient_name, resolved:false },
+    examiner: META.examiner,
+    answers: list,
+    text: buildText()
+  };
+}
+function downloadJson(){
+  const o = buildJson();
+  const blob = new Blob([JSON.stringify(o,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'ortho_exam_' + (o.patient.karteId ? o.patient.karteId + '_' : '') +
+               o.recordedAt.slice(0,10).replace(/-/g,'') + '.json';
+  a.click(); setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+  toast('保存しました');
+}
+
+/* ハブの受診レコードへ書き戻します。無ければその場で作ります。 */
+function saveToHub(thenBack){
+  if(!HUB.ok){ toast('ハブに記録できませんでした'); return; }
+  const rec = buildJson();
+  if(!rec.answers.length){ toast('まだ回答がありません'); return; }
+  let done = false;
+  const fin = ok => {
+    if(done) return; done = true;
+    if(ok){ toast('ハブに記録しました'); if(thenBack) setTimeout(backToHub, 700); }
+    else toast('ハブに記録できませんでした');
+  };
+  setTimeout(()=>fin(false), 2500);
+  try{
+    const st = HUB.h.transaction('visits','readwrite').objectStore('visits');
+    const g = st.get(VISIT);
+    g.onsuccess = ()=>{
+      let v = g.result;
+      if(!v){
+        const m = String(VISIT).match(/_(\d{4}-\d{2}-\d{2})$/);
+        const d = new Date();
+        v = { key:VISIT, karteId:META.patient_id, alias:META.patient_name,
+              date: m ? m[1] : d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()),
+              enquete:null, karte:null, receipt:null };
+      }
+      v.enquete = rec;
+      v.updatedAt = isoLocal(new Date());
+      const w = st.put(v);
+      w.onsuccess = ()=>fin(true);
+      w.onerror   = ()=>fin(false);
+    };
+    g.onerror = ()=>fin(false);
+  }catch(e){ fin(false); }
+}
+function backToHub(){
+  location.href = '../visit/visit.html?visit=' + encodeURIComponent(VISIT);
+}
+
+/* 打ち終えた内容が消えないよう、回答のたびにハブへ控えます */
+let hubT;
+function hubAuto(){
+  if(!HUB.ok) return;
+  clearTimeout(hubT);
+  hubT = setTimeout(()=>saveToHub(false), 1200);
+}
+
+build();
+
+/* 起動時にハブへ接続（?visit= があるときだけ） */
+if(VISIT){
+  hubOpen().then(h=>{
+    HUB.h = h; HUB.ok = !!h;
+    if(HUB.ok){
+      document.getElementById('hubBtn').style.display = '';
+      document.getElementById('hubSaveBtn').style.display = '';
+      /* 回答が変わったら自動で控えます */
+      document.addEventListener('change', hubAuto, true);
+      document.addEventListener('click', e=>{
+        if(e.target && e.target.closest && e.target.closest('main')) hubAuto();
+      }, true);
+    }
+  });
+}
+applyMeta();
+document.getElementById('loadState').textContent = '内蔵定義: ' + DEF.questions.length + '問';
+
+/* ---------- ?def=<URL> : サイト設置型の外部定義読込(v0.4) ----------
+   例: /forms/?def=/forms/defs/urine.json
+   同一オリジン(またはCORS許可済み)のJSONを取得して定義を差し替える。
+   失敗時は内蔵定義のまま動作を続ける(壊れない)。file://では使えません */
+(function(){
+  const defUrl = PARAMS.get('def');
+  if(!defUrl) return;
+  document.getElementById('loadState').textContent = '外部定義を読込中…';
+  fetch(defUrl, {cache:'no-store'})
+    .then(r=>{ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(d=>{
+      if(!d.questions || !d.questions.length) throw new Error('questions がありません');
+      DEF = d;
+      for(const k in S) delete S[k];
+      build();
+      document.getElementById('loadState').textContent = '外部定義: ' + d.name + '(' + d.questions.length + '問)';
+      toast('定義を読み込みました: ' + d.name);
+    })
+    .catch(e=>{
+      document.getElementById('loadState').textContent = '内蔵定義: ' + DEF.questions.length + '問(外部定義の読込失敗)';
+      toast('外部定義の読込に失敗: ' + e.message);
+    });
+})();
+</script>
+</body>
+</html>

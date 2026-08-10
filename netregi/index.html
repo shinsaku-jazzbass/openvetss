@@ -1,0 +1,233 @@
+<!--
+  OpenVetss — 動物病院のためのオープンソース・ツール群
+  https://www.vetss-karte.net/
+
+  ネットレジ 紹介ページ
+  Copyright (c) 2026 OpenVetss Project
+
+  MIT ライセンスで配布しています。改変も再配布も自由ですが、
+  この著作権表示とライセンス表示は残してください。
+  全文は同梱の LICENSE をご覧ください。
+
+  無保証です。診療・会計・帳簿の内容については、
+  お使いになる病院の責任でご確認ください。
+-->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ネットレジ — タブレット1台で、診療明細を渡すレジ ｜ Vetss Lab</title>
+<meta name="description" content="動物病院専用のレジ。インストールもサーバも要らず、タブレットのブラウザで開くだけ。20年の現場で使われた操作体系を、そのまま今の形に。">
+<style>
+:root{
+  --paper:#FBF9F4; --paper2:#F4F1EA; --rule:#D8D2C6;
+  --ink:#1F2A2E; --ink2:#5A6A70; --ink3:#8C8578;
+  --blue:#42606E; --blue-lo:#EAF0F1;
+  --seal:#2F7A5C; --seal-lo:#EAF3EE;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho",YuMincho,"MS PMincho",serif;
+  --gothic:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--gothic);
+  line-height:1.9;-webkit-text-size-adjust:100%}
+a{color:var(--blue)}
+.wrap{max-width:860px;margin:0 auto;padding:0 24px}
+
+/* 見出し */
+h1,h2,h3{font-family:var(--mincho);font-weight:600;letter-spacing:.04em;line-height:1.5}
+
+/* パンくず */
+.top{border-bottom:1px solid var(--rule);padding:14px 0;font-size:12px;color:var(--ink3)}
+.top a{text-decoration:none}
+.top a:hover{text-decoration:underline}
+
+/* ヒーロー */
+.hero{padding:52px 0 40px;border-bottom:1px solid var(--rule);position:relative}
+.eyebrow{font-size:11px;letter-spacing:.22em;color:var(--blue);margin-bottom:16px}
+.hero h1{font-size:clamp(28px,5.6vw,44px);margin-bottom:18px}
+.hero h1 em{font-style:normal;border-bottom:3px solid var(--seal-lo);box-shadow:inset 0 -10px 0 var(--seal-lo)}
+.lede{font-size:clamp(15px,2.1vw,17px);color:var(--ink2);max-width:38em}
+.seal{
+  position:absolute;top:44px;right:8px;width:92px;height:92px;border:2.5px solid var(--seal);
+  border-radius:50%;color:var(--seal);display:grid;place-content:center;text-align:center;
+  font-family:var(--mincho);font-size:15px;letter-spacing:.16em;line-height:1.35;
+  transform:rotate(-11deg);opacity:.9
+}
+.seal small{display:block;font-size:8.5px;letter-spacing:.1em;margin-top:3px;font-family:var(--gothic)}
+@media(max-width:640px){.seal{width:70px;height:70px;font-size:12px;top:38px;right:0}}
+
+/* CTA */
+.cta{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:30px}
+.btn{display:inline-block;padding:13px 26px;border-radius:3px;text-decoration:none;
+  font-size:15px;letter-spacing:.06em;transition:background .15s,color .15s}
+.btn.on{background:var(--seal);color:#fff}
+.btn.on:hover{background:#24634A}
+.btn.off{border:1px solid var(--rule);color:var(--ink2)}
+.btn.off:hover{background:var(--paper2)}
+.cta-note{font-size:12px;color:var(--ink3);flex-basis:100%;margin-top:2px}
+
+/* セクション */
+section{padding:44px 0;border-bottom:1px solid var(--rule)}
+section h2{font-size:22px;margin-bottom:6px}
+section h2 .num{font-family:var(--mono);font-size:11px;color:var(--blue);
+  letter-spacing:.1em;display:block;margin-bottom:8px;font-weight:400}
+.sub{color:var(--ink2);font-size:14px;margin-bottom:26px;max-width:40em}
+
+/* 3つの無し */
+.nots{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px}
+.not{background:var(--paper2);border-radius:4px;padding:20px}
+.not b{display:block;font-family:var(--mincho);font-size:17px;margin-bottom:8px}
+.not p{font-size:13.5px;color:var(--ink2);line-height:1.85}
+
+/* 流れ */
+.flow{list-style:none;counter-reset:f}
+.flow li{counter-increment:f;display:grid;grid-template-columns:2.4rem 1fr;gap:16px;
+  padding:16px 0;border-top:1px dashed var(--rule)}
+.flow li:first-child{border-top:0}
+.flow li::before{content:counter(f,decimal-leading-zero);font-family:var(--mono);font-size:12px;
+  color:var(--blue);padding-top:5px}
+.flow li>b{grid-column:2;font-family:var(--mincho);font-size:16px;display:block;margin-bottom:3px}
+.flow li>p{grid-column:2;font-size:13.5px;color:var(--ink2);max-width:none;margin-bottom:0}
+
+/* 表 */
+table.spec{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}
+table.spec th,table.spec td{border-bottom:1px solid var(--rule);padding:11px 4px;text-align:left;vertical-align:top}
+table.spec th{width:11em;font-weight:400;color:var(--ink3);font-size:12px;letter-spacing:.06em}
+code{font-family:var(--mono);font-size:12.5px;background:var(--paper2);padding:1px 5px;border-radius:3px}
+
+/* 由来 */
+.origin{background:var(--blue-lo);border-radius:4px;padding:26px 28px}
+.origin p{font-size:14px;color:var(--ink2);margin-bottom:12px}
+.origin p:last-child{margin-bottom:0}
+.origin strong{color:var(--ink);font-weight:600}
+
+/* 正直欄 */
+.honest{border-left:3px solid var(--rule);padding-left:20px}
+.honest li{font-size:13.5px;color:var(--ink2);margin-bottom:9px;list-style:none;position:relative;padding-left:1.1em}
+.honest li::before{content:"—";position:absolute;left:0;color:var(--ink3)}
+
+/* 窓口 */
+.contact{text-align:center;padding:52px 0}
+.contact h2{font-size:20px;margin-bottom:12px}
+.contact p{font-size:14px;color:var(--ink2);max-width:32em;margin:0 auto 24px}
+
+footer{padding:30px 0 48px;font-size:12px;color:var(--ink3);text-align:center}
+footer a{color:var(--ink3)}
+</style>
+</head>
+<body>
+
+<div class="top"><div class="wrap"><a href="/">Vetss Lab</a> ／ Lab Tools ／ ネットレジ</div></div>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="seal">動く<small>DEMO</small></div>
+    <div class="eyebrow">LAB TOOLS ／ 02</div>
+    <h1>タブレット1台で、<br><em>診療明細を渡す</em>レジ。</h1>
+    <p class="lede">インストールも、サーバも、専用機も要りません。ブラウザで開けば、そこがレジです。動物病院の会計に必要なものだけを、20年ぶんの操作体系そのままに載せました。</p>
+    <div class="cta">
+      <a class="btn on" href="/netregi/netregi.html">デモを開く</a>
+      <a class="btn off" href="/netregi/setup.html">自院の品名で組み立てる</a>
+      <a class="btn off" href="/netregi/guide.html">使い方</a>
+      <span class="cta-note">iPad・Android・PC のブラウザで動きます。打ったデータはお使いの端末から出ません。</span>
+    </div>
+  </header>
+
+  <section>
+    <h2><span class="num">WHY</span>三つの「要らない」</h2>
+    <p class="sub">レジが重くなる原因を、順番に外していきました。残ったのは、打って、渡すことだけです。</p>
+    <div class="nots">
+      <div class="not">
+        <b>サーバが要らない</b>
+        <p>売上をどこにも預けません。計算して明細を出したら、それで仕事は終わり。だから通信も、月額も、障害対応もありません。</p>
+      </div>
+      <div class="not">
+        <b>マスタ登録が要らない</b>
+        <p>単価はその場で打ちます。登録するのは品名だけ。値上げのたびにマスタを直す作業から解放されます。</p>
+      </div>
+      <div class="not">
+        <b>研修が要らない</b>
+        <p>このデモが、そのまま本番です。試した操作がそのまま現場の操作になるので、導入日に覚え直すことがありません。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">HOW</span>会計の流れ</h2>
+    <p class="sub">診察券を読むところから、明細を渡すところまで。指はテンキーの上から動きません。</p>
+    <ol class="flow">
+      <li><b>診察券を読む</b><p>バーコードリーダーでも、タブレットのカメラでも。番号を打っても構いません。氏名や連絡先は端末に残さず、診察券IDと表示名だけを扱います。</p></li>
+      <li><b>単価を打って、品名を押す</b><p><code>5000</code> → <code>眼科検査</code>。数量は <code>1200*3</code> のように。消費税と非課税は自動で分けて計算します。</p></li>
+      <li><b>預り金を打って、現計</b><p><code>6000</code> → <code>現計/預</code>。釣銭が出て、診療明細書の確認画面に切り替わります。</p></li>
+      <li><b>飼主さんに見せて、渡す</b><p>タブレットをそのまま向けて確認していただき、印刷するか、明細ファイルとして保存します。</p></li>
+      <li><b>一日の終わりに、日計</b><p>その日の会計は端末の中に溜まっています。集計を開いて、CSV か Excel で書き出すだけ。明細番号の抜けも自動で見つけます。</p></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2><span class="num">SPEC</span>できること</h2>
+    <table class="spec">
+      <tr><th>動作環境</th><td>iPad・Android タブレット・PC のブラウザ。オフラインでも動きます</td></tr>
+      <tr><th>入力</th><td>画面のキー／物理キーボード／カスタムキーボード（同じキー割当）</td></tr>
+      <tr><th>患者の特定</th><td>診察券のバーコード・QR、カメラ読み取り、番号入力、URL からの受け渡し</td></tr>
+      <tr><th>消費税</th><td>外税・内税、非課税品目、端数処理（切捨／四捨五入／10円単位）、税率は期間で自動切替</td></tr>
+      <tr><th>会計操作</th><td>数量・％値引・行削除・小計・担当者・現金／クレジット・領収書再表示</td></tr>
+      <tr><th>保存</th><td>打ちかけの会計は端末に自動保存。閉じても、落ちても、続きから再開できます</td></tr>
+      <tr><th>自院設定</th><td>設定ツールで作ったファイルを読み込むと、病院情報・消費税・品名が入れ替わります</td></tr>
+      <tr><th>日計</th><td>件数・税抜・消費税・税込・支払区分別・部門別／CSV・Excel・明細ファイル出力／複数台の合算</td></tr>
+      <tr><th>明細の形式</th><td>公開仕様の JSON（<code>vetss-receipt</code>）。他システムへの受け渡しを想定しています</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2><span class="num">SETUP</span>自院の品名で、組み立てる</h2>
+    <p class="sub">デモのまま触っていただいても構いませんが、自院の品名を並べれば、その日から本番の道具になります。</p>
+    <ol class="flow">
+      <li><b>設定ツールを開く</b><p>ブラウザの中だけで動きます。入力した品名がこのサイトに送られることはありません。</p></li>
+      <li><b>品名を並べる</b><p>サンプルを直しても、既存のマスタを貼り付けても構いません。単価は登録しません。よく使うものを上へ動かすと、画面の左上に来ます。</p></li>
+      <li><b>設定ファイルを保存する</b><p>病院名・登録番号・消費税の設定・品名が、ファイル1つにまとまります。</p></li>
+      <li><b>レジで読み込む</b><p>歯車のボタンから読み込めば、次回からは自院のレジとして開きます。複数台お使いの場合は、同じファイルを各台に読ませて端末記号だけ変えてください。</p></li>
+    </ol>
+    <div class="cta">
+      <a class="btn on" href="/netregi/setup.html">設定ツールを開く</a>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">ORIGIN</span>これは、新しい道具ではありません</h2>
+    <div class="origin">
+      <p>もとになったのは、20年ほど前に動物病院向けに書いたレジです。当時まだ珍しかった非同期通信を使い、画面を再読み込みせずに明細が伸びていく——今でいう SPA の走りのようなものでした。以来、実際の病院の窓口で会計を打ち続けてきました。</p>
+      <p>今回やったのは、発明ではなく<strong>移し替え</strong>です。単価を打ってから品名キーを押す文法も、テンキーだけで会計が終わる割当も、消費税の丸め方も、現場が長年検証してきたものをそのまま持ってきました。</p>
+      <p>変えたのは、置き場所だけです。サーバの中にあったものが、タブレットの中に移りました。それだけで、必要なものが専用機からブラウザ1つになりました。</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">HONEST</span>今できないこと</h2>
+    <p class="sub">試作段階です。隠さずに書いておきます。</p>
+    <ul class="honest">
+      <li>ペット保険の窓口精算にはまだ対応していません（負担率と限度額の設計を検討中です）</li>
+      <li>傷病名を持たないため、このままでは保険請求用の書類は作れません。電子カルテと繋いで補う想定です</li>
+      <li>クレジット決済端末との連動はありません。区分の記録のみです</li>
+      <li>iPad のカメラで読めるのは QR コードのみです（一次元バーコードはリーダーをお使いください）</li>
+      <li>適格請求書としてお使いになる場合は、病院名と登録番号の設定が必要です</li>
+      <li>会計の記録はタブレットの中に置かれます。iPad ではホーム画面に追加してお使いください（長く開かないとブラウザが保存領域を整理することがあります）。帳簿としては、一日の終わりに書き出したファイルを原本としてお考えください</li>
+    </ul>
+  </section>
+
+  <div class="contact">
+    <h2>試してみて、話しませんか</h2>
+    <p>実際に打ってみたご感想、現場に合わない点、こう動いてほしいという要望——どれも次の版に反映していきます。導入のご相談も承ります。</p>
+    <a class="btn on" href="/netregi/netregi.html">デモを開く</a>
+  </div>
+
+  <footer>
+    OpenVetss ／ <a href="/license.html">ライセンス（MIT）</a> ／ <a href="/">動くもので、語る。</a>
+  </footer>
+
+</div>
+</body>
+</html>

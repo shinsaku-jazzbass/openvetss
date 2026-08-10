@@ -1,0 +1,70 @@
+OpenVetss — Third-Party Notices
+================================================================================
+
+OpenVetss bundles the following third-party components inside its
+single-file HTML distributions. Their licenses are reproduced or referenced
+below and must be kept with any copy or modified version of OpenVetss.
+
+--------------------------------------------------------------------------------
+1) jsQR  version 1.4.0
+   QR code decoder (used for reading karte-holder QR codes with the camera)
+   https://github.com/cozmo/jsQR
+   Copyright (c) Cosmo Wolfe
+   Licensed under the Apache License, Version 2.0
+
+   Bundled in: visit.html, netregi.html
+
+   You may obtain a copy of the Apache License, Version 2.0 at
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+   NOTE: place the full text of the Apache License, Version 2.0 in the file
+   licenses/Apache-2.0.txt of this repository, copied verbatim from the URL
+   above. Do not retype or reformat it.
+
+--------------------------------------------------------------------------------
+2) qrcode-generator
+   QR code encoder (used for printing karte-holder QR labels)
+   https://github.com/kazuhikoarase/qrcode-generator
+   Copyright (c) Kazuhiko Arase
+   Licensed under the MIT License
+
+   Bundled in: visit.html, qrlabel.html
+
+   MIT License
+
+   Permission is hereby granted, free of charge, to any person obtaining a copy
+   of this software and associated documentation files (the "Software"), to deal
+   in the Software without restriction, including without limitation the rights
+   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+   copies of the Software, and to permit persons to whom the Software is
+   furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included in
+   all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+   THE SOFTWARE.
+
+--------------------------------------------------------------------------------
+3) Clinical phrase master (karte_master.json)
+   Derived from the syori1 / syori2 tables of VetssWeb.
+   Copyright (c) 2026 OpenVetss Project
+   Distributed under the same MIT License as OpenVetss.
+
+   This file contains wording used in veterinary practice. It is provided as a
+   starting point only; each clinic is expected to review and adapt it.
+
+--------------------------------------------------------------------------------
+Nothing in OpenVetss is endorsed, certified or approved by any veterinary
+association, insurer or public authority.

@@ -1,0 +1,377 @@
+<!--
+  OpenVetss — 動物病院のためのオープンソース・ツール群
+  https://www.vetss-karte.net/
+
+  サイト トップ
+  Copyright (c) 2026 OpenVetss Project
+
+  MIT ライセンスで配布しています。改変も再配布も自由ですが、
+  この著作権表示とライセンス表示は残してください。
+  全文は同梱の LICENSE をご覧ください。
+
+  無保証です。診療・会計・帳簿の内容については、
+  お使いになる病院の責任でご確認ください。
+-->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vetss Lab — 動くもので、語る。｜動物病院ITの研究ノートと道具</title>
+<meta name="description" content="動物病院のためのIT研究ノートと、すぐ触れる道具。タブレット1台で会計ができるネットレジ、整形外科検査のデジタル問診ツールを公開しています。">
+<style>
+:root{
+  --paper:#FBF9F4; --paper2:#F4F1EA; --rule:#D8D2C6;
+  --ink:#1F2A2E; --ink2:#5A6A70; --ink3:#8C8578;
+  --blue:#42606E; --blue-lo:#EAF0F1;
+  --seal:#2F7A5C; --seal-lo:#EAF3EE;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho",YuMincho,"MS PMincho",serif;
+  --gothic:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--gothic);line-height:1.9;
+  -webkit-text-size-adjust:100%}
+a{color:var(--blue)}
+h1,h2,h3{font-family:var(--mincho);font-weight:600;letter-spacing:.04em;line-height:1.5}
+.wrap{max-width:900px;margin:0 auto;padding:0 24px}
+
+/* ヘッダ */
+.site{border-bottom:1px solid var(--rule);padding:16px 0}
+.site .wrap{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.brand{font-family:var(--mincho);font-size:17px;letter-spacing:.1em;text-decoration:none;color:var(--ink)}
+.nav{display:flex;gap:18px;font-size:12.5px}
+.nav a{text-decoration:none;color:var(--ink2)}
+.nav a:hover{color:var(--seal)}
+
+/* ヒーロー */
+.hero{padding:60px 0 46px}
+.hero h1{font-size:clamp(30px,6vw,50px);margin-bottom:20px}
+.hero .lede{font-size:clamp(15px,2.1vw,17px);color:var(--ink2);max-width:37em}
+.hero .lede strong{color:var(--ink);font-weight:600}
+
+/* 注目 */
+.feature{background:var(--blue-lo);border-radius:6px;padding:34px 36px;position:relative;
+  margin-bottom:8px}
+.feature .badge{font-size:11px;letter-spacing:.2em;color:var(--seal);margin-bottom:12px}
+.feature h2{font-size:clamp(22px,3.6vw,30px);margin-bottom:8px}
+.feature .tag{font-family:var(--mincho);font-size:16px;color:var(--blue);margin-bottom:16px}
+.feature p{font-size:14.5px;color:var(--ink2);max-width:40em;margin-bottom:20px}
+.feature .seal{position:absolute;top:28px;right:30px;width:82px;height:82px;border:2.5px solid var(--seal);
+  border-radius:50%;color:var(--seal);display:grid;place-content:center;text-align:center;
+  font-family:var(--mincho);font-size:14px;letter-spacing:.16em;line-height:1.35;
+  transform:rotate(-11deg);opacity:.9;background:var(--paper)}
+.feature .seal small{display:block;font-size:8px;letter-spacing:.1em;margin-top:3px;font-family:var(--gothic)}
+.pts{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:6px 22px;margin-bottom:22px}
+.pts li{font-size:13px;color:var(--ink2);padding-left:1.1em;position:relative}
+.pts li::before{content:"—";position:absolute;left:0;color:var(--ink3)}
+@media(max-width:680px){
+  .feature{padding:28px 22px}
+  .feature .seal{width:60px;height:60px;font-size:11.5px;top:20px;right:18px}
+  .feature h2{padding-right:70px}
+}
+
+/* ボタン */
+.cta{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{display:inline-block;padding:12px 24px;border-radius:3px;text-decoration:none;
+  font-size:14.5px;letter-spacing:.06em;transition:background .15s,color .15s}
+.btn.on{background:var(--seal);color:#fff}
+.btn.on:hover{background:#24634A}
+.btn.off{border:1px solid var(--rule);color:var(--ink2);background:var(--paper)}
+.btn.off:hover{background:var(--paper2)}
+.cta-note{font-size:12px;color:var(--ink3);flex-basis:100%;margin-top:6px}
+
+/* セクション */
+section{padding:46px 0;border-top:1px solid var(--rule)}
+.sec-hd{margin-bottom:26px}
+.sec-hd .num{font-family:var(--mono);font-size:11px;color:var(--blue);letter-spacing:.14em;
+  display:block;margin-bottom:8px}
+.sec-hd h2{font-size:22px;margin-bottom:6px}
+.sec-hd p{font-size:14px;color:var(--ink2);max-width:40em}
+
+/* 道具カード */
+.tools{display:grid;gap:18px}
+.tool{background:var(--paper2);border-radius:5px;padding:26px 28px;position:relative}
+.tool .stamp{position:absolute;top:22px;right:24px;width:64px;height:64px;border:2px solid var(--seal);
+  border-radius:50%;color:var(--seal);display:grid;place-content:center;text-align:center;
+  font-family:var(--mincho);font-size:12px;letter-spacing:.12em;line-height:1.3;
+  transform:rotate(-10deg);opacity:.85}
+.tool .stamp small{display:block;font-size:7.5px;letter-spacing:.08em;margin-top:2px;font-family:var(--gothic)}
+.tool .stamp.wip{border-color:var(--ink3);color:var(--ink3)}
+.tool .no{font-family:var(--mono);font-size:11px;color:var(--blue);letter-spacing:.14em;margin-bottom:8px}
+.tool h3{font-size:20px;margin-bottom:4px;padding-right:76px}
+.tool .tag{font-family:var(--mincho);font-size:14.5px;color:var(--blue);margin-bottom:12px}
+.tool p{font-size:13.5px;color:var(--ink2);max-width:40em;margin-bottom:16px}
+.tool .cta .btn{padding:10px 20px;font-size:13.5px}
+.tool.soon{opacity:.72}
+@media(max-width:680px){
+  .tool .stamp{width:52px;height:52px;font-size:10.5px;top:18px;right:16px}
+  .tool h3{padding-right:62px}
+}
+
+/* ノート */
+.notes{display:grid;gap:2px;background:var(--rule);border-top:1px solid var(--rule);
+  border-bottom:1px solid var(--rule)}
+.note{background:var(--paper);padding:18px 4px;display:grid;grid-template-columns:4.2rem 1fr auto;
+  gap:16px;align-items:baseline;text-decoration:none;color:inherit}
+.note:hover{background:var(--paper2)}
+.note .n{font-family:var(--mono);font-size:11px;color:var(--blue)}
+.note b{font-family:var(--mincho);font-size:16px;font-weight:600;display:block;margin-bottom:2px}
+.note span{font-size:13px;color:var(--ink2)}
+.note .go{font-size:12px;color:var(--ink3);white-space:nowrap}
+.note.soon{pointer-events:none}
+.note.soon b,.note.soon span{color:var(--ink3)}
+@media(max-width:560px){.note{grid-template-columns:3.2rem 1fr}.note .go{display:none}}
+
+/* 窓口 */
+.contact{text-align:center;padding:56px 0 20px;border-top:1px solid var(--rule)}
+.contact h2{font-size:21px;margin-bottom:12px}
+.contact p{font-size:14px;color:var(--ink2);max-width:34em;margin:0 auto 20px}
+.contact .fine{font-size:12px;color:var(--ink3);max-width:34em;margin:18px auto 0}
+
+footer{padding:32px 0 52px;font-size:12px;color:var(--ink3);text-align:center}
+footer a{color:var(--ink3)}
+footer .sig{font-family:var(--mincho);font-size:13px;margin-bottom:6px;color:var(--ink2)}
+</style>
+</head>
+<body>
+
+<div class="site"><div class="wrap">
+  <a class="brand" href="/">Vetss Lab</a>
+  <nav class="nav">
+    <a href="/visit/">受診ハブ</a>
+    <a href="#screens">三つの画面</a>
+    <a href="#tools">Lab Tools</a>
+    <a href="#notes">研究ノート</a>
+    <a href="#karte">電子カルテ</a>
+    <a href="#contact">お問い合わせ</a>
+    <a href="/license.html">ライセンス</a>
+  </nav>
+</div></div>
+
+<div class="wrap">
+
+  <header class="hero">
+    <h1>動くもので、語る。</h1>
+    <p class="lede">動物病院のITについて考えたことを、<strong>必ず動く実物を添えて</strong>置いていく場所です。読んで終わりにせず、その場で触って、良ければ持ち帰って使ってください。すべてブラウザだけで動き、入力されたものがこちらに送られることはありません。</p>
+  </header>
+
+  <div class="feature">
+    <div class="seal">動く<small>DEMO</small></div>
+    <div class="badge">NEW ／ LAB TOOLS 02</div>
+    <h2>ネットレジ</h2>
+    <p class="tag">タブレット1台で、診療明細を渡すレジ。</p>
+    <p>インストールも、サーバも、専用機も要りません。ブラウザで開けば、そこがレジです。20年ほど前に動物病院向けに書き、実際の窓口で使われ続けてきたレジを、置き場所だけ変えて載せ直しました。単価を打って品名を押すと明細が伸び、消費税と釣銭が出て、そのまま飼主さんに見せて渡せます。</p>
+    <ul class="pts">
+      <li>売上をどこにも預けない — 通信なし・月額なし</li>
+      <li>登録するのは品名だけ — 単価はその場で入力</li>
+      <li>診察券のバーコード・QR をカメラで読み取り</li>
+      <li>日計は端末の中で完結し、CSV・Excel で書き出し</li>
+      <li>自院の品名は設定ツールで組み立て、ファイル1つで反映</li>
+      <li>試したデモが、そのまま本番 — 覚え直しがありません</li>
+    </ul>
+    <div class="cta">
+      <a class="btn on" href="/netregi/netregi.html">デモを開く</a>
+      <a class="btn off" href="/netregi/setup.html">自院の品名で組み立てる</a>
+      <a class="btn off" href="/netregi/guide.html">使い方</a>
+      <a class="btn off" href="/netregi/">くわしく</a>
+      <span class="cta-note">試作版です。ペット保険の窓口精算と傷病名の記録は、今後の課題としています。</span>
+    </div>
+  </div>
+
+
+  <div class="ipad ipad-wide">
+    <div class="ipad-body">
+      <span class="ipad-cam"></span>
+      <div class="ipad-screen">
+        <iframe class="scaled" src="/netregi/netregi.html" title="ネットレジのデモ" loading="lazy"></iframe>
+      </div>
+    </div>
+    <div class="ipad-cap">
+      <span class="ipad-live">LIVE</span>
+      <b>この画面は実物です。</b>ここで打ってみてください。
+      <a class="btn off" href="/netregi/netregi.html" style="padding:6px 15px;font-size:12.5px">全画面で開く</a>
+    </div>
+  </div>
+
+  <div class="ipad ipad-narrow">
+    <div class="ipad-body">
+      <span class="ipad-cam"></span>
+      <div class="ipad-screen"><img src="/netregi/shots/regi.png" alt="ネットレジの会計画面"></div>
+    </div>
+    <div class="ipad-cap">
+      <b>ネットレジの会計画面</b>
+      <a class="btn on" href="/netregi/netregi.html" style="padding:6px 15px;font-size:12.5px">デモを開く</a>
+    </div>
+  </div>
+
+  <section id="screens">
+    <div class="sec-hd">
+      <span class="num">THREE SCREENS</span>
+      <h2>三つの画面で、ひとつの流れに</h2>
+      <p>病院の仕事は、場所によって必要な画面が違います。渡す画面、並べる画面、持ち帰る画面——それぞれに向いた役割を割り当てると、全体が無理なく繋がります。</p>
+    </div>
+    <div class="screens">
+      <div class="screen">
+        <div class="dev">iPad</div>
+        <b>渡せる画面</b>
+        <p>受付・診察室・会計。飼主さんに向けて見せられる唯一の端末です。問診を書いていただき、明細を確認していただき、カメラで診察券を読みます。持ち歩けるので、会計が場所に縛られません。</p>
+      </div>
+      <div class="screen">
+        <div class="dev">PC</div>
+        <b>並べる画面</b>
+        <p>事務と集計。日計や月報を広い画面で確認し、品名の整備や設定ファイルの作成を行います。何かを見比べる作業は、やはりこちらが向いています。</p>
+      </div>
+      <div class="screen">
+        <div class="dev">SMARTPHONE</div>
+        <b>持ち帰る画面</b>
+        <p>飼主さんの手元。診療明細を受け取り、健康の記録を続けていただくための画面です。病院を出たあとも繋がっている場所になります。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-hd">
+      <span class="num">NEW ／ LAB TOOLS 04</span>
+      <h2>受診ハブ — 1台のタブレットで、受診がひとつに</h2>
+      <p>カルテホルダーのQRを読み、問診を書いてもらい、S・O・A・P を組み立て、会計を打ち、その日の診療録を紙で刷る。ここまでを、サーバもインストールもなしにタブレット1台で通します。</p>
+    </div>
+    <div class="cta">
+      <a class="btn on" href="/visit/visit.html">受診ハブを開く</a>
+      <a class="btn off" href="/visit/">くわしく</a>
+      <a class="btn off" href="/visit/qrlabel.html">QRラベルを作る</a>
+    </div>
+  </section>
+
+  <section id="tools">
+    <div class="sec-hd">
+      <span class="num">LAB TOOLS</span>
+      <h2>触れる道具</h2>
+      <p>アイデアだけを置いても伝わらないので、すべて動く形にしてあります。デモとして触ったものが、そのまま現場で使えるものです。</p>
+    </div>
+
+    <div class="tools">
+
+      <article class="tool">
+        <div class="stamp">動く<small>DEMO</small></div>
+        <div class="no">01</div>
+        <h3>整形外科 検査問診ツール</h3>
+        <p class="tag">97項目の検査記録を、そのままデジタルで。</p>
+        <p>日本獣医麻酔外科学会が提唱する整形外科学的検査カルテを、単一ページのデジタル問診に起こしたものです。入力した内容はこちらに送られず、記入が終わったらお使いのカルテへ受け渡せます。受け口の参考実装も公開しています。</p>
+        <div class="cta">
+          <a class="btn on" href="/ortho/">ツールを開く</a>
+          <a class="btn off" href="/ortho/spec.html">連携仕様</a>
+        </div>
+      </article>
+
+      <article class="tool">
+        <div class="stamp">動く<small>DEMO</small></div>
+        <div class="no">02</div>
+        <h3>ネットレジ</h3>
+        <p class="tag">タブレット1台で、診療明細を渡すレジ。</p>
+        <p>会計を打ち、消費税を計算し、診療明細書を発行します。診察券のバーコードや QR で患者を特定し、一日の終わりには日計を CSV・Excel で書き出せます。自院の品名は、設定ツールで組み立ててファイルを読み込むだけです。</p>
+        <div class="cta">
+          <a class="btn on" href="/netregi/netregi.html">デモを開く</a>
+          <a class="btn off" href="/netregi/setup.html">設定ツール</a>
+          <a class="btn off" href="/netregi/guide.html">使い方</a>
+          <a class="btn off" href="/netregi/">くわしく</a>
+        </div>
+      </article>
+
+      <article class="tool soon">
+        <div class="stamp wip">構想</div>
+        <div class="no">03</div>
+        <h3>診療明細の受け渡し仕様</h3>
+        <p class="tag">病院をまたいで通じる、明細のかたち。</p>
+        <p>ネットレジが書き出す明細ファイルの形式を、公開仕様として整えています。どの会計システムからでも同じ形で出せるようになれば、保険請求も、飼主さんへの受け渡しも、その先の道具づくりも共通の土台に乗ります。</p>
+      </article>
+
+      <article class="tool">
+        <div class="stamp">動く<small>DEMO</small></div>
+        <div class="no">04</div>
+        <h3>受診ハブ</h3>
+        <p class="tag">一日を束ねて、紙にする。</p>
+        <p>問診・カルテ記入・会計を、同じ診察券番号で1つの受診にまとめます。カルテホルダーのQRをカメラで読んで始め、終わりにその日の診療録を印刷。深夜に日付をまたいでも「営業日」で締められます。</p>
+        <div class="cta">
+          <a class="btn on" href="/visit/visit.html">開く</a>
+          <a class="btn off" href="/visit/">くわしく</a>
+          <a class="btn off" href="/karte/karte.html">ボタンカルテ</a>
+          <a class="btn off" href="/visit/qrlabel.html">QRラベル発行</a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section id="notes">
+    <div class="sec-hd">
+      <span class="num">RESEARCH NOTES</span>
+      <h2>研究ノート</h2>
+      <p>道具を作りながら考えたことを、その都度まとめています。</p>
+    </div>
+    <div class="notes">
+      <a class="note" href="/notes/01.html">
+        <span class="n">第 1 号</span>
+        <span><b>フロントを公共財にする</b><span>動物病院ITの新しい入り口。試用と本番でフロントが同じなら、導入時の教育コストは消える。</span></span>
+        <span class="go">読む →</span>
+      </a>
+      <span class="note soon">
+        <span class="n">第 2 号</span>
+        <span><b>レジは、売上を持たなくていい</b><span>記録ではなく受け渡しを目的に置いたとき、会計の道具はどこまで軽くなるか。</span></span>
+        <span class="go">近日</span>
+      </span>
+      <span class="note soon">
+        <span class="n">第 3 号</span>
+        <span><b>20年前の設計が、今も正しかった話</b><span>キー割当も、税の丸め方も、現場が検証したものは古びない。</span></span>
+        <span class="go">近日</span>
+      </span>
+    </div>
+  </section>
+
+  <section id="karte">
+    <div class="sec-hd">
+      <span class="num">ELECTRONIC KARTE</span>
+      <h2>電子カルテ</h2>
+      <p>ここに置いている道具は、単体でもお使いいただけますが、カルテと繋いだときに本領を発揮します。問診は記録へ、会計は明細へ——ひとつの診察券番号で一本の線になります。</p>
+    </div>
+    <div class="tools">
+      <article class="tool soon">
+        <div class="stamp wip">準備中</div>
+        <div class="no">—</div>
+        <h3>タイムライン型 電子カルテ</h3>
+        <p class="tag">SOAP を、時間の流れのままに。</p>
+        <p>デモの公開を準備しています。ネットレジや問診ツールとの連携も、この上で組み立てていきます。ご関心のある方はお問い合わせください。</p>
+      </article>
+    </div>
+  </section>
+
+  <div class="contact" id="contact">
+    <h2>試してみて、話しませんか</h2>
+    <p>実際に打ってみたご感想、現場に合わない点、こう動いてほしいという要望——どれも次の版に反映していきます。導入や連携のご相談も承ります。</p>
+    <div class="cta" style="justify-content:center">
+      <a class="btn on" href="/netregi/netregi.html">ネットレジを試す</a>
+      <a class="btn off" href="/ortho/">問診ツールを試す</a>
+    </div>
+    <p class="fine">整形外科の問診ツールは、学会が提唱する検査項目に準拠して作成したものですが、公認を受けたものではありません。公式化に向けたご相談は歓迎いたします。</p>
+  </div>
+
+  <footer>
+    <div class="sig">開発と、ときどきジャズベース。</div>
+    Vetss Lab
+  </footer>
+
+</div>
+<script>
+(function(){
+  function fit(){
+    document.querySelectorAll(".ipad-screen").forEach(function(s){
+      if(!s.querySelector("iframe.scaled")) return;
+      s.style.setProperty("--s", s.clientWidth/1194);
+    });
+  }
+  addEventListener("resize",fit); addEventListener("load",fit); fit();
+})();
+</script>
+</body>
+</html>
