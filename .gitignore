@@ -1,0 +1,10 @@
+.DS_Store
+*.bak
+*~
+visit_*.json
+daybook_*.json
+nikkei_*.csv
+nikkei_*.xlsx
+karte_*.json
+labels.json
+netregi_setup_*.json
