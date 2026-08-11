@@ -8,6 +8,7 @@
 > Single-file HTML, works offline. MIT licensed.
 
 すぐ試せます → **https://www.vetss-karte.net/visit/**
+ソース → **https://github.com/shinsaku-jazzbass/openvetss**
 
 ---
 
@@ -150,8 +151,7 @@ MIT License — [`LICENSE`](LICENSE)
 | [jsQR](https://github.com/cozmo/jsQR) 1.4.0 | カメラでQRを読む | Apache-2.0 |
 | [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) | QRラベルを作る | MIT |
 
-jsQR を含むため、`licenses/Apache-2.0.txt` に Apache License 2.0 の全文を置いてください。
-https://www.apache.org/licenses/LICENSE-2.0.txt から**そのまま**コピーします（1文字でも変えると別のライセンスになります）。
+jsQR を含むため、Apache License 2.0 の全文を [`licenses/Apache-2.0.txt`](licenses/Apache-2.0.txt) に同梱しています。
 
 ---
 
@@ -201,11 +201,10 @@ OpenVetss は **VetssWeb がなくても単独で動きます。**
 
 ## 不具合・ご要望
 
-Issue でお知らせください。実際に打ってみた感想、現場に合わない点、こう動いてほしいという要望——どれも次の版に反映していきます。
+[Issue](https://github.com/shinsaku-jazzbass/openvetss/issues) でお知らせください。実際に打ってみた感想、現場に合わない点、こう動いてほしいという要望——どれも次の版に反映していきます。
 
 修正版を送っていただいても構いません。
 
 ---
 
 Copyright (c) 2026 OpenVetss Project
-# openvetss

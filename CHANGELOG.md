@@ -33,3 +33,10 @@
 - 日本獣医麻酔外科学会 整形外科委員会 ver.1 準拠 97項目
 - 回答済みの項目だけをテキスト化
 - 受診ハブへの書き戻し、JSON書き出し
+
+### ライセンス
+- MIT License で公開
+- 同梱ライブラリの表示（THIRD-PARTY-NOTICES.txt）
+- Apache License 2.0 の全文を `licenses/Apache-2.0.txt` に同梱（jsQR のため）
+- サイトに日本語のライセンス案内ページ（`license.html`）
+- サイト各ページから GitHub への導線
