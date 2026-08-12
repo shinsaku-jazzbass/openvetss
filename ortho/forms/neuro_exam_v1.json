@@ -1,0 +1,1605 @@
+{
+ "name": "神経学的検査",
+ "source": "OpenVetss ひな型（学会等の公認を受けたものではありません。自院で調整してください）",
+ "type": 1,
+ "questions": [
+  {
+   "id": 3001,
+   "name": "動物種",
+   "answer_type": "radio",
+   "required": 1,
+   "group_name": "基本",
+   "page_no": 1,
+   "sort_order": 1,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30011,
+     "label": "犬",
+     "value": "犬",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30012,
+     "label": "猫",
+     "value": "猫",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30013,
+     "label": "その他",
+     "value": "その他",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 3002,
+   "name": "体重",
+   "answer_type": "number",
+   "required": 0,
+   "group_name": "基本",
+   "page_no": 1,
+   "sort_order": 2,
+   "placeholder": "0.0",
+   "unit": "kg",
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 3003,
+   "name": "発症",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "基本",
+   "page_no": 1,
+   "sort_order": 3,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30031,
+     "label": "急性",
+     "value": "急性",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30032,
+     "label": "亜急性",
+     "value": "亜急性",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30033,
+     "label": "慢性",
+     "value": "慢性",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 3004,
+   "name": "経過",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "基本",
+   "page_no": 1,
+   "sort_order": 4,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30041,
+     "label": "進行性",
+     "value": "進行性",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30042,
+     "label": "非進行性",
+     "value": "非進行性",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30043,
+     "label": "改善傾向",
+     "value": "改善傾向",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 30044,
+     "label": "間欠的",
+     "value": "間欠的",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 3005,
+   "name": "主訴",
+   "answer_type": "text",
+   "required": 0,
+   "group_name": "基本",
+   "page_no": 1,
+   "sort_order": 5,
+   "placeholder": "例：後肢のふらつき",
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 3011,
+   "name": "意識状態",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "精神状態・行動",
+   "page_no": 2,
+   "sort_order": 1,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30111,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30112,
+     "label": "沈鬱",
+     "value": "沈鬱",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30113,
+     "label": "混迷",
+     "value": "混迷",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 30114,
+     "label": "昏睡",
+     "value": "昏睡",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 3012,
+   "name": "行動の変化",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "精神状態・行動",
+   "page_no": 2,
+   "sort_order": 2,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30121,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30122,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 3013,
+   "name": "旋回・斜頸",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "精神状態・行動",
+   "page_no": 2,
+   "sort_order": 3,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30131,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30132,
+     "label": "左",
+     "value": "左",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30133,
+     "label": "右",
+     "value": "右",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 3014,
+   "name": "頭位傾斜",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "精神状態・行動",
+   "page_no": 2,
+   "sort_order": 4,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30141,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30142,
+     "label": "左",
+     "value": "左",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30143,
+     "label": "右",
+     "value": "右",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 3021,
+   "name": "歩様",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "歩様・姿勢",
+   "page_no": 3,
+   "sort_order": 1,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30211,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30212,
+     "label": "不全麻痺",
+     "value": "不全麻痺",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30213,
+     "label": "麻痺",
+     "value": "麻痺",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 30214,
+     "label": "運動失調",
+     "value": "運動失調",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 3022,
+   "name": "麻痺の分布",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "歩様・姿勢",
+   "page_no": 3,
+   "sort_order": 2,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30221,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30222,
+     "label": "四肢",
+     "value": "四肢",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30223,
+     "label": "後肢",
+     "value": "後肢",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 30224,
+     "label": "前肢",
+     "value": "前肢",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 30225,
+     "label": "片側（左）",
+     "value": "片側（左）",
+     "allow_text": 0,
+     "sort_order": 5
+    },
+    {
+     "id": 30226,
+     "label": "片側（右）",
+     "value": "片側（右）",
+     "allow_text": 0,
+     "sort_order": 6
+    },
+    {
+     "id": 30227,
+     "label": "単一肢",
+     "value": "単一肢",
+     "allow_text": 0,
+     "sort_order": 7
+    }
+   ]
+  },
+  {
+   "id": 3023,
+   "name": "運動失調の種類",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "歩様・姿勢",
+   "page_no": 3,
+   "sort_order": 3,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30231,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30232,
+     "label": "固有受容性",
+     "value": "固有受容性",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30233,
+     "label": "小脳性",
+     "value": "小脳性",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 30234,
+     "label": "前庭性",
+     "value": "前庭性",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 3024,
+   "name": "跛行スコア",
+   "answer_type": "scale",
+   "required": 0,
+   "group_name": "歩様・姿勢",
+   "page_no": 3,
+   "sort_order": 4,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": 0,
+   "scale_max": 5,
+   "options": []
+  },
+  {
+   "id": 3025,
+   "name": "起立可否",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "歩様・姿勢",
+   "page_no": 3,
+   "sort_order": 5,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30251,
+     "label": "可",
+     "value": "可",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30252,
+     "label": "介助で可",
+     "value": "介助で可",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30253,
+     "label": "不可",
+     "value": "不可",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 3031,
+   "name": "踏み直り反応（前肢）",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "姿勢反応",
+   "page_no": 4,
+   "sort_order": 1,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30311,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30312,
+     "label": "減弱",
+     "value": "減弱",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30313,
+     "label": "消失",
+     "value": "消失",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 30314,
+     "label": "亢進",
+     "value": "亢進",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 3032,
+   "name": "踏み直り反応（後肢）",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "姿勢反応",
+   "page_no": 4,
+   "sort_order": 2,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30321,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30322,
+     "label": "減弱",
+     "value": "減弱",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30323,
+     "label": "消失",
+     "value": "消失",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 30324,
+     "label": "亢進",
+     "value": "亢進",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 3033,
+   "name": "跳び直り反応（前肢）",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "姿勢反応",
+   "page_no": 4,
+   "sort_order": 3,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30331,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30332,
+     "label": "減弱",
+     "value": "減弱",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30333,
+     "label": "消失",
+     "value": "消失",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 30334,
+     "label": "亢進",
+     "value": "亢進",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 3034,
+   "name": "跳び直り反応（後肢）",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "姿勢反応",
+   "page_no": 4,
+   "sort_order": 4,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30341,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30342,
+     "label": "減弱",
+     "value": "減弱",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30343,
+     "label": "消失",
+     "value": "消失",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 30344,
+     "label": "亢進",
+     "value": "亢進",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 3035,
+   "name": "手押し車試験",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "姿勢反応",
+   "page_no": 4,
+   "sort_order": 5,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30351,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30352,
+     "label": "異常",
+     "value": "異常",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 3041,
+   "name": "膝蓋腱反射",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "脊髄反射",
+   "page_no": 5,
+   "sort_order": 1,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30411,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30412,
+     "label": "減弱",
+     "value": "減弱",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30413,
+     "label": "消失",
+     "value": "消失",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 30414,
+     "label": "亢進",
+     "value": "亢進",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 3042,
+   "name": "前脛骨筋反射",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "脊髄反射",
+   "page_no": 5,
+   "sort_order": 2,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30421,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30422,
+     "label": "減弱",
+     "value": "減弱",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30423,
+     "label": "消失",
+     "value": "消失",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 30424,
+     "label": "亢進",
+     "value": "亢進",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 3043,
+   "name": "腓腹筋反射",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "脊髄反射",
+   "page_no": 5,
+   "sort_order": 3,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30431,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30432,
+     "label": "減弱",
+     "value": "減弱",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30433,
+     "label": "消失",
+     "value": "消失",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 30434,
+     "label": "亢進",
+     "value": "亢進",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 3044,
+   "name": "屈曲反射（後肢）",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "脊髄反射",
+   "page_no": 5,
+   "sort_order": 4,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30441,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30442,
+     "label": "減弱",
+     "value": "減弱",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30443,
+     "label": "消失",
+     "value": "消失",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 30444,
+     "label": "亢進",
+     "value": "亢進",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 3045,
+   "name": "屈曲反射（前肢）",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "脊髄反射",
+   "page_no": 5,
+   "sort_order": 5,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30451,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30452,
+     "label": "減弱",
+     "value": "減弱",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30453,
+     "label": "消失",
+     "value": "消失",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 30454,
+     "label": "亢進",
+     "value": "亢進",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 3046,
+   "name": "皮筋反射",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "脊髄反射",
+   "page_no": 5,
+   "sort_order": 6,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30461,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30462,
+     "label": "低下部位あり",
+     "value": "低下部位あり",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30463,
+     "label": "消失",
+     "value": "消失",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 3047,
+   "name": "皮筋反射の境界",
+   "answer_type": "text",
+   "required": 0,
+   "group_name": "脊髄反射",
+   "page_no": 5,
+   "sort_order": 7,
+   "placeholder": "例：Th13 以降で消失",
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 3048,
+   "name": "肛門反射・肛門緊張",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "脊髄反射",
+   "page_no": 5,
+   "sort_order": 8,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30481,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30482,
+     "label": "減弱",
+     "value": "減弱",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30483,
+     "label": "消失",
+     "value": "消失",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 30484,
+     "label": "亢進",
+     "value": "亢進",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 3049,
+   "name": "深部痛覚",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "脊髄反射",
+   "page_no": 5,
+   "sort_order": 9,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30491,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30492,
+     "label": "低下",
+     "value": "低下",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30493,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 3051,
+   "name": "眼位・眼球運動",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "脳神経",
+   "page_no": 6,
+   "sort_order": 1,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30511,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30512,
+     "label": "異常",
+     "value": "異常",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 3052,
+   "name": "瞳孔径",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "脳神経",
+   "page_no": 6,
+   "sort_order": 2,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30521,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30522,
+     "label": "散大",
+     "value": "散大",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30523,
+     "label": "縮小",
+     "value": "縮小",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 3053,
+   "name": "対光反射",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "脳神経",
+   "page_no": 6,
+   "sort_order": 3,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30531,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30532,
+     "label": "減弱",
+     "value": "減弱",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30533,
+     "label": "消失",
+     "value": "消失",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 30534,
+     "label": "亢進",
+     "value": "亢進",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 3054,
+   "name": "威嚇瞬目反応",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "脳神経",
+   "page_no": 6,
+   "sort_order": 4,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30541,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30542,
+     "label": "異常",
+     "value": "異常",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 3055,
+   "name": "眼瞼反射",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "脳神経",
+   "page_no": 6,
+   "sort_order": 5,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30551,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30552,
+     "label": "減弱",
+     "value": "減弱",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30553,
+     "label": "消失",
+     "value": "消失",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 30554,
+     "label": "亢進",
+     "value": "亢進",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 3056,
+   "name": "角膜反射",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "脳神経",
+   "page_no": 6,
+   "sort_order": 6,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30561,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30562,
+     "label": "減弱",
+     "value": "減弱",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30563,
+     "label": "消失",
+     "value": "消失",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 30564,
+     "label": "亢進",
+     "value": "亢進",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 3057,
+   "name": "顔面の対称性",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "脳神経",
+   "page_no": 6,
+   "sort_order": 7,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30571,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30572,
+     "label": "異常",
+     "value": "異常",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 3058,
+   "name": "生理的眼振",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "脳神経",
+   "page_no": 6,
+   "sort_order": 8,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30581,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30582,
+     "label": "異常",
+     "value": "異常",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 3059,
+   "name": "病的眼振",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "脳神経",
+   "page_no": 6,
+   "sort_order": 9,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30591,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30592,
+     "label": "水平",
+     "value": "水平",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30593,
+     "label": "垂直",
+     "value": "垂直",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 30594,
+     "label": "回転",
+     "value": "回転",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 3060,
+   "name": "嚥下・舌の動き",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "脳神経",
+   "page_no": 6,
+   "sort_order": 10,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30601,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30602,
+     "label": "異常",
+     "value": "異常",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 3071,
+   "name": "脊椎の触診（疼痛）",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "疼痛・局在",
+   "page_no": 7,
+   "sort_order": 1,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30711,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30712,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 3072,
+   "name": "疼痛部位",
+   "answer_type": "text",
+   "required": 0,
+   "group_name": "疼痛・局在",
+   "page_no": 7,
+   "sort_order": 2,
+   "placeholder": "例：胸腰部",
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 3073,
+   "name": "病変の局在（推定）",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "疼痛・局在",
+   "page_no": 7,
+   "sort_order": 3,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30731,
+     "label": "前脳",
+     "value": "前脳",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30732,
+     "label": "脳幹",
+     "value": "脳幹",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30733,
+     "label": "小脳",
+     "value": "小脳",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 30734,
+     "label": "前庭",
+     "value": "前庭",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 30735,
+     "label": "C1-C5",
+     "value": "C1-C5",
+     "allow_text": 0,
+     "sort_order": 5
+    },
+    {
+     "id": 30736,
+     "label": "C6-T2",
+     "value": "C6-T2",
+     "allow_text": 0,
+     "sort_order": 6
+    },
+    {
+     "id": 30737,
+     "label": "T3-L3",
+     "value": "T3-L3",
+     "allow_text": 0,
+     "sort_order": 7
+    },
+    {
+     "id": 30738,
+     "label": "L4-S3",
+     "value": "L4-S3",
+     "allow_text": 0,
+     "sort_order": 8
+    },
+    {
+     "id": 30739,
+     "label": "末梢神経",
+     "value": "末梢神経",
+     "allow_text": 0,
+     "sort_order": 9
+    },
+    {
+     "id": 30740,
+     "label": "筋",
+     "value": "筋",
+     "allow_text": 0,
+     "sort_order": 10
+    }
+   ]
+  },
+  {
+   "id": 3074,
+   "name": "検査メモ",
+   "answer_type": "text",
+   "required": 0,
+   "group_name": "疼痛・局在",
+   "page_no": 7,
+   "sort_order": 4,
+   "placeholder": "メモ",
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 3075,
+   "name": "次の検査",
+   "answer_type": "check",
+   "required": 0,
+   "group_name": "疼痛・局在",
+   "page_no": 7,
+   "sort_order": 5,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 30751,
+     "label": "X線検査",
+     "value": "X線検査",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 30752,
+     "label": "CT・MRI検査",
+     "value": "CT・MRI検査",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 30753,
+     "label": "脳脊髄液検査",
+     "value": "脳脊髄液検査",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 30754,
+     "label": "血液検査",
+     "value": "血液検査",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 30755,
+     "label": "電気生理検査",
+     "value": "電気生理検査",
+     "allow_text": 0,
+     "sort_order": 5
+    },
+    {
+     "id": 30756,
+     "label": "その他",
+     "value": "その他",
+     "allow_text": 0,
+     "sort_order": 6
+    }
+   ]
+  },
+  {
+   "id": 3076,
+   "name": "鑑別疾患",
+   "answer_type": "text",
+   "required": 0,
+   "group_name": "疼痛・局在",
+   "page_no": 7,
+   "sort_order": 6,
+   "placeholder": "例：胸腰部椎間板疾患",
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  }
+ ]
+}

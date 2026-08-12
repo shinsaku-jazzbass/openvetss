@@ -21,6 +21,7 @@
 | **ネットレジ** | 会計を打ち、診療明細を発行し、日計を CSV・Excel に書き出す | `netregi/netregi.html` |
 | **QRラベル発行** | カルテホルダー用のQRラベルをA4に並べて印刷する | `visit/qrlabel.html` |
 | **問診（整形外科）** | 日本獣医麻酔外科学会 整形外科委員会 ver.1 準拠の97項目 | `ortho/index.html` |
+| **imgEdit** | 動物図13種に所見を描き込む（シェーマ描画） | `schema/index.html` |
 
 それぞれ単独でも動きます。受診ハブから開くと、同じ診察券番号で記録が結びつきます。
 
@@ -50,8 +51,12 @@ Webサーバに置くだけです。PHP もデータベースも要りません�
 │   ├── netregi.html              ネットレジ本体
 │   ├── setup.html                設定ツール
 │   └── guide.html                使い方
-└── ortho/
-    └── index.html                整形外科 検査問診
+├── ortho/
+│   └── index.html                整形外科 検査問診
+└── schema/                       imgEdit（React ビルド済み）
+    ├── index.html
+    ├── assets/
+    └── animal_image/             動物図25点
 ```
 
 ### 3つの約束ごと

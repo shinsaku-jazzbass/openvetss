@@ -1,0 +1,39 @@
+{
+ "schema": "vetss-forms/0.1",
+ "note": "整形外科以外は OpenVetss のひな型です。学会等の公認を受けたものではありません。自院で内容を確認・調整してください。",
+ "default": "ortho",
+ "forms": [
+  {
+   "id": "ortho",
+   "name": "整形外科学的検査カルテ",
+   "file": "ortho_exam_v1.json",
+   "by": "獣医師",
+   "source": "日本獣医麻酔外科学会 整形外科委員会 ver.1 準拠",
+   "count": 97
+  },
+  {
+   "id": "general",
+   "name": "一般身体検査",
+   "file": "general_exam_v1.json",
+   "by": "獣医師",
+   "source": "OpenVetss ひな型",
+   "count": 34
+  },
+  {
+   "id": "neuro",
+   "name": "神経学的検査",
+   "file": "neuro_exam_v1.json",
+   "by": "獣医師",
+   "source": "OpenVetss ひな型",
+   "count": 44
+  },
+  {
+   "id": "owner",
+   "name": "初診時問診（飼主さん記入）",
+   "file": "owner_intake_v1.json",
+   "by": "飼主",
+   "source": "OpenVetss ひな型",
+   "count": 28
+  }
+ ]
+}

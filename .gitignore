@@ -1,6 +1,8 @@
-.DS_Store
+# 病院の実データは絶対に入れないこと
 *.bak
 *~
+.DS_Store
+Thumbs.db
 visit_*.json
 daybook_*.json
 nikkei_*.csv

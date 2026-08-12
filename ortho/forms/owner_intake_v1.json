@@ -1,0 +1,956 @@
+{
+ "name": "初診時問診（飼主さん記入）",
+ "source": "OpenVetss ひな型（自院で調整してください）",
+ "type": 1,
+ "questions": [
+  {
+   "id": 4001,
+   "name": "動物の種類",
+   "answer_type": "radio",
+   "required": 1,
+   "group_name": "はじめに",
+   "page_no": 1,
+   "sort_order": 1,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 40011,
+     "label": "犬",
+     "value": "犬",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 40012,
+     "label": "猫",
+     "value": "猫",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 40013,
+     "label": "うさぎ",
+     "value": "うさぎ",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 40014,
+     "label": "その他",
+     "value": "その他",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 4002,
+   "name": "品種",
+   "answer_type": "text",
+   "required": 0,
+   "group_name": "はじめに",
+   "page_no": 1,
+   "sort_order": 2,
+   "placeholder": "例：トイプードル",
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 4003,
+   "name": "性別",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "はじめに",
+   "page_no": 1,
+   "sort_order": 3,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 40031,
+     "label": "オス",
+     "value": "オス",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 40032,
+     "label": "メス",
+     "value": "メス",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 40033,
+     "label": "オス（去勢済み）",
+     "value": "オス（去勢済み）",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 40034,
+     "label": "メス（不妊済み）",
+     "value": "メス（不妊済み）",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 40035,
+     "label": "わからない",
+     "value": "わからない",
+     "allow_text": 0,
+     "sort_order": 5
+    }
+   ]
+  },
+  {
+   "id": 4004,
+   "name": "生まれた年（西暦）",
+   "answer_type": "number",
+   "required": 0,
+   "group_name": "はじめに",
+   "page_no": 1,
+   "sort_order": 4,
+   "placeholder": "2022",
+   "unit": "年",
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 4005,
+   "name": "当院は初めてですか",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "はじめに",
+   "page_no": 1,
+   "sort_order": 5,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 40051,
+     "label": "はじめて",
+     "value": "はじめて",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 40052,
+     "label": "2回目以降",
+     "value": "2回目以降",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 4011,
+   "name": "今日いちばん気になること",
+   "answer_type": "text",
+   "required": 0,
+   "group_name": "今日のこと",
+   "page_no": 2,
+   "sort_order": 1,
+   "placeholder": "例：昨日から食欲がない",
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 4012,
+   "name": "いつからですか",
+   "answer_type": "radio",
+   "required": 1,
+   "group_name": "今日のこと",
+   "page_no": 2,
+   "sort_order": 2,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 40121,
+     "label": "今日",
+     "value": "今日",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 40122,
+     "label": "昨日",
+     "value": "昨日",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 40123,
+     "label": "2〜3日前",
+     "value": "2〜3日前",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 40124,
+     "label": "1週間ほど前",
+     "value": "1週間ほど前",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 40125,
+     "label": "2週間以上前",
+     "value": "2週間以上前",
+     "allow_text": 0,
+     "sort_order": 5
+    },
+    {
+     "id": 40126,
+     "label": "わからない",
+     "value": "わからない",
+     "allow_text": 0,
+     "sort_order": 6
+    }
+   ]
+  },
+  {
+   "id": 4013,
+   "name": "だんだん悪くなっていますか",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "今日のこと",
+   "page_no": 2,
+   "sort_order": 3,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 40131,
+     "label": "悪くなっている",
+     "value": "悪くなっている",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 40132,
+     "label": "変わらない",
+     "value": "変わらない",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 40133,
+     "label": "よくなってきた",
+     "value": "よくなってきた",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 40134,
+     "label": "波がある",
+     "value": "波がある",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 4014,
+   "name": "食欲",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "今日のこと",
+   "page_no": 2,
+   "sort_order": 4,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 40141,
+     "label": "いつもどおり",
+     "value": "いつもどおり",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 40142,
+     "label": "少し落ちた",
+     "value": "少し落ちた",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 40143,
+     "label": "ほとんど食べない",
+     "value": "ほとんど食べない",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 40144,
+     "label": "増えた",
+     "value": "増えた",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 4015,
+   "name": "水を飲む量",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "今日のこと",
+   "page_no": 2,
+   "sort_order": 5,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 40151,
+     "label": "いつもどおり",
+     "value": "いつもどおり",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 40152,
+     "label": "減った",
+     "value": "減った",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 40153,
+     "label": "増えた",
+     "value": "増えた",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 40154,
+     "label": "わからない",
+     "value": "わからない",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 4016,
+   "name": "元気",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "今日のこと",
+   "page_no": 2,
+   "sort_order": 6,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 40161,
+     "label": "いつもどおり",
+     "value": "いつもどおり",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 40162,
+     "label": "少しない",
+     "value": "少しない",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 40163,
+     "label": "ぐったりしている",
+     "value": "ぐったりしている",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 4017,
+   "name": "気になる様子",
+   "answer_type": "check",
+   "required": 0,
+   "group_name": "今日のこと",
+   "page_no": 2,
+   "sort_order": 7,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 40171,
+     "label": "吐いた",
+     "value": "吐いた",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 40172,
+     "label": "下痢",
+     "value": "下痢",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 40173,
+     "label": "便が出ない",
+     "value": "便が出ない",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 40174,
+     "label": "咳",
+     "value": "咳",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 40175,
+     "label": "くしゃみ",
+     "value": "くしゃみ",
+     "allow_text": 0,
+     "sort_order": 5
+    },
+    {
+     "id": 40176,
+     "label": "呼吸が速い",
+     "value": "呼吸が速い",
+     "allow_text": 0,
+     "sort_order": 6
+    },
+    {
+     "id": 40177,
+     "label": "ふらつく",
+     "value": "ふらつく",
+     "allow_text": 0,
+     "sort_order": 7
+    },
+    {
+     "id": 40178,
+     "label": "足を引きずる",
+     "value": "足を引きずる",
+     "allow_text": 0,
+     "sort_order": 8
+    },
+    {
+     "id": 40179,
+     "label": "かゆがる",
+     "value": "かゆがる",
+     "allow_text": 0,
+     "sort_order": 9
+    },
+    {
+     "id": 40180,
+     "label": "目やに",
+     "value": "目やに",
+     "allow_text": 0,
+     "sort_order": 10
+    },
+    {
+     "id": 40181,
+     "label": "耳を振る",
+     "value": "耳を振る",
+     "allow_text": 0,
+     "sort_order": 11
+    },
+    {
+     "id": 40182,
+     "label": "おしっこの様子がおかしい",
+     "value": "おしっこの様子がおかしい",
+     "allow_text": 0,
+     "sort_order": 12
+    },
+    {
+     "id": 40183,
+     "label": "震える",
+     "value": "震える",
+     "allow_text": 0,
+     "sort_order": 13
+    },
+    {
+     "id": 40184,
+     "label": "その他",
+     "value": "その他",
+     "allow_text": 0,
+     "sort_order": 14
+    }
+   ]
+  },
+  {
+   "id": 4018,
+   "name": "体重の変化",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "今日のこと",
+   "page_no": 2,
+   "sort_order": 8,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 140181,
+     "label": "変わらない",
+     "value": "変わらない",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 140182,
+     "label": "減った",
+     "value": "減った",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 140183,
+     "label": "増えた",
+     "value": "増えた",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 140184,
+     "label": "わからない",
+     "value": "わからない",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 4021,
+   "name": "飲んでいる薬・サプリメント",
+   "answer_type": "text",
+   "required": 0,
+   "group_name": "これまでのこと",
+   "page_no": 3,
+   "sort_order": 1,
+   "placeholder": "お薬の名前がわかれば",
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 4022,
+   "name": "これまでの病気・手術",
+   "answer_type": "text",
+   "required": 0,
+   "group_name": "これまでのこと",
+   "page_no": 3,
+   "sort_order": 2,
+   "placeholder": "例：3年前に避妊手術",
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 4023,
+   "name": "アレルギー・体質",
+   "answer_type": "text",
+   "required": 0,
+   "group_name": "これまでのこと",
+   "page_no": 3,
+   "sort_order": 3,
+   "placeholder": "例：鶏肉で皮膚が赤くなる",
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 4024,
+   "name": "混合ワクチン",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "これまでのこと",
+   "page_no": 3,
+   "sort_order": 4,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 40241,
+     "label": "1年以内に接種",
+     "value": "1年以内に接種",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 40242,
+     "label": "1年以上前",
+     "value": "1年以上前",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 40243,
+     "label": "していない",
+     "value": "していない",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 40244,
+     "label": "わからない",
+     "value": "わからない",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 4025,
+   "name": "狂犬病予防注射（犬）",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "これまでのこと",
+   "page_no": 3,
+   "sort_order": 5,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 40251,
+     "label": "今年済み",
+     "value": "今年済み",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 40252,
+     "label": "していない",
+     "value": "していない",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 40253,
+     "label": "わからない",
+     "value": "わからない",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 40254,
+     "label": "猫・その他",
+     "value": "猫・その他",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 4026,
+   "name": "フィラリア予防",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "これまでのこと",
+   "page_no": 3,
+   "sort_order": 6,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 40261,
+     "label": "している",
+     "value": "している",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 40262,
+     "label": "していない",
+     "value": "していない",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 40263,
+     "label": "わからない",
+     "value": "わからない",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 4027,
+   "name": "ノミ・ダニ予防",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "これまでのこと",
+   "page_no": 3,
+   "sort_order": 7,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 40271,
+     "label": "している",
+     "value": "している",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 40272,
+     "label": "していない",
+     "value": "していない",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 40273,
+     "label": "わからない",
+     "value": "わからない",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 4031,
+   "name": "ふだんの食事",
+   "answer_type": "text",
+   "required": 0,
+   "group_name": "ふだんの生活",
+   "page_no": 4,
+   "sort_order": 1,
+   "placeholder": "例：ドライフード（子犬用）",
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 4032,
+   "name": "おやつ・人の食べ物",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "ふだんの生活",
+   "page_no": 4,
+   "sort_order": 2,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 40321,
+     "label": "与えていない",
+     "value": "与えていない",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 40322,
+     "label": "少し与える",
+     "value": "少し与える",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 40323,
+     "label": "よく与える",
+     "value": "よく与える",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 4033,
+   "name": "飼育環境",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "ふだんの生活",
+   "page_no": 4,
+   "sort_order": 3,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 40331,
+     "label": "室内のみ",
+     "value": "室内のみ",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 40332,
+     "label": "室内と屋外",
+     "value": "室内と屋外",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 40333,
+     "label": "屋外のみ",
+     "value": "屋外のみ",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 4034,
+   "name": "同居している動物",
+   "answer_type": "text",
+   "required": 0,
+   "group_name": "ふだんの生活",
+   "page_no": 4,
+   "sort_order": 4,
+   "placeholder": "例：猫1匹",
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 4035,
+   "name": "散歩（犬）",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "ふだんの生活",
+   "page_no": 4,
+   "sort_order": 5,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 40351,
+     "label": "1日1回",
+     "value": "1日1回",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 40352,
+     "label": "1日2回以上",
+     "value": "1日2回以上",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 40353,
+     "label": "していない",
+     "value": "していない",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 40354,
+     "label": "猫・その他",
+     "value": "猫・その他",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 4036,
+   "name": "ペット保険",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "ふだんの生活",
+   "page_no": 4,
+   "sort_order": 6,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 40361,
+     "label": "加入している",
+     "value": "加入している",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 40362,
+     "label": "加入していない",
+     "value": "加入していない",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 40363,
+     "label": "わからない",
+     "value": "わからない",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 4037,
+   "name": "保険の会社名",
+   "answer_type": "text",
+   "required": 0,
+   "group_name": "ふだんの生活",
+   "page_no": 4,
+   "sort_order": 7,
+   "placeholder": "加入されている場合",
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 4038,
+   "name": "そのほか伝えておきたいこと",
+   "answer_type": "text",
+   "required": 0,
+   "group_name": "ふだんの生活",
+   "page_no": 4,
+   "sort_order": 8,
+   "placeholder": "ご自由にお書きください",
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  }
+ ]
+}

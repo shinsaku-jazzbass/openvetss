@@ -143,6 +143,13 @@
   <div class="loadrow">
     <!-- <button class="btn ghost" onclick="document.getElementById('jsonFile').click()">定義JSONを差し替え</button> -->
     <input type="file" id="jsonFile" accept=".json,application/json" style="display:none">
+    <label id="formPick" style="display:none; font-size:.82rem; align-items:center; gap:6px;">
+      検査票
+      <select id="formSel" style="font-size:.9rem; padding:5px 8px; border-radius:6px;
+              border:1px solid rgba(255,255,255,.35); background:rgba(255,255,255,.12); color:#fff;"></select>
+      <button class="btn ghost" id="formDefault" title="この検査票を次回からの既定にします"
+              style="font-size:.78rem; padding:4px 10px;">既定にする</button>
+    </label>
     <span id="loadState" style="font-size:.78rem; opacity:.8;"></span>
     <button class="btn primary" id="hubBtn" style="display:none" onclick="backToHub()">ハブへ戻る</button>
     <a class="btn primary" href="../index.html" target="blank">戻る</a>
@@ -713,28 +720,96 @@ if(VISIT){
 applyMeta();
 document.getElementById('loadState').textContent = '内蔵定義: ' + DEF.questions.length + '問';
 
-/* ---------- ?def=<URL> : サイト設置型の外部定義読込(v0.4) ----------
-   例: /forms/?def=/forms/defs/urine.json
-   同一オリジン(またはCORS許可済み)のJSONを取得して定義を差し替える。
-   失敗時は内蔵定義のまま動作を続ける(壊れない)。file://では使えません */
-(function(){
-  const defUrl = PARAMS.get('def');
-  if(!defUrl) return;
-  document.getElementById('loadState').textContent = '外部定義を読込中…';
-  fetch(defUrl, {cache:'no-store'})
+/* ============================================================
+   検査票の切り替え（v0.7）
+
+   forms/forms.json に検査票の一覧を置いておくと、ヘッダに選択欄が出ます。
+   選んだ検査票は「既定にする」でこの端末に覚えさせられます。
+   一覧が無い環境では、内蔵の整形外科カルテがそのまま使われます。
+
+   優先順位：?def=<URL> → ?form=<id> → この端末の既定 → forms.json の default
+   ============================================================ */
+const FORMS_URL = './forms/forms.json';
+const DEF_KEY   = 'vetss_form_default';
+let CATALOG = null;
+
+function applyDef(d, label){
+  if(!d || !d.questions || !d.questions.length) throw new Error('questions がありません');
+  DEF = d;
+  for(const k in S) delete S[k];
+  build();
+  document.getElementById('loadState').textContent =
+    (label || d.name) + '：' + d.questions.length + '問';
+}
+function loadDefUrl(url, label){
+  document.getElementById('loadState').textContent = '読込中…';
+  return fetch(url, {cache:'no-store'})
     .then(r=>{ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-    .then(d=>{
-      if(!d.questions || !d.questions.length) throw new Error('questions がありません');
-      DEF = d;
-      for(const k in S) delete S[k];
-      build();
-      document.getElementById('loadState').textContent = '外部定義: ' + d.name + '(' + d.questions.length + '問)';
-      toast('定義を読み込みました: ' + d.name);
-    })
+    .then(d=>{ applyDef(d, label); toast('検査票を読み込みました：' + (d.name||'')); return d; })
     .catch(e=>{
-      document.getElementById('loadState').textContent = '内蔵定義: ' + DEF.questions.length + '問(外部定義の読込失敗)';
-      toast('外部定義の読込に失敗: ' + e.message);
+      document.getElementById('loadState').textContent =
+        '内蔵：' + DEF.questions.length + '問（読込失敗）';
+      toast('検査票を読み込めませんでした：' + e.message);
+      throw e;
     });
+}
+function formById(id){
+  if(!CATALOG) return null;
+  return (CATALOG.forms || []).find(f => f.id === id) || null;
+}
+function selectForm(id, remember){
+  const f = formById(id);
+  if(!f) return;
+  document.getElementById('formSel').value = id;
+  if(remember){ try{ localStorage.setItem(DEF_KEY, id); }catch(e){} }
+  loadDefUrl('./forms/' + f.file, f.name).catch(()=>{});
+}
+
+(async function boot(){
+  const state = document.getElementById('loadState');
+
+  /* ① ?def= が最優先（従来どおり任意のURLを読めます） */
+  const defUrl = PARAMS.get('def');
+  if(defUrl){ loadDefUrl(defUrl).catch(()=>{}); return; }
+
+  /* ② 一覧を読む。無ければ内蔵のまま（従来と同じ動作） */
+  try{
+    const r = await fetch(FORMS_URL, {cache:'no-store'});
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    CATALOG = await r.json();
+  }catch(e){
+    state.textContent = '内蔵：' + DEF.questions.length + '問';
+    return;
+  }
+  const list = CATALOG.forms || [];
+  if(!list.length){ state.textContent = '内蔵：' + DEF.questions.length + '問'; return; }
+
+  const sel = document.getElementById('formSel');
+  sel.innerHTML = list.map(f =>
+    '<option value="' + f.id + '">' + f.name +
+    (f.by ? '（' + f.by + '）' : '') + '</option>').join('');
+  document.getElementById('formPick').style.display = 'inline-flex';
+
+  sel.onchange = ()=> selectForm(sel.value, false);
+  document.getElementById('formDefault').onclick = ()=>{
+    try{ localStorage.setItem(DEF_KEY, sel.value); }catch(e){}
+    const f = formById(sel.value);
+    toast('次回からは「' + (f ? f.name : sel.value) + '」で開きます');
+  };
+
+  /* ③ ?form=<id> → ④ 端末の既定 → ⑤ 一覧の default */
+  let saved = null;
+  try{ saved = localStorage.getItem(DEF_KEY); }catch(e){}
+  const want = PARAMS.get('form') || saved || CATALOG.default || list[0].id;
+  const f = formById(want) || list[0];
+  sel.value = f.id;
+
+  /* 内蔵定義と同じものなら、読み直さずそのまま使います */
+  if(f.name === DEF.name){
+    state.textContent = f.name + '：' + DEF.questions.length + '問';
+  }else{
+    loadDefUrl('./forms/' + f.file, f.name).catch(()=>{});
+  }
 })();
 </script>
 </body>

@@ -1,0 +1,1160 @@
+{
+ "name": "一般身体検査",
+ "source": "OpenVetss ひな型（学会等の公認を受けたものではありません。自院で調整してください）",
+ "type": 1,
+ "questions": [
+  {
+   "id": 2001,
+   "name": "動物種",
+   "answer_type": "radio",
+   "required": 1,
+   "group_name": "基本",
+   "page_no": 1,
+   "sort_order": 1,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 20011,
+     "label": "犬",
+     "value": "犬",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 20012,
+     "label": "猫",
+     "value": "猫",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 20013,
+     "label": "その他",
+     "value": "その他",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 2002,
+   "name": "体重",
+   "answer_type": "number",
+   "required": 0,
+   "group_name": "基本",
+   "page_no": 1,
+   "sort_order": 2,
+   "placeholder": "0.0",
+   "unit": "kg",
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 2003,
+   "name": "体温",
+   "answer_type": "number",
+   "required": 0,
+   "group_name": "基本",
+   "page_no": 1,
+   "sort_order": 3,
+   "placeholder": "38.5",
+   "unit": "℃",
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 2004,
+   "name": "心拍数",
+   "answer_type": "number",
+   "required": 0,
+   "group_name": "基本",
+   "page_no": 1,
+   "sort_order": 4,
+   "placeholder": "120",
+   "unit": "回/分",
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 2005,
+   "name": "呼吸数",
+   "answer_type": "number",
+   "required": 0,
+   "group_name": "基本",
+   "page_no": 1,
+   "sort_order": 5,
+   "placeholder": "24",
+   "unit": "回/分",
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 2006,
+   "name": "BCS",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "基本",
+   "page_no": 1,
+   "sort_order": 6,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 20061,
+     "label": "1",
+     "value": "1",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 20062,
+     "label": "2",
+     "value": "2",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 20063,
+     "label": "3",
+     "value": "3",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 20064,
+     "label": "4",
+     "value": "4",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 20065,
+     "label": "5",
+     "value": "5",
+     "allow_text": 0,
+     "sort_order": 5
+    }
+   ]
+  },
+  {
+   "id": 2007,
+   "name": "来院理由",
+   "answer_type": "text",
+   "required": 0,
+   "group_name": "基本",
+   "page_no": 1,
+   "sort_order": 7,
+   "placeholder": "例：食欲低下",
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 2011,
+   "name": "意識・活動性",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "全身",
+   "page_no": 2,
+   "sort_order": 1,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 20111,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 20112,
+     "label": "沈鬱",
+     "value": "沈鬱",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 20113,
+     "label": "興奮",
+     "value": "興奮",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 20114,
+     "label": "虚脱",
+     "value": "虚脱",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 2012,
+   "name": "体格・姿勢",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "全身",
+   "page_no": 2,
+   "sort_order": 2,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 20121,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 20122,
+     "label": "異常",
+     "value": "異常",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 2013,
+   "name": "歩様",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "全身",
+   "page_no": 2,
+   "sort_order": 3,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 20131,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 20132,
+     "label": "異常",
+     "value": "異常",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 2014,
+   "name": "脱水の程度",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "全身",
+   "page_no": 2,
+   "sort_order": 4,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 20141,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 20142,
+     "label": "軽度",
+     "value": "軽度",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 20143,
+     "label": "中等度",
+     "value": "中等度",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 20144,
+     "label": "重度",
+     "value": "重度",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 2015,
+   "name": "可視粘膜の色",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "全身",
+   "page_no": 2,
+   "sort_order": 5,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 20151,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 20152,
+     "label": "蒼白",
+     "value": "蒼白",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 20153,
+     "label": "充血",
+     "value": "充血",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 20154,
+     "label": "黄染",
+     "value": "黄染",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 20155,
+     "label": "チアノーゼ",
+     "value": "チアノーゼ",
+     "allow_text": 0,
+     "sort_order": 5
+    }
+   ]
+  },
+  {
+   "id": 2016,
+   "name": "CRT（毛細血管再充満時間）",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "全身",
+   "page_no": 2,
+   "sort_order": 6,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 20161,
+     "label": "2秒未満",
+     "value": "2秒未満",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 20162,
+     "label": "2秒以上",
+     "value": "2秒以上",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 2021,
+   "name": "眼",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "頭部",
+   "page_no": 3,
+   "sort_order": 1,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 20211,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 20212,
+     "label": "異常",
+     "value": "異常",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 2022,
+   "name": "耳",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "頭部",
+   "page_no": 3,
+   "sort_order": 2,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 20221,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 20222,
+     "label": "異常",
+     "value": "異常",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 2023,
+   "name": "鼻",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "頭部",
+   "page_no": 3,
+   "sort_order": 3,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 20231,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 20232,
+     "label": "異常",
+     "value": "異常",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 2024,
+   "name": "口腔・歯",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "頭部",
+   "page_no": 3,
+   "sort_order": 4,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 20241,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 20242,
+     "label": "歯石",
+     "value": "歯石",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 20243,
+     "label": "歯肉炎",
+     "value": "歯肉炎",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 20244,
+     "label": "動揺歯",
+     "value": "動揺歯",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 20245,
+     "label": "口臭",
+     "value": "口臭",
+     "allow_text": 0,
+     "sort_order": 5
+    },
+    {
+     "id": 20246,
+     "label": "その他",
+     "value": "その他",
+     "allow_text": 0,
+     "sort_order": 6
+    }
+   ]
+  },
+  {
+   "id": 2025,
+   "name": "下顎リンパ節",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "頭部",
+   "page_no": 3,
+   "sort_order": 5,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 20251,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 20252,
+     "label": "腫大",
+     "value": "腫大",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 2031,
+   "name": "心音",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "胸部",
+   "page_no": 4,
+   "sort_order": 1,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 20311,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 20312,
+     "label": "心雑音",
+     "value": "心雑音",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 20313,
+     "label": "不整",
+     "value": "不整",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 20314,
+     "label": "減弱",
+     "value": "減弱",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 2032,
+   "name": "心雑音の程度",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "胸部",
+   "page_no": 4,
+   "sort_order": 2,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 20321,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 20322,
+     "label": "Ⅰ",
+     "value": "Ⅰ",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 20323,
+     "label": "Ⅱ",
+     "value": "Ⅱ",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 20324,
+     "label": "Ⅲ",
+     "value": "Ⅲ",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 20325,
+     "label": "Ⅳ",
+     "value": "Ⅳ",
+     "allow_text": 0,
+     "sort_order": 5
+    },
+    {
+     "id": 20326,
+     "label": "Ⅴ",
+     "value": "Ⅴ",
+     "allow_text": 0,
+     "sort_order": 6
+    },
+    {
+     "id": 20327,
+     "label": "Ⅵ",
+     "value": "Ⅵ",
+     "allow_text": 0,
+     "sort_order": 7
+    }
+   ]
+  },
+  {
+   "id": 2033,
+   "name": "肺音",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "胸部",
+   "page_no": 4,
+   "sort_order": 3,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 20331,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 20332,
+     "label": "減弱",
+     "value": "減弱",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 20333,
+     "label": "ラ音",
+     "value": "ラ音",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 20334,
+     "label": "湿性",
+     "value": "湿性",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 20335,
+     "label": "乾性",
+     "value": "乾性",
+     "allow_text": 0,
+     "sort_order": 5
+    }
+   ]
+  },
+  {
+   "id": 2034,
+   "name": "気管の触診（咳の誘発）",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "胸部",
+   "page_no": 4,
+   "sort_order": 4,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 20341,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 20342,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 2041,
+   "name": "腹部触診",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "腹部",
+   "page_no": 5,
+   "sort_order": 1,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 20411,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 20412,
+     "label": "緊張",
+     "value": "緊張",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 20413,
+     "label": "疼痛",
+     "value": "疼痛",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 20414,
+     "label": "腫瘤",
+     "value": "腫瘤",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 20415,
+     "label": "膨満",
+     "value": "膨満",
+     "allow_text": 0,
+     "sort_order": 5
+    }
+   ]
+  },
+  {
+   "id": 2042,
+   "name": "肝臓の触知",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "腹部",
+   "page_no": 5,
+   "sort_order": 2,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 20421,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 20422,
+     "label": "腫大",
+     "value": "腫大",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 2043,
+   "name": "膀胱",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "腹部",
+   "page_no": 5,
+   "sort_order": 3,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 20431,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 20432,
+     "label": "充満",
+     "value": "充満",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 20433,
+     "label": "硬結",
+     "value": "硬結",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 20434,
+     "label": "疼痛",
+     "value": "疼痛",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 2044,
+   "name": "腸内容",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "腹部",
+   "page_no": 5,
+   "sort_order": 4,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 20441,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 20442,
+     "label": "ガス",
+     "value": "ガス",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 20443,
+     "label": "硬結",
+     "value": "硬結",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 20444,
+     "label": "液状",
+     "value": "液状",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 2045,
+   "name": "体表リンパ節",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "腹部",
+   "page_no": 5,
+   "sort_order": 5,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 20451,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 20452,
+     "label": "腫大（部位を記入）",
+     "value": "腫大（部位を記入）",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 2046,
+   "name": "リンパ節腫大の部位",
+   "answer_type": "text",
+   "required": 0,
+   "group_name": "腹部",
+   "page_no": 5,
+   "sort_order": 6,
+   "placeholder": "例：右膝窩",
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 2051,
+   "name": "皮膚・被毛",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "皮膚・その他",
+   "page_no": 6,
+   "sort_order": 1,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 20511,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 20512,
+     "label": "脱毛",
+     "value": "脱毛",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 20513,
+     "label": "痂皮",
+     "value": "痂皮",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 20514,
+     "label": "紅斑",
+     "value": "紅斑",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 20515,
+     "label": "色素沈着",
+     "value": "色素沈着",
+     "allow_text": 0,
+     "sort_order": 5
+    },
+    {
+     "id": 20516,
+     "label": "外部寄生虫",
+     "value": "外部寄生虫",
+     "allow_text": 0,
+     "sort_order": 6
+    }
+   ]
+  },
+  {
+   "id": 2052,
+   "name": "皮膚病変の部位",
+   "answer_type": "text",
+   "required": 0,
+   "group_name": "皮膚・その他",
+   "page_no": 6,
+   "sort_order": 2,
+   "placeholder": "例：背部正中",
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 2053,
+   "name": "肛門周囲・肛門嚢",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "皮膚・その他",
+   "page_no": 6,
+   "sort_order": 3,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 20531,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 20532,
+     "label": "異常",
+     "value": "異常",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 2054,
+   "name": "外部生殖器",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "皮膚・その他",
+   "page_no": 6,
+   "sort_order": 4,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 20541,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 20542,
+     "label": "異常",
+     "value": "異常",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 2055,
+   "name": "所見メモ",
+   "answer_type": "text",
+   "required": 0,
+   "group_name": "皮膚・その他",
+   "page_no": 6,
+   "sort_order": 5,
+   "placeholder": "メモ",
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 2056,
+   "name": "次の検査",
+   "answer_type": "check",
+   "required": 0,
+   "group_name": "皮膚・その他",
+   "page_no": 6,
+   "sort_order": 6,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 20561,
+     "label": "血液検査",
+     "value": "血液検査",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 20562,
+     "label": "X線検査",
+     "value": "X線検査",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 20563,
+     "label": "超音波検査",
+     "value": "超音波検査",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 20564,
+     "label": "尿検査",
+     "value": "尿検査",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 20565,
+     "label": "糞便検査",
+     "value": "糞便検査",
+     "allow_text": 0,
+     "sort_order": 5
+    },
+    {
+     "id": 20566,
+     "label": "細胞診",
+     "value": "細胞診",
+     "allow_text": 0,
+     "sort_order": 6
+    },
+    {
+     "id": 20567,
+     "label": "その他",
+     "value": "その他",
+     "allow_text": 0,
+     "sort_order": 7
+    }
+   ]
+  }
+ ]
+}

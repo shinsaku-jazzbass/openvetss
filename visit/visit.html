@@ -63,7 +63,17 @@ label.f input.mono{font-family:var(--mono)}
 .st-hd{display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap}
 .st-hd .no{font-family:var(--mono);font-size:11px;color:#fff;width:1.7em;height:1.7em;
   border-radius:50%;display:grid;place-content:center;font-weight:600}
-.stage.q .no{background:var(--Q)} .stage.k .no{background:var(--K)} .stage.r .no{background:var(--R)}
+.stage.q .no{background:var(--Q)} .stage.k .no{background:var(--K)}
+.stage.i .no{background:var(--L)} .stage.r .no{background:var(--R)}
+.st-pick{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:11px;
+  background:var(--paper2);border-radius:5px;padding:9px 12px}
+.st-pick label{font-size:12.5px;color:var(--ink2);display:flex;gap:7px;align-items:center}
+.st-pick select{padding:7px 9px;border:1px solid var(--rule);border-radius:5px;
+  background:#fff;font-size:14px;max-width:22em}
+.st-pick .hint{font-size:11.5px;color:var(--ink3)}
+.st-thumbs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:11px}
+.st-thumbs img{width:96px;height:64px;object-fit:contain;background:#fff;
+  border:1px solid var(--rule);border-radius:4px}
 .st-hd h2{font-family:var(--mincho);font-size:17px;font-weight:600}
 .st-hd .badge{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:.06em;
   border:1px solid var(--rule);border-radius:12px;padding:2px 11px;color:var(--ink3);white-space:nowrap}
@@ -174,6 +184,10 @@ label.f input.mono{font-family:var(--mono)}
 /* 記載が短いときは下に余白が出ます。ここから下は切り取って構いません */
 #print .pk-cut{margin-top:6mm;border-top:1px dashed #999;font-size:6.5pt;color:#999;
   padding-top:1mm;text-align:right;letter-spacing:.1em}
+#print .pk-img{display:grid;grid-template-columns:repeat(2,1fr);gap:4mm;margin:2mm 0 4mm}
+#print .pk-img figure{margin:0;break-inside:avoid}
+#print .pk-img img{width:100%;border:1px solid #999;display:block}
+#print .pk-img figcaption{font-size:7pt;color:#333;margin-top:1mm}
 #print .pk-ft .sign{border-bottom:1px solid #000;min-width:44mm;text-align:right}
 
 #print .pgbrk{break-after:page;page-break-after:always}
@@ -214,10 +228,15 @@ label.f input.mono{font-family:var(--mono)}
 
   <!-- 1 問診 -->
   <div class="stage q" id="stQ">
-    <div class="st-hd"><span class="no">1</span><h2>問診（整形外科 検査問診）</h2>
+    <div class="st-hd"><span class="no">1</span><h2>検査票</h2>
       <span class="badge" id="bdQ">未</span></div>
-    <p class="st-desc">待合でタブレットを渡し、飼主さんに書いていただきます。書かれた内容は、そのまま主訴（S）や所見（O）の下書きになります。<br>
-      問診ツールからハブへの自動の書き戻しはまだありません。書き終えたら<b>ファイルから取り込む</b>でこの受診に付けてください。</p>
+    <p class="st-desc">整形外科・一般身体・神経学的検査など、<b>獣医師が視診・問診・触診でチェックする票</b>です。
+      記入した内容は、そのまま主訴（S）や所見（O）の下書きになります。<br>
+      飼主さんに書いていただく「初診時問診」も選べます。その場合はタブレットを待合でお渡しください。</p>
+    <div class="st-pick" id="pickQ" hidden>
+      <label>検査票 <select id="selQ"></select></label>
+      <span class="hint" id="hintQ"></span>
+    </div>
     <div class="st-sum" id="smQ" hidden></div>
     <div class="st-act">
       <button class="btn" id="opQ">問診を開く</button>
@@ -237,9 +256,22 @@ label.f input.mono{font-family:var(--mono)}
     </div>
   </div>
 
-  <!-- 3 会計 -->
+  <!-- 3 画像・シェーマ -->
+  <div class="stage i" id="stI">
+    <div class="st-hd"><span class="no">3</span><h2>画像・シェーマ</h2>
+      <span class="badge" id="bdI">未</span></div>
+    <p class="st-desc">動物図に所見を描き込みます。写真を読み込んで、その上に印を付けることもできます。描いたものは診療録に印刷されます。</p>
+    <div class="st-sum" id="smI" hidden></div>
+    <div class="st-act">
+      <button class="btn" id="opI">シェーマを描く</button>
+      <label class="btn sm">画像ファイルを取り込む<input type="file" id="fiI" accept="image/*" multiple hidden></label>
+      <button class="btn sm" id="clI" hidden>画像をすべて外す</button>
+    </div>
+  </div>
+
+  <!-- 4 会計 -->
   <div class="stage r" id="stR">
-    <div class="st-hd"><span class="no">3</span><h2>会計</h2>
+    <div class="st-hd"><span class="no">4</span><h2>会計</h2>
       <span class="badge" id="bdR">未</span></div>
     <p class="st-desc">受付で単価と品名を打ち、明細を発行します。そのまま飼主さんに画面を向けて確認していただけます。</p>
     <div class="st-sum" id="smR" hidden></div>
@@ -317,7 +349,8 @@ const TOOLS = {
      飼主さん向けPWA（../an_pwa/）に変えることもできますが、そちらは病院サーバへ
      通信して保存する仕組みなので、1台で完結させたい場合は既定のままにしてください。 */
   Q: "../ortho/",
-  K: "../karte/karte.html",           /* カルテ記入 */
+  K: "../karte/karte.html",
+  I: "../schema/",      /* imgEdit（シェーマ描画）。院内版の /imgedit/ と分けています */           /* カルテ記入 */
   R: "../netregi/netregi.html"        /* ネットレジ */
 };
 
@@ -416,6 +449,7 @@ function draw(){
 
   mark("Q", V.enquete, sumQ);
   mark("K", V.karte,   sumK);
+  markImages();
   mark("R", V.receipt, sumR);
 
   let msg = "";
@@ -428,7 +462,7 @@ function draw(){
       'このまま続けると '+esc(V.date)+' の記録として保存されます。</div>';
   }
   $("warn").innerHTML = msg;
-  ["opQ","opK","opR","bOut"].forEach(i=> V.karteId ? $(i).removeAttribute("disabled") : $(i).setAttribute("disabled",""));
+  ["opQ","opK","opI","opR","bOut"].forEach(i=> V.karteId ? $(i).removeAttribute("disabled") : $(i).setAttribute("disabled",""));
 }
 function mark(k, data, fn){
   const st = $("st"+k), bd = $("bd"+k), sm = $("sm"+k);
@@ -440,9 +474,81 @@ function mark(k, data, fn){
     sm.hidden = true; sm.innerHTML = "";
   }
 }
+/* 画像の段。枚数とサムネイルを出します */
+function markImages(){
+  const imgs = Array.isArray(V.images) ? V.images : [];
+  const st=$("stI"), bd=$("bdI"), sm=$("smI");
+  $("clI").hidden = !imgs.length;
+  if(!imgs.length){
+    st.classList.remove("done"); bd.textContent="未"; bd.classList.remove("ok");
+    sm.hidden = true; sm.innerHTML=""; return;
+  }
+  st.classList.add("done"); bd.textContent="済"; bd.classList.add("ok");
+  sm.hidden = false;
+  sm.innerHTML = '<div class="st-thumbs">'+
+    imgs.slice(0,8).map((x,i)=>'<img src="'+x.dataUrl+'" alt="" title="'+
+      esc((x.title||x.name||"")+" "+String(x.recordedAt||"").slice(11,16))+'">').join("")+
+    '</div>'+
+    '<b>'+imgs.length+'</b> 枚'+
+    (imgs.length>8 ? '（先頭8枚を表示）' : '')+
+    '　'+esc(imgs.map(x=>x.title||x.name||"").filter(Boolean).slice(0,4).join("／"));
+}
+$("clI").onclick = async ()=>{
+  const n = (V.images||[]).length;
+  if(!n) return;
+  if(!confirm(n+" 枚の画像をこの受診から外します。よろしいですか？")) return;
+  V.images = [];
+  await save(); draw();
+  toast("外しました");
+};
+/* 画像ファイルの取り込み（写真・スキャンした書類など） */
+$("fiI").onchange = async e=>{
+  const files=[...e.target.files]; if(!files.length) return;
+  if(!V.karteId){ toast("先に診察券IDを入れてください"); e.target.value=""; return; }
+  let n=0;
+  for(const f of files){
+    try{
+      const d = await shrink(f, 1600, 0.85);
+      if(!Array.isArray(V.images)) V.images=[];
+      V.images.push({ schema:"vetss-image/0.1", kind:"photo", name:f.name,
+                      w:d.w, h:d.h, recordedAt:isoLocal(new Date()), dataUrl:d.url });
+      n++;
+    }catch(err){ toast(f.name+" を読めませんでした"); }
+  }
+  await save(); draw();
+  toast(n+" 枚を取り込みました");
+  e.target.value="";
+};
+/* 端末に持つのは表示用の縮小版。原本は書き出したファイルとお考えください */
+function shrink(file, maxSide, quality){
+  return new Promise((res,rej)=>{
+    const fr = new FileReader();
+    fr.onerror = ()=>rej(new Error("read"));
+    fr.onload = ()=>{
+      const im = new Image();
+      im.onerror = ()=>rej(new Error("decode"));
+      im.onload = ()=>{
+        const sc = Math.min(1, maxSide/Math.max(im.width, im.height));
+        const w = Math.round(im.width*sc), h = Math.round(im.height*sc);
+        const cv = document.createElement("canvas");
+        cv.width=w; cv.height=h;
+        const cx = cv.getContext("2d");
+        cx.fillStyle="#fff"; cx.fillRect(0,0,w,h);
+        cx.drawImage(im,0,0,w,h);
+        res({ url: cv.toDataURL("image/jpeg", quality), w:w, h:h });
+      };
+      im.src = fr.result;
+    };
+    fr.readAsDataURL(file);
+  });
+}
+
 function sumQ(d){
   const n = (d.answers ? d.answers.length : (d.items ? d.items.length : 0));
-  return "回答 <b>"+n+"</b> 件" + (d.recordedAt ? "　"+String(d.recordedAt).slice(11,16) : "");
+  return (d.form ? esc(d.form)+"<br>" : "") +
+    "記入 <b>"+n+"</b> 項目" +
+    (d.examiner ? "　"+esc(d.examiner) : "") +
+    (d.recordedAt ? "　"+String(d.recordedAt).slice(11,16) : "");
 }
 function sumK(d){
   const s = d.soap || {};
@@ -479,7 +585,8 @@ async function drawList(){
     '<div class="row" data-k="'+esc(v.key)+'">'+
       '<span class="id">'+esc(v.karteId)+'</span>'+
       '<span>'+esc(v.alias||"（表示名なし）")+'</span>'+
-      '<span class="mk">'+(v.enquete?"問":"・")+(v.karte?"カ":"・")+(v.receipt?"会":"・")+
+      '<span class="mk">'+(v.enquete?"問":"・")+(v.karte?"カ":"・")+
+        ((v.images&&v.images.length)?"画":"・")+(v.receipt?"会":"・")+
         "　"+String(v.updatedAt).slice(11,16)+'</span>'+
       '<button class="del" data-del="'+esc(v.key)+'" title="この受診を消す">消す</button>'+
     '</div>').join("");
@@ -551,11 +658,43 @@ async function open3(k){
   await save();                       /* 保存が終わってから移動します */
   const q = "?karteId=" + encodeURIComponent(V.karteId) +
             "&alias="   + encodeURIComponent(V.alias||"") +
+            "&patient_id="   + encodeURIComponent(V.karteId) +
+            "&patient_name=" + encodeURIComponent(V.alias||"") +
             "&visit="   + encodeURIComponent(V.key);
-  location.href = TOOLS[k] + q;
+  let extra = "";
+  if(k === "Q" && QFORMS && $("selQ").value){
+    extra = "&form=" + encodeURIComponent($("selQ").value);
+  }
+  location.href = TOOLS[k] + q + extra;
 }
 $("opQ").onclick = ()=>open3("Q");
+
+/* 検査票の一覧（../ortho/forms/forms.json）。無ければ選択欄を出しません。 */
+let QFORMS = null;
+(async function loadForms(){
+  try{
+    const r = await fetch("../ortho/forms/forms.json", {cache:"no-store"});
+    if(!r.ok) throw new Error(r.status);
+    QFORMS = await r.json();
+  }catch(e){ return; }
+  const list = (QFORMS.forms||[]);
+  if(!list.length) return;
+  const sel = $("selQ");
+  sel.innerHTML = list.map(f=>'<option value="'+esc(f.id)+'">'+esc(f.name)+
+    (f.by?'（'+esc(f.by)+'）':'')+'</option>').join("");
+  let saved = null;
+  try{ saved = localStorage.getItem("vetss_form_default"); }catch(e){}
+  sel.value = saved || QFORMS.default || list[0].id;
+  const note = ()=>{
+    const f = list.find(x=>x.id===sel.value);
+    $("hintQ").textContent = f ? (f.source||"") + (f.count?"　"+f.count+" 項目":"") : "";
+  };
+  sel.onchange = note;
+  note();
+  $("pickQ").hidden = false;
+})();
 $("opK").onclick = ()=>open3("K");
+$("opI").onclick = ()=>open3("I");
 $("opR").onclick = ()=>open3("R");
 
 /* ══ ファイルから取り込む ══════════════════════════ */
@@ -586,14 +725,16 @@ function build(){
     schema:"vetss-visit/0.1",
     karteId:V.karteId, alias:V.alias, date:V.date,
     assembledAt:isoLocal(new Date()),
-    status:{ enquete:!!V.enquete, karte:!!V.karte, receipt:!!V.receipt },
-    enquete:V.enquete, karte:V.karte, receipt:V.receipt
+    status:{ enquete:!!V.enquete, karte:!!V.karte,
+             images:(V.images||[]).length, receipt:!!V.receipt },
+    enquete:V.enquete, karte:V.karte,
+    images:(V.images||[]), receipt:V.receipt
   };
 }
 let CUR = null;
 $("bOut").onclick = ()=>{
   if(!V.karteId){ toast("診察券IDを入れてください"); return; }
-  if(!V.enquete && !V.karte && !V.receipt){ toast("まだ記録がありません"); return; }
+  if(!V.enquete && !V.karte && !V.receipt && !(V.images||[]).length){ toast("まだ記録がありません"); return; }
   CUR = build();
   $("out").textContent = JSON.stringify(CUR, null, 2);
   $("sheet").classList.add("on");
@@ -715,6 +856,20 @@ function paperKarte(rec){
   }
   /* 問診は、問診ツールが作ったカルテ貼付テキストをそのまま載せます。
      古い形式（text を持たないもの）は回答一覧から組み立てます。 */
+  /* 画像は所見のあとに2列で並べます（多いときは自然に次ページへ） */
+  let imgs = "";
+  const IL = Array.isArray(R.images) ? R.images : [];
+  if(IL.length){
+    imgs = '<div class="soap"><h2><i>図</i>画像・シェーマ'+
+      '　<span style="font-weight:400;font-size:8pt;color:#555">'+IL.length+' 枚</span></h2>'+
+      '<div class="pk-img">'+ IL.map((x,i)=>
+        '<figure><img src="'+x.dataUrl+'" alt="">'+
+        '<figcaption>'+(i+1)+'. '+esc(x.title||x.name||(x.kind==="schema"?"シェーマ":"画像"))+
+        (x.recordedAt?'　'+String(x.recordedAt).slice(11,16):'')+
+        (x.examiner?'　'+esc(x.examiner):'')+'</figcaption></figure>').join("")+
+      '</div></div>';
+  }
+
   let enq = "";
   if(R.enquete){
     const e = R.enquete;
@@ -757,6 +912,7 @@ function paperKarte(rec){
       ((s[x]&&s[x].picks&&s[x].picks.length)
         ? '<div class="ids">文例 '+s[x].picks.join(" / ")+'</div>' : '')+
       '</div>').join("")+
+    imgs +
     acc +
     '<div class="pk-ft"><span>'+esc(R.karteId)+' ／ '+esc(R.date)+
       (R.receipt&&R.receipt.id?' ／ 明細 '+esc(R.receipt.id):'')+'</span>'+

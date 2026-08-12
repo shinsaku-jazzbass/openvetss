@@ -1,0 +1,3064 @@
+{
+ "name": "整形外科学的検査カルテ",
+ "source": "日本獣医麻酔外科学会 整形外科委員会 ver.1",
+ "type": 1,
+ "questions": [
+  {
+   "id": 123,
+   "name": "動物種",
+   "answer_type": "radio",
+   "required": 1,
+   "group_name": "シグナルメント",
+   "page_no": 1,
+   "sort_order": 1,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 536,
+     "label": "犬",
+     "value": "犬",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 537,
+     "label": "猫",
+     "value": "猫",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 124,
+   "name": "性別",
+   "answer_type": "radio",
+   "required": 1,
+   "group_name": "シグナルメント",
+   "page_no": 1,
+   "sort_order": 2,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 539,
+     "label": "雄",
+     "value": "雄",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 540,
+     "label": "雌",
+     "value": "雌",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 541,
+     "label": "去勢雄",
+     "value": "去勢雄",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 542,
+     "label": "不妊雌",
+     "value": "不妊雌",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 125,
+   "name": "品種",
+   "answer_type": "text",
+   "required": 0,
+   "group_name": "シグナルメント",
+   "page_no": 1,
+   "sort_order": 3,
+   "placeholder": "例：ラブラドール",
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 126,
+   "name": "年齢（歳）",
+   "answer_type": "number",
+   "required": 0,
+   "group_name": "シグナルメント",
+   "page_no": 1,
+   "sort_order": 4,
+   "placeholder": "0",
+   "unit": "歳",
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 127,
+   "name": "年齢（ヵ月）",
+   "answer_type": "number",
+   "required": 0,
+   "group_name": "シグナルメント",
+   "page_no": 1,
+   "sort_order": 5,
+   "placeholder": "0",
+   "unit": "ヵ月",
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 128,
+   "name": "体重",
+   "answer_type": "number",
+   "required": 0,
+   "group_name": "シグナルメント",
+   "page_no": 1,
+   "sort_order": 6,
+   "placeholder": "0.0",
+   "unit": "kg",
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 129,
+   "name": "BCS",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "シグナルメント",
+   "page_no": 1,
+   "sort_order": 7,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 546,
+     "label": "1",
+     "value": "1",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 547,
+     "label": "2",
+     "value": "2",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 548,
+     "label": "3",
+     "value": "3",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 549,
+     "label": "4",
+     "value": "4",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 550,
+     "label": "5",
+     "value": "5",
+     "allow_text": 0,
+     "sort_order": 5
+    }
+   ]
+  },
+  {
+   "id": 130,
+   "name": "発症前の散歩（分/回）",
+   "answer_type": "number",
+   "required": 0,
+   "group_name": "シグナルメント",
+   "page_no": 1,
+   "sort_order": 8,
+   "placeholder": "30",
+   "unit": "分/回",
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 131,
+   "name": "散歩回数（回/日）",
+   "answer_type": "number",
+   "required": 0,
+   "group_name": "シグナルメント",
+   "page_no": 1,
+   "sort_order": 9,
+   "placeholder": "2",
+   "unit": "回/日",
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 132,
+   "name": "運動種別",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "シグナルメント",
+   "page_no": 1,
+   "sort_order": 10,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 553,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 554,
+     "label": "ドッグラン",
+     "value": "ドッグラン",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 555,
+     "label": "水泳",
+     "value": "水泳",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 556,
+     "label": "スポーツ",
+     "value": "スポーツ",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 133,
+   "name": "発症タイプ",
+   "answer_type": "radio",
+   "required": 1,
+   "group_name": "主訴・問診",
+   "page_no": 2,
+   "sort_order": 1,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 560,
+     "label": "常時",
+     "value": "常時",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 561,
+     "label": "起立時",
+     "value": "起立時",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 562,
+     "label": "運動時",
+     "value": "運動時",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 563,
+     "label": "運動後",
+     "value": "運動後",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 134,
+   "name": "進行性",
+   "answer_type": "radio",
+   "required": 1,
+   "group_name": "主訴・問診",
+   "page_no": 2,
+   "sort_order": 2,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 567,
+     "label": "急性",
+     "value": "急性",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 568,
+     "label": "緩徐",
+     "value": "緩徐",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 569,
+     "label": "慢性",
+     "value": "慢性",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 570,
+     "label": "間欠的",
+     "value": "間欠的",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 571,
+     "label": "改善傾向",
+     "value": "改善傾向",
+     "allow_text": 0,
+     "sort_order": 5
+    }
+   ]
+  },
+  {
+   "id": 135,
+   "name": "外傷歴",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "主訴・問診",
+   "page_no": 2,
+   "sort_order": 3,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 574,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 575,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 136,
+   "name": "外傷歴詳細",
+   "answer_type": "text",
+   "required": 0,
+   "group_name": "主訴・問診",
+   "page_no": 2,
+   "sort_order": 4,
+   "placeholder": "外傷の内容",
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 137,
+   "name": "治療効果",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "主訴・問診",
+   "page_no": 2,
+   "sort_order": 5,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 577,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 578,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 579,
+     "label": "悪化",
+     "value": "悪化",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 138,
+   "name": "現在の治療",
+   "answer_type": "check",
+   "required": 0,
+   "group_name": "主訴・問診",
+   "page_no": 2,
+   "sort_order": 6,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 580,
+     "label": "NSAIDs",
+     "value": "NSAIDs",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 581,
+     "label": "ステロイド",
+     "value": "ステロイド",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 582,
+     "label": "サプリメント",
+     "value": "サプリメント",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 583,
+     "label": "他の薬剤",
+     "value": "他の薬剤",
+     "allow_text": 0,
+     "sort_order": 4
+    }
+   ]
+  },
+  {
+   "id": 139,
+   "name": "他の薬剤名",
+   "answer_type": "text",
+   "required": 0,
+   "group_name": "主訴・問診",
+   "page_no": 2,
+   "sort_order": 7,
+   "placeholder": "例：メロキシカム",
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 140,
+   "name": "VAS（疼痛）",
+   "answer_type": "scale",
+   "required": 0,
+   "group_name": "主訴・問診",
+   "page_no": 2,
+   "sort_order": 8,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": 0,
+   "scale_max": 100,
+   "options": []
+  },
+  {
+   "id": 141,
+   "name": "NRS（疼痛）",
+   "answer_type": "scale",
+   "required": 0,
+   "group_name": "主訴・問診",
+   "page_no": 2,
+   "sort_order": 9,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": 0,
+   "scale_max": 10,
+   "options": []
+  },
+  {
+   "id": 142,
+   "name": "立位姿勢",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "視診",
+   "page_no": 3,
+   "sort_order": 1,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 587,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 588,
+     "label": "前傾",
+     "value": "前傾",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 589,
+     "label": "後傾",
+     "value": "後傾",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 590,
+     "label": "背弯",
+     "value": "背弯",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 591,
+     "label": "側弯",
+     "value": "側弯",
+     "allow_text": 0,
+     "sort_order": 5
+    }
+   ]
+  },
+  {
+   "id": 143,
+   "name": "脚変形",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "視診",
+   "page_no": 3,
+   "sort_order": 2,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 594,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 595,
+     "label": "あり（前左）",
+     "value": "あり（前左）",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 596,
+     "label": "あり（前右）",
+     "value": "あり（前右）",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 597,
+     "label": "あり（後左）",
+     "value": "あり（後左）",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 598,
+     "label": "あり（後右）",
+     "value": "あり（後右）",
+     "allow_text": 0,
+     "sort_order": 5
+    }
+   ]
+  },
+  {
+   "id": 144,
+   "name": "蹠行",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "視診",
+   "page_no": 3,
+   "sort_order": 3,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 601,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 602,
+     "label": "あり（前左）",
+     "value": "あり（前左）",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 603,
+     "label": "あり（前右）",
+     "value": "あり（前右）",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 604,
+     "label": "あり（後左）",
+     "value": "あり（後左）",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 605,
+     "label": "あり（後右）",
+     "value": "あり（後右）",
+     "allow_text": 0,
+     "sort_order": 5
+    }
+   ]
+  },
+  {
+   "id": 145,
+   "name": "ナックリング",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "視診",
+   "page_no": 3,
+   "sort_order": 4,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 608,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 609,
+     "label": "あり（前左）",
+     "value": "あり（前左）",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 610,
+     "label": "あり（前右）",
+     "value": "あり（前右）",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 611,
+     "label": "あり（後左）",
+     "value": "あり（後左）",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 612,
+     "label": "あり（後右）",
+     "value": "あり（後右）",
+     "allow_text": 0,
+     "sort_order": 5
+    }
+   ]
+  },
+  {
+   "id": 146,
+   "name": "着肢位置",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "視診",
+   "page_no": 3,
+   "sort_order": 5,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 615,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 616,
+     "label": "異常（前左）",
+     "value": "異常（前左）",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 617,
+     "label": "異常（前右）",
+     "value": "異常（前右）",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 618,
+     "label": "異常（後左）",
+     "value": "異常（後左）",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 619,
+     "label": "異常（後右）",
+     "value": "異常（後右）",
+     "allow_text": 0,
+     "sort_order": 5
+    }
+   ]
+  },
+  {
+   "id": 147,
+   "name": "負重状態",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "視診",
+   "page_no": 3,
+   "sort_order": 6,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 622,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 623,
+     "label": "弱い（前左）",
+     "value": "弱い（前左）",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 624,
+     "label": "弱い（前右）",
+     "value": "弱い（前右）",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 625,
+     "label": "なし（前左）",
+     "value": "なし（前左）",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 626,
+     "label": "なし（前右）",
+     "value": "なし（前右）",
+     "allow_text": 0,
+     "sort_order": 5
+    },
+    {
+     "id": 627,
+     "label": "弱い（後左）",
+     "value": "弱い（後左）",
+     "allow_text": 0,
+     "sort_order": 6
+    },
+    {
+     "id": 628,
+     "label": "弱い（後右）",
+     "value": "弱い（後右）",
+     "allow_text": 0,
+     "sort_order": 7
+    },
+    {
+     "id": 629,
+     "label": "なし（後左）",
+     "value": "なし（後左）",
+     "allow_text": 0,
+     "sort_order": 8
+    },
+    {
+     "id": 630,
+     "label": "なし（後右）",
+     "value": "なし（後右）",
+     "allow_text": 0,
+     "sort_order": 9
+    }
+   ]
+  },
+  {
+   "id": 148,
+   "name": "お座り試験",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "視診",
+   "page_no": 3,
+   "sort_order": 7,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 637,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 638,
+     "label": "異常（左）",
+     "value": "異常（左）",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 639,
+     "label": "異常（右）",
+     "value": "異常（右）",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 149,
+   "name": "跛行スコア",
+   "answer_type": "scale",
+   "required": 1,
+   "group_name": "歩様",
+   "page_no": 3,
+   "sort_order": 8,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": 0,
+   "scale_max": 5,
+   "options": []
+  },
+  {
+   "id": 150,
+   "name": "頭部の上下動",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "歩様",
+   "page_no": 3,
+   "sort_order": 9,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 640,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 641,
+     "label": "あり（頭上位：左前）",
+     "value": "あり（頭上位：左前）",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 642,
+     "label": "あり（頭上位：右前）",
+     "value": "あり（頭上位：右前）",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 151,
+   "name": "臀部の上下動",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "歩様",
+   "page_no": 3,
+   "sort_order": 10,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 643,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 644,
+     "label": "あり（臀部上位：左後）",
+     "value": "あり（臀部上位：左後）",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 645,
+     "label": "あり（臀部上位：右後）",
+     "value": "あり（臀部上位：右後）",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 152,
+   "name": "歩幅・接地時間の短縮",
+   "answer_type": "radio",
+   "required": 0,
+   "group_name": "歩様",
+   "page_no": 3,
+   "sort_order": 11,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 646,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 647,
+     "label": "あり（前左）",
+     "value": "あり（前左）",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 648,
+     "label": "あり（前右）",
+     "value": "あり（前右）",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 649,
+     "label": "あり（後左）",
+     "value": "あり（後左）",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 650,
+     "label": "あり（後右）",
+     "value": "あり（後右）",
+     "allow_text": 0,
+     "sort_order": 5
+    }
+   ]
+  },
+  {
+   "id": 153,
+   "name": "肩甲部筋肉量",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診立位（前肢）",
+   "page_no": 4,
+   "sort_order": 1,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 653,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 658,
+     "label": "萎縮",
+     "value": "萎縮",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 154,
+   "name": "肩関節の腫脹",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診立位（前肢）",
+   "page_no": 4,
+   "sort_order": 2,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 668,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 696,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 155,
+   "name": "大結節の位置",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診立位（前肢）",
+   "page_no": 4,
+   "sort_order": 3,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 825,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 829,
+     "label": "異常",
+     "value": "異常",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 156,
+   "name": "上腕部筋肉量",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診立位（前肢）",
+   "page_no": 4,
+   "sort_order": 4,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 654,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 659,
+     "label": "萎縮",
+     "value": "萎縮",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 157,
+   "name": "上腕三頭筋腱 腫脹・緊張低下",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診立位（前肢）",
+   "page_no": 4,
+   "sort_order": 5,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 669,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 697,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 158,
+   "name": "肘関節の腫脹",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診立位（前肢）",
+   "page_no": 4,
+   "sort_order": 6,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 670,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 698,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 159,
+   "name": "前腕の筋肉量",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診立位（前肢）",
+   "page_no": 4,
+   "sort_order": 7,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 655,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 660,
+     "label": "萎縮",
+     "value": "萎縮",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 160,
+   "name": "手根関節の腫脹",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診立位（前肢）",
+   "page_no": 4,
+   "sort_order": 8,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 673,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 701,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 161,
+   "name": "肩甲骨の位置",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診立位（前肢）",
+   "page_no": 4,
+   "sort_order": 9,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 826,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 830,
+     "label": "異常",
+     "value": "異常",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 162,
+   "name": "腸骨稜・坐骨結節の位置",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診立位（後肢）",
+   "page_no": 4,
+   "sort_order": 10,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 827,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 831,
+     "label": "異常",
+     "value": "異常",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 163,
+   "name": "大転子の位置（三角試験）",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診立位（後肢）",
+   "page_no": 4,
+   "sort_order": 11,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 828,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 832,
+     "label": "異常",
+     "value": "異常",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 164,
+   "name": "股関節の腫脹",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診立位（後肢）",
+   "page_no": 4,
+   "sort_order": 12,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 674,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 702,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 165,
+   "name": "大腿部の筋肉量",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診立位（後肢）",
+   "page_no": 4,
+   "sort_order": 13,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 656,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 661,
+     "label": "萎縮",
+     "value": "萎縮",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 166,
+   "name": "膝蓋骨脱臼の有無（立位）",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診立位（後肢）",
+   "page_no": 4,
+   "sort_order": 14,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 840,
+     "label": "内外方",
+     "value": "内外方",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 841,
+     "label": "外方",
+     "value": "外方",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 842,
+     "label": "内方",
+     "value": "内方",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 843,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    }
+   ]
+  },
+  {
+   "id": 167,
+   "name": "膝蓋骨脱臼グレード（立位）",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診立位（後肢）",
+   "page_no": 4,
+   "sort_order": 15,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 855,
+     "label": "Grade 4",
+     "value": "4",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 856,
+     "label": "Grade 3",
+     "value": "3",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 857,
+     "label": "Grade 2",
+     "value": "2",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 858,
+     "label": "Grade 1",
+     "value": "1",
+     "allow_text": 0,
+     "sort_order": 1
+    }
+   ]
+  },
+  {
+   "id": 168,
+   "name": "膝関節の腫脹",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診立位（後肢）",
+   "page_no": 4,
+   "sort_order": 16,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 676,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 704,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 169,
+   "name": "膝内側の肥厚 Medial Buttress",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診立位（後肢）",
+   "page_no": 4,
+   "sort_order": 17,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 678,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 706,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 170,
+   "name": "下腿の筋肉量",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診立位（後肢）",
+   "page_no": 4,
+   "sort_order": 18,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 657,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 662,
+     "label": "萎縮",
+     "value": "萎縮",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 171,
+   "name": "足根関節の腫脹",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診立位（後肢）",
+   "page_no": 4,
+   "sort_order": 19,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 679,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 707,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 172,
+   "name": "アキレス腱 腫脹・緊張低下",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診立位（後肢）",
+   "page_no": 4,
+   "sort_order": 20,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 681,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 709,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 173,
+   "name": "触診立位メモ",
+   "answer_type": "text",
+   "required": 0,
+   "group_name": "触診立位（後肢）",
+   "page_no": 4,
+   "sort_order": 21,
+   "placeholder": "メモ",
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 174,
+   "name": "股関節 バーデン試験",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（股関節）",
+   "page_no": 5,
+   "sort_order": 1,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 731,
+     "label": "陰性",
+     "value": "陰性",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 741,
+     "label": "陽性",
+     "value": "陽性",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 175,
+   "name": "股関節 オルトラニ試験",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（股関節）",
+   "page_no": 5,
+   "sort_order": 2,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 732,
+     "label": "陰性",
+     "value": "陰性",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 742,
+     "label": "陽性",
+     "value": "陽性",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 176,
+   "name": "股関節 外転試験",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（股関節）",
+   "page_no": 5,
+   "sort_order": 3,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 733,
+     "label": "陰性",
+     "value": "陰性",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 743,
+     "label": "陽性",
+     "value": "陽性",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 177,
+   "name": "股関節 屈伸可動域",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（股関節）",
+   "page_no": 5,
+   "sort_order": 4,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 762,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 773,
+     "label": "増",
+     "value": "増",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 784,
+     "label": "減",
+     "value": "減",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 178,
+   "name": "股関節 内外転可動域",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（股関節）",
+   "page_no": 5,
+   "sort_order": 5,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 763,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 774,
+     "label": "増",
+     "value": "増",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 785,
+     "label": "減",
+     "value": "減",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 179,
+   "name": "股関節 熱感・腫脹・疼痛",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（股関節）",
+   "page_no": 5,
+   "sort_order": 6,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 671,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 699,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 180,
+   "name": "大腿骨の圧痛",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（股関節）",
+   "page_no": 5,
+   "sort_order": 7,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 672,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 700,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 181,
+   "name": "膝関節 前方引き出し徴候",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（膝関節）",
+   "page_no": 5,
+   "sort_order": 8,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 734,
+     "label": "陰性",
+     "value": "陰性",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 744,
+     "label": "陽性",
+     "value": "陽性",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 182,
+   "name": "膝関節 脛骨圧迫試験",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（膝関節）",
+   "page_no": 5,
+   "sort_order": 9,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 735,
+     "label": "陰性",
+     "value": "陰性",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 745,
+     "label": "陽性",
+     "value": "陽性",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 183,
+   "name": "膝蓋骨脱臼の有無（横臥）",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（膝関節）",
+   "page_no": 5,
+   "sort_order": 10,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 844,
+     "label": "内外方",
+     "value": "内外方",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 845,
+     "label": "外方",
+     "value": "外方",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 846,
+     "label": "内方",
+     "value": "内方",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 847,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    }
+   ]
+  },
+  {
+   "id": 184,
+   "name": "膝蓋骨脱臼グレード（横臥）",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（膝関節）",
+   "page_no": 5,
+   "sort_order": 11,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 859,
+     "label": "Grade 4",
+     "value": "4",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 860,
+     "label": "Grade 3",
+     "value": "3",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 861,
+     "label": "Grade 2",
+     "value": "2",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 862,
+     "label": "Grade 1",
+     "value": "1",
+     "allow_text": 0,
+     "sort_order": 1
+    }
+   ]
+  },
+  {
+   "id": 185,
+   "name": "膝関節 クリック音",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（膝関節）",
+   "page_no": 5,
+   "sort_order": 12,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 736,
+     "label": "陰性",
+     "value": "陰性",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 746,
+     "label": "陽性",
+     "value": "陽性",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 186,
+   "name": "膝関節 屈伸可動域",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（膝関節）",
+   "page_no": 5,
+   "sort_order": 13,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 764,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 775,
+     "label": "増",
+     "value": "増",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 786,
+     "label": "減",
+     "value": "減",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 187,
+   "name": "膝関節 内外反可動域",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（膝関節）",
+   "page_no": 5,
+   "sort_order": 14,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 765,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 776,
+     "label": "増",
+     "value": "増",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 787,
+     "label": "減",
+     "value": "減",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 188,
+   "name": "膝関節 熱感・腫脹・疼痛",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（膝関節）",
+   "page_no": 5,
+   "sort_order": 15,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 675,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 703,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 189,
+   "name": "脛骨・腓骨の圧痛",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（足根関節）",
+   "page_no": 5,
+   "sort_order": 16,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 677,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 705,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 190,
+   "name": "足根関節 屈伸可動域",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（足根関節）",
+   "page_no": 5,
+   "sort_order": 17,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 766,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 777,
+     "label": "増",
+     "value": "増",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 788,
+     "label": "減",
+     "value": "減",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 191,
+   "name": "足根関節 内外反・内外旋可動域",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（足根関節）",
+   "page_no": 5,
+   "sort_order": 18,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 767,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 778,
+     "label": "増",
+     "value": "増",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 789,
+     "label": "減",
+     "value": "減",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 192,
+   "name": "足根関節 熱感・腫脹・疼痛",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（足根関節）",
+   "page_no": 5,
+   "sort_order": 19,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 680,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 708,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 193,
+   "name": "アキレス腱 腫脹・緊張低下（横臥）",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（足根関節）",
+   "page_no": 5,
+   "sort_order": 20,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 682,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 710,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 194,
+   "name": "趾骨・中足骨の圧痛",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（足根関節）",
+   "page_no": 5,
+   "sort_order": 21,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 683,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 711,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 195,
+   "name": "中足趾関節の疼痛・違和感",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（足根関節）",
+   "page_no": 5,
+   "sort_order": 22,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 684,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 712,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 196,
+   "name": "趾の底側・背側の異常",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（足根関節）",
+   "page_no": 5,
+   "sort_order": 23,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 685,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 713,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 197,
+   "name": "肩関節 二頭筋腱試験",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（肩関節）",
+   "page_no": 5,
+   "sort_order": 24,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 737,
+     "label": "陰性",
+     "value": "陰性",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 747,
+     "label": "陽性",
+     "value": "陽性",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 198,
+   "name": "肩関節 屈伸可動域",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（肩関節）",
+   "page_no": 5,
+   "sort_order": 25,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 768,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 779,
+     "label": "増",
+     "value": "増",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 790,
+     "label": "減",
+     "value": "減",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 199,
+   "name": "肩関節 外転試験",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（肩関節）",
+   "page_no": 5,
+   "sort_order": 26,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 738,
+     "label": "陰性",
+     "value": "陰性",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 748,
+     "label": "陽性",
+     "value": "陽性",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 200,
+   "name": "肩関節 熱感・腫脹・疼痛",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（肩関節）",
+   "page_no": 5,
+   "sort_order": 27,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 686,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 714,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 201,
+   "name": "上腕骨の圧痛",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（肩関節）",
+   "page_no": 5,
+   "sort_order": 28,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 687,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 715,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 202,
+   "name": "上腕三頭筋腱 腫脹・緊張低下（横臥）",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（肩関節）",
+   "page_no": 5,
+   "sort_order": 29,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 688,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 716,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 203,
+   "name": "肘関節 キャンベル試験（回内）",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（肘関節）",
+   "page_no": 5,
+   "sort_order": 30,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 739,
+     "label": "陰性",
+     "value": "陰性",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 749,
+     "label": "陽性",
+     "value": "陽性",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 204,
+   "name": "肘関節 キャンベル試験（回外）",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（肘関節）",
+   "page_no": 5,
+   "sort_order": 31,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 740,
+     "label": "陰性",
+     "value": "陰性",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 750,
+     "label": "陽性",
+     "value": "陽性",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 205,
+   "name": "内側鉤状突起領域の圧痛",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（肘関節）",
+   "page_no": 5,
+   "sort_order": 32,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 689,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 717,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 206,
+   "name": "肘関節 屈伸可動域",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（肘関節）",
+   "page_no": 5,
+   "sort_order": 33,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 769,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 780,
+     "label": "増",
+     "value": "増",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 791,
+     "label": "減",
+     "value": "減",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 207,
+   "name": "肘関節 内外反可動域",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（肘関節）",
+   "page_no": 5,
+   "sort_order": 34,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 770,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 781,
+     "label": "増",
+     "value": "増",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 792,
+     "label": "減",
+     "value": "減",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 208,
+   "name": "肘関節 熱感・腫脹・疼痛",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（肘関節）",
+   "page_no": 5,
+   "sort_order": 35,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 690,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 718,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 209,
+   "name": "橈骨・尺骨の圧痛",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（手根関節）",
+   "page_no": 5,
+   "sort_order": 36,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 691,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 719,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 210,
+   "name": "手根関節 屈伸可動域",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（手根関節）",
+   "page_no": 5,
+   "sort_order": 37,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 771,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 782,
+     "label": "増",
+     "value": "増",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 793,
+     "label": "減",
+     "value": "減",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 211,
+   "name": "手根関節 内外反可動域",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（手根関節）",
+   "page_no": 5,
+   "sort_order": 38,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 772,
+     "label": "正常",
+     "value": "正常",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 783,
+     "label": "増",
+     "value": "増",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 794,
+     "label": "減",
+     "value": "減",
+     "allow_text": 0,
+     "sort_order": 3
+    }
+   ]
+  },
+  {
+   "id": 212,
+   "name": "手根関節 熱感・腫脹・疼痛",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（手根関節）",
+   "page_no": 5,
+   "sort_order": 39,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 692,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 720,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 213,
+   "name": "指骨・中手骨の圧痛",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（手根関節）",
+   "page_no": 5,
+   "sort_order": 40,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 693,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 721,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 214,
+   "name": "中手指関節の疼痛・違和感",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（手根関節）",
+   "page_no": 5,
+   "sort_order": 41,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 694,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 722,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 215,
+   "name": "指の掌側・背側の異常",
+   "answer_type": "lr",
+   "required": 0,
+   "group_name": "触診横臥位（手根関節）",
+   "page_no": 5,
+   "sort_order": 42,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 695,
+     "label": "なし",
+     "value": "なし",
+     "allow_text": 0,
+     "sort_order": 1
+    },
+    {
+     "id": 723,
+     "label": "あり",
+     "value": "あり",
+     "allow_text": 0,
+     "sort_order": 2
+    }
+   ]
+  },
+  {
+   "id": 216,
+   "name": "触診横臥位メモ",
+   "answer_type": "text",
+   "required": 0,
+   "group_name": "触診横臥位（手根関節）",
+   "page_no": 5,
+   "sort_order": 43,
+   "placeholder": "メモ",
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 217,
+   "name": "次の検査",
+   "answer_type": "check",
+   "required": 0,
+   "group_name": "判定・鑑別疾患",
+   "page_no": 6,
+   "sort_order": 1,
+   "placeholder": null,
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": [
+    {
+     "id": 870,
+     "label": "関節鏡検査",
+     "value": "関節鏡検査",
+     "allow_text": 0,
+     "sort_order": 7
+    },
+    {
+     "id": 871,
+     "label": "CT・MRI検査",
+     "value": "CT・MRI検査",
+     "allow_text": 0,
+     "sort_order": 6
+    },
+    {
+     "id": 872,
+     "label": "関節液検査",
+     "value": "関節液検査",
+     "allow_text": 0,
+     "sort_order": 5
+    },
+    {
+     "id": 873,
+     "label": "血液検査",
+     "value": "血液検査",
+     "allow_text": 0,
+     "sort_order": 4
+    },
+    {
+     "id": 874,
+     "label": "超音波検査",
+     "value": "超音波検査",
+     "allow_text": 0,
+     "sort_order": 3
+    },
+    {
+     "id": 875,
+     "label": "X線検査",
+     "value": "X線検査",
+     "allow_text": 0,
+     "sort_order": 2
+    },
+    {
+     "id": 876,
+     "label": "神経検査",
+     "value": "神経検査",
+     "allow_text": 0,
+     "sort_order": 1
+    }
+   ]
+  },
+  {
+   "id": 218,
+   "name": "病変部位",
+   "answer_type": "text",
+   "required": 0,
+   "group_name": "判定・鑑別疾患",
+   "page_no": 6,
+   "sort_order": 2,
+   "placeholder": "例：左膝関節",
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  },
+  {
+   "id": 219,
+   "name": "鑑別疾患リスト",
+   "answer_type": "text",
+   "required": 0,
+   "group_name": "判定・鑑別疾患",
+   "page_no": 6,
+   "sort_order": 3,
+   "placeholder": "例：左膝前十字靭帯断裂",
+   "unit": null,
+   "scale_min": null,
+   "scale_max": null,
+   "options": []
+  }
+ ]
+}
