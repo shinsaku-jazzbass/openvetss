@@ -23,7 +23,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="format-detection" content="telephone=no">
-<title>ネットレジ v0.7.1</title>
+<title>ネットレジ v0.8</title>
 <style>
 :root{
   --enamel:#16302F; --enamel-lo:#0E2322;
@@ -216,6 +216,40 @@ input{font:inherit}
   .card{max-height:none;width:100%;border-radius:0}
   .card-scroll{overflow:visible;padding:0}
 }
+
+/* ── 日計表（印刷専用）────────────────────────── */
+#nkPrint{display:none}
+@media print{
+  @page{size:A4;margin:12mm}
+  body.printing .sheet{display:none!important}
+  body.printing #nkPrint{display:block!important}
+}
+#nkPrint .np{font-family:var(--sans);color:#000;line-height:1.55}
+#nkPrint .np-hd{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;
+  border-bottom:1.5px solid #000;padding-bottom:5px;margin-bottom:10px}
+#nkPrint .np-hd h1{font-size:17pt;letter-spacing:.2em;font-weight:600}
+#nkPrint .np-hd .mt{font-family:var(--mono);font-size:8.5pt;color:#333;text-align:right;line-height:1.6}
+#nkPrint .np-box{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#000;
+  border:1px solid #000;margin-bottom:9px}
+#nkPrint .np-box div{background:#fff;padding:5px 8px}
+#nkPrint .np-box span{display:block;font-size:7.5pt;color:#444;letter-spacing:.06em}
+#nkPrint .np-box b{font-family:var(--mono);font-variant-numeric:tabular-nums;
+  font-size:13pt;font-weight:600}
+#nkPrint h2{font-size:9.5pt;font-weight:600;margin:9px 0 3px;padding-bottom:2px;
+  border-bottom:1px solid #000}
+#nkPrint table{width:100%;border-collapse:collapse;font-size:8.5pt}
+#nkPrint th{text-align:left;font-weight:400;font-size:7pt;color:#444;
+  border-bottom:1px solid #000;padding:0 3px 2px;white-space:nowrap}
+#nkPrint td{border-bottom:1px solid #ccc;padding:2.5px 3px;white-space:nowrap}
+#nkPrint .r{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+#nkPrint tfoot td{border-top:1px solid #000;border-bottom:0;font-weight:600;padding-top:4px}
+#nkPrint tr.vd td{color:#888;text-decoration:line-through}
+#nkPrint tr.vd td.vm{color:#000;text-decoration:none;font-size:7pt}
+#nkPrint .np-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+#nkPrint .np-ft{margin-top:10px;border-top:1px solid #000;padding-top:4px;
+  font-size:7.5pt;color:#333;display:flex;justify-content:space-between;gap:12px}
+#nkPrint .np-ft .sg{border-bottom:1px solid #000;min-width:38mm;text-align:right}
+@media(max-width:1px){}
 </style>
 </head>
 <body>
@@ -224,7 +258,7 @@ input{font:inherit}
   <div class="vfd">
     <div>
       <div class="vfd-pt" id="vfdPt"><span class="chip">診察券</span><span id="ptTxt">未読取</span></div>
-      <div class="vfd-line" id="vfdLast">ネットレジ v0.7.1 &nbsp;/&nbsp; 診察券を読むか、単価を打って品名キー</div>
+      <div class="vfd-line" id="vfdLast">ネットレジ v0.8 &nbsp;/&nbsp; 診察券を読むか、単価を打って品名キー</div>
     </div>
     <div class="vfd-total"><small>合計</small><span id="vfdTotal">0</span></div>
     <div class="vfd-meta">
@@ -383,6 +417,7 @@ input{font:inherit}
       <button class="k fn" id="nkPrev">前の日</button>
       <button class="k fn" id="nkNext">次の日</button>
       <button class="k fn" id="nkLoad">ファイルを読む</button>
+      <button class="k id" id="nkPrintBtn">日計表を印刷</button>
       <button class="k fn" id="nkCsv">CSV</button>
       <button class="k fn" id="nkXlsx">Excel</button>
       <button class="k id" id="nkJson">明細ファイル</button>
@@ -405,6 +440,7 @@ input{font:inherit}
   </div>
 </div>
 
+<div id="nkPrint"></div>
 <div class="toast" id="toast"></div>
 <canvas id="frame" hidden></canvas>
 
@@ -877,7 +913,7 @@ function send(code){
     }
     case "r": S.lines.length ? openSheet() : toast("明細がありません"); break;
     case "h": openNikkei(); break;
-    default: toast("v0.7 では未実装のキーです");
+    default: toast("v0.8 では未実装のキーです");
   }
 }
 
@@ -1193,6 +1229,94 @@ function dl(blob,name){
   setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 }
 function stamp(){ return (NK.list[0] && NK.list[0].date || bizDate()).replace(/-/g,""); }
+
+/* ══ 日計表の印刷 ══════════════════════════════════════
+   画面の日計を、そのまま紙の日計表として刷ります。
+   伝票別と品名別を1枚にまとめ、締めの署名欄を付けます。 */
+function nkPaper(){
+  const s = aggregate(NK.list), gaps = findGaps(NK.list);
+  const list = NK.list.slice().sort((a,b)=> a.id<b.id?-1:1);
+  const items = aggregateItems(NK.list);
+  const isum = items.reduce((a,x)=>a+x.amount,0);
+  const deptName = ["診療・物品","分類1","トリミング","値引","非課税費用"];
+  const now = new Date();
+  const cell = (t,v)=>'<div><span>'+t+'</span><b>'+v+'</b></div>';
+
+  const den =
+    '<h2>伝 票 別</h2><table><thead><tr>'+
+    '<th>明細番号</th><th>時刻</th><th>診察券</th><th>表示名</th>'+
+    '<th class="r">行</th><th class="r">税抜</th><th class="r">税</th>'+
+    '<th class="r">税込</th><th>支払</th></tr></thead><tbody>'+
+    list.map(r=>'<tr'+(r.voided?' class="vd"':'')+'>'+
+      '<td>'+esc(r.id)+'</td>'+
+      '<td>'+String(r.issuedAt).slice(11,16)+'</td>'+
+      '<td>'+esc(r.patient&&r.patient.karteId||"")+'</td>'+
+      '<td>'+esc(r.patient&&r.patient.alias||"")+'</td>'+
+      '<td class="r">'+r.lines.length+'</td>'+
+      '<td class="r">'+yen(r.totals.subtotal)+'</td>'+
+      '<td class="r">'+yen(r.tax.amount)+'</td>'+
+      '<td class="r">'+yen(r.totals.total)+'</td>'+
+      '<td'+(r.voided?' class="vm"':'')+'>'+
+        (r.voided?"取消":(r.totals.payMethod==="credit"?"クレ":"現金"))+'</td></tr>').join("")+
+    '</tbody><tfoot><tr><td colspan="4">合計（取消を除く）</td>'+
+      '<td class="r">'+s.lines+'</td><td class="r">'+yen(s.subtotal)+'</td>'+
+      '<td class="r">'+yen(s.tax)+'</td><td class="r">'+yen(s.total)+'</td><td></td>'+
+    '</tr></tfoot></table>';
+
+  const itm = items.length
+    ? '<h2>品 名 別</h2><table><thead><tr><th class="r">#</th><th>品名</th>'+
+      '<th class="r">回数</th><th class="r">数量</th><th class="r">金額</th>'+
+      '<th class="r">構成比</th></tr></thead><tbody>'+
+      items.map((x,i)=>'<tr><td class="r">'+(i+1)+'</td><td>'+esc(x.name)+
+        (x.taxClass==="exempt"?'（非課税）':'')+'</td>'+
+        '<td class="r">'+x.count+'</td><td class="r">'+x.qty+'</td>'+
+        '<td class="r">'+yen(x.amount)+'</td>'+
+        '<td class="r">'+(isum?(x.amount/isum*100).toFixed(1):"0.0")+'%</td></tr>').join("")+
+      '</tbody><tfoot><tr><td></td><td>合計</td>'+
+        '<td class="r">'+items.reduce((a,x)=>a+x.count,0)+'</td>'+
+        '<td class="r">'+items.reduce((a,x)=>a+x.qty,0)+'</td>'+
+        '<td class="r">'+yen(isum)+'</td><td class="r">100.0%</td></tr></tfoot></table>'
+    : "";
+
+  const dept = '<h2>部 門 別（税抜）</h2><table><tbody>'+
+    s.dept.map((v,i)=>'<tr><td>'+deptName[i]+'</td><td class="r">'+yen(v)+'</td></tr>').join("")+
+    '</tbody></table>';
+
+  const pay = '<h2>支 払 区 分</h2><table><tbody>'+
+    '<tr><td>現金</td><td class="r">'+s.cashN+' 件</td><td class="r">'+yen(s.cashV)+'</td></tr>'+
+    '<tr><td>クレジット</td><td class="r">'+s.creN+' 件</td><td class="r">'+yen(s.creV)+'</td></tr>'+
+    '</tbody><tfoot><tr><td>合計</td><td class="r">'+s.count+' 件</td>'+
+    '<td class="r">'+yen(s.cashV+s.creV)+'</td></tr></tfoot></table>';
+
+  return '<div class="np">'+
+    '<div class="np-hd"><div><h1>日 計 表</h1></div>'+
+      '<div class="mt">'+esc(CONFIG.name)+'<br>'+
+      (NKDATE||bizDate())+'　端末 '+esc(CONFIG.terminal)+'<br>'+
+      '出力 '+now.getFullYear()+'-'+pad2(now.getMonth()+1)+'-'+pad2(now.getDate())+' '+
+      pad2(now.getHours())+':'+pad2(now.getMinutes())+'</div></div>'+
+    '<div class="np-box">'+
+      cell("件数", s.count)+cell("税抜計", yen(s.subtotal))+
+      cell("消費税", yen(s.tax))+cell("税込計", yen(s.total))+
+    '</div>'+
+    (gaps.length
+      ? '<div style="border:1px solid #000;padding:5px 8px;margin-bottom:9px;font-size:8pt">'+
+        '明細番号の飛び（'+gaps.length+'件）：'+esc(gaps.join("、"))+'</div>' : "")+
+    den +
+    '<div class="np-2">'+pay+dept+'</div>'+
+    itm +
+    '<div class="np-ft"><span>'+(NKDATE||bizDate())+'　'+esc(CONFIG.name)+
+      '　'+esc(NK.src)+'</span><span class="sg">確認　　　　　</span></div>'+
+  '</div>';
+}
+$("nkPrintBtn").onclick = ()=>{
+  if(!NK.list.length){ toast("明細がありません"); return; }
+  $("nkPrint").innerHTML = nkPaper();
+  document.body.classList.add("printing");
+  setTimeout(()=>{
+    window.print();
+    setTimeout(()=>document.body.classList.remove("printing"), 400);
+  }, 60);
+};
 
 $("nkJson").onclick = ()=>{
   if(!NK.list.length){ toast("明細がありません"); return; }
