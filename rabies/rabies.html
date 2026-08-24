@@ -1,0 +1,832 @@
+<!--
+  OpenVetss - 動物病院のためのオープンソース・ツール群
+  https://www.vetss-karte.net/
+
+  狂犬病予防注射 台帳ツール  v0.1
+  Copyright (c) 2026 OpenVetss Project
+
+  MIT ライセンスで配布しています。改変も再配布も自由ですが、
+  この著作権表示とライセンス表示は残してください。無保証です。
+
+  昨年までに提出した様式を読み込んで台帳にし、今月の接種分だけを足して
+  同じ様式で書き出します。飼主さんと犬の情報を打ち直す必要がなくなります。
+
+  ★ このツールは通信をしません。読み込んだ台帳は、お使いの端末から出ません。
+-->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>狂犬病予防注射 台帳ツール ｜ OpenVetss</title>
+<style>
+:root{
+  --paper:#FBF9F4; --paper2:#F2EFE8; --rule:#D8D2C6; --rule2:#EAE5DA;
+  --ink:#1F2A2E; --ink2:#5A6A70; --ink3:#8C8578;
+  --blue:#42606E; --blue-lo:#EAF0F1; --seal:#2F7A5C; --seal-lo:#E7F1EC;
+  --warn:#9A4030; --warn-lo:#FBEEE9;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho",YuMincho,serif;
+  --gothic:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--gothic);background:var(--paper2);color:var(--ink);line-height:1.75;
+  -webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--seal);outline-offset:1px}
+.wrap{max-width:1000px;margin:0 auto;padding:14px 16px 46px}
+
+.hd{background:var(--paper);border:1px solid var(--rule);border-radius:7px;padding:16px 18px;margin-bottom:12px}
+.hd h1{font-family:var(--mincho);font-size:18px;letter-spacing:.1em;font-weight:600;margin-bottom:6px}
+.hd p{font-size:13px;color:var(--ink2);max-width:52em}
+.hd .steps{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--ink2)}
+.hd .steps span{background:var(--paper2);border-radius:3px;padding:5px 11px}
+.hd .steps b{font-family:var(--mono);color:var(--blue);margin-right:5px}
+
+.box{background:var(--paper);border:1px solid var(--rule);border-radius:7px;padding:16px 18px;margin-bottom:11px}
+.box h2{font-family:var(--mincho);font-size:15px;font-weight:600;margin-bottom:3px}
+.box h2 span{font-family:var(--mono);font-size:10.5px;color:var(--blue);letter-spacing:.12em;
+  display:block;margin-bottom:5px}
+.box .sub{font-size:12.5px;color:var(--ink2);margin-bottom:13px;max-width:52em}
+.h2row{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.cnt{font-family:var(--mono);font-size:12px;color:var(--ink3);margin-left:auto}
+
+.btn{padding:10px 20px;border-radius:5px;border:1px solid var(--rule);background:#fff;
+  font-size:14px;color:var(--ink2);white-space:nowrap}
+.btn:active{background:var(--paper2)}
+.btn.go{background:var(--seal);border-color:var(--seal);color:#fff}
+.btn.sm{padding:8px 15px;font-size:13px}
+.btn.dg{color:var(--warn);border-color:#E0B4A8}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+.opt{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+label.f{display:block}
+label.f span{display:block;font-size:11px;letter-spacing:.06em;color:var(--ink3);margin-bottom:3px}
+label.f input,label.f select{width:100%;padding:9px 10px;border:1px solid var(--rule);
+  border-radius:5px;background:#fff;font-size:15px}
+label.f input.mono{font-family:var(--mono)}
+
+.srch{display:flex;gap:9px;align-items:center;background:var(--paper2);border-radius:6px;
+  padding:9px 12px;margin-bottom:11px;flex-wrap:wrap}
+.srch input{flex:1;min-width:12em;border:1px solid var(--rule);border-radius:5px;
+  padding:8px 10px;background:#fff;font-size:15px}
+.srch .n{font-family:var(--mono);font-size:12px;color:var(--ink3)}
+
+.list{display:grid;gap:4px;max-height:46vh;overflow-y:auto}
+.row{display:grid;grid-template-columns:6.5rem 1fr 7rem auto;gap:10px;align-items:center;
+  background:#fff;border:1px solid var(--rule);border-radius:5px;padding:8px 11px;font-size:13.5px}
+.row .id{font-family:var(--mono);font-size:12px;color:var(--ink2)}
+.row .nm b{font-weight:600}
+.row .nm span{color:var(--ink3);font-size:12px;margin-left:7px}
+.row .st{font-family:var(--mono);font-size:11.5px;color:var(--ink3);text-align:right}
+.row.done{background:var(--seal-lo);border-color:#B9D6C8}
+.row.done .st{color:var(--seal)}
+.row .go{font-size:12px;color:var(--blue);border:1px solid var(--rule);border-radius:14px;
+  padding:5px 12px;background:var(--paper);white-space:nowrap}
+.none{font-size:13px;color:var(--ink3);padding:12px 2px}
+
+.info{background:var(--blue-lo);border-radius:5px;padding:12px 15px;font-size:12.5px;
+  color:var(--ink2);line-height:1.95;margin-top:12px}
+.info b{font-family:var(--mono);color:var(--ink)}
+.warnbox{background:var(--warn-lo);border:1px solid #E0B4A8;color:var(--warn);border-radius:5px;
+  padding:11px 14px;font-size:12.5px;line-height:1.8;margin-bottom:12px}
+.okbox{background:var(--seal-lo);border:1px solid #B9D6C8;color:var(--seal);border-radius:5px;
+  padding:11px 14px;font-size:12.5px;line-height:1.8;margin-bottom:12px}
+.hint{font-size:11.5px;color:var(--ink3);line-height:1.85;margin-top:8px}
+.hint code{background:var(--paper2);padding:1px 5px;border-radius:3px;font-family:var(--mono)}
+
+/* ダイアログ */
+.sheet{position:fixed;inset:0;background:rgba(31,42,46,.86);display:none;align-items:center;
+  justify-content:center;padding:16px;z-index:40}
+.sheet.on{display:flex}
+.card{background:var(--paper);border-radius:8px;width:min(680px,100%);max-height:92dvh;
+  display:flex;flex-direction:column;overflow:hidden}
+.card h3{font-family:var(--mincho);font-size:16px;letter-spacing:.08em;padding:18px 22px 3px}
+.card .lead{font-size:12.5px;color:var(--ink2);padding:0 22px 12px}
+.card .body{overflow-y:auto;padding:0 22px 6px;display:grid;gap:11px}
+.card .act{display:flex;gap:8px;padding:14px 22px 18px;flex-wrap:wrap;border-top:1px solid var(--rule);
+  background:var(--paper2);margin-top:10px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px}
+@media(max-width:600px){.g2,.g3{grid-template-columns:1fr}}
+
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);
+  color:var(--paper);padding:9px 20px;border-radius:20px;font-size:13px;opacity:0;
+  transition:opacity .2s;pointer-events:none;z-index:50;max-width:92vw;text-align:center}
+.toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hd">
+    <h1>狂犬病予防注射 台帳ツール</h1>
+    <p>昨年までに提出した様式を読み込んで台帳にし、今月の接種分だけを足して、同じ様式で書き出します。
+       飼主さんと犬の情報を毎年打ち直す必要がなくなります。
+       <b>このツールは通信をしません。</b>読み込んだ台帳は、お使いの端末から出ません。</p>
+    <div class="steps">
+      <span><b>01</b>昨年の様式を読み込む</span>
+      <span><b>02</b>今月の接種を記録する</span>
+      <span><b>03</b>様式で書き出す</span>
+    </div>
+  </div>
+
+  <div id="warn"></div>
+
+  <div class="box">
+    <div class="h2row"><h2><span>01</span>台帳をつくる</h2><span class="cnt" id="cntLed"></span></div>
+    <p class="sub">これまでに提出した様式（.xlsx）を読み込んでください。何年分でも重ねられます。
+      同じ登録番号は新しいほうで上書きし、注射の履歴は積み重ねます。
+      <b>最初に読み込んだ様式は、書き出しの雛形としても使います。</b></p>
+    <div class="acts">
+      <label class="btn go">様式を読み込む<input type="file" id="fLed" accept=".xlsx" multiple hidden></label>
+      <button class="btn sm" id="bSaveLed">台帳をファイルに保存</button>
+      <label class="btn sm">保存した台帳を読む<input type="file" id="fJson" accept=".json" hidden></label>
+      <button class="btn dg sm" id="bClrLed">台帳を消す</button>
+    </div>
+    <div class="info" id="infoLed"></div>
+  </div>
+
+  <div class="box">
+    <h2><span>02</span>提出の設定</h2>
+    <div class="opt">
+      <label class="f"><span>提出先</span><input id="oCity" placeholder="千葉市長"></label>
+      <label class="f"><span>会員名（担当獣医師名）</span><input id="oVet" placeholder="山田太郎"></label>
+      <label class="f"><span>年度（注射済票）</span><input id="oYear" class="mono" inputmode="numeric"></label>
+      <label class="f"><span>注射済票番号 次の番号</span><input id="oSeq" class="mono" inputmode="numeric"></label>
+      <label class="f"><span>登録確認方法（既定）</span><input id="oChk" placeholder="通知書"></label>
+      <label class="f"><span>提出日</span><input id="oDate" type="date"></label>
+    </div>
+    <p class="hint">年度は注射済票の年度です。読み込んだ様式では、<code>2026/03</code> の注射に <code>2026</code> 年度が入っていました。
+      お使いの市の扱いに合わせてください。</p>
+  </div>
+
+  <div class="box">
+    <div class="h2row"><h2><span>03</span>今月の接種を記録する</h2><span class="cnt" id="cntShot"></span></div>
+    <p class="sub">台帳から犬を探して「接種」を押し、注射日を入れてください。注射済票番号は自動で次の番号が入ります。</p>
+    <div class="srch">
+      <input id="q" type="search" placeholder="登録番号・飼主名・犬の名前・住所で探す" autocomplete="off">
+      <select id="fSt" style="padding:8px 10px;border:1px solid var(--rule);border-radius:5px;background:#fff">
+        <option value="all">すべて</option>
+        <option value="yet">今年まだ</option>
+        <option value="done">今年済み</option>
+      </select>
+      <span class="n" id="qn"></span>
+    </div>
+    <div class="list" id="list"></div>
+    <div class="acts">
+      <button class="btn" id="bNew">新規の犬を追加</button>
+    </div>
+  </div>
+
+  <div class="box">
+    <h2><span>04</span>書き出す</h2>
+    <p class="sub">月を選んで、その月の接種分を様式にして書き出します。未接種の一覧もCSVで出せます。</p>
+    <div class="opt">
+      <label class="f"><span>対象の月</span><input id="oMon" type="month"></label>
+      <label class="f"><span>この月の件数</span><input id="oMonN" class="mono" readonly></label>
+    </div>
+    <div class="acts">
+      <button class="btn go" id="bOut">様式で書き出す</button>
+      <button class="btn" id="bYet">未接種の一覧（CSV）</button>
+      <button class="btn" id="bAllCsv">台帳をCSVで出す</button>
+    </div>
+    <p class="hint">
+      書き出したファイルが原本です。端末の中の台帳は作業用の控えとお考えください。<br>
+      一日の終わり、または提出のたびに「台帳をファイルに保存」もしておくと安心です。
+    </p>
+  </div>
+
+</div>
+
+<!-- 接種の記録 -->
+<div class="sheet" id="dlg">
+  <div class="card">
+    <h3 id="dlgT">接 種 の 記 録</h3>
+    <p class="lead" id="dlgP"></p>
+    <div class="body">
+      <div class="g3">
+        <label class="f"><span>注射年月日</span><input id="sDate" type="date"></label>
+        <label class="f"><span>注射済票 年度</span><input id="sNoteY" class="mono" inputmode="numeric"></label>
+        <label class="f"><span>注射済票番号</span><input id="sNoteN" class="mono" inputmode="numeric"></label>
+      </div>
+      <div class="g2">
+        <label class="f"><span>区分</span>
+          <select id="sKu"><option>登録済</option><option>新規</option></select></label>
+        <label class="f"><span>登録確認方法</span><input id="sChk"></label>
+      </div>
+    </div>
+    <div class="act">
+      <button class="btn" id="sCancel">やめる</button>
+      <button class="btn dg" id="sDel">この記録を消す</button>
+      <button class="btn go" id="sOk">記録する</button>
+    </div>
+  </div>
+</div>
+
+<!-- 新規の犬 -->
+<div class="sheet" id="dlgN">
+  <div class="card">
+    <h3>新 規 の 犬</h3>
+    <p class="lead">台帳に無い犬を足します。登録番号は市から交付されたものを入れてください。</p>
+    <div class="body">
+      <div class="g2">
+        <label class="f"><span>登録番号 年度</span><input id="nRegY" class="mono" inputmode="numeric"></label>
+        <label class="f"><span>登録番号</span><input id="nRegN" class="mono" inputmode="numeric"></label>
+      </div>
+      <label class="f"><span>住所（犬の所在地）</span><input id="nAddr"></label>
+      <div class="g2">
+        <label class="f"><span>氏名</span><input id="nNm"></label>
+        <label class="f"><span>電話番号</span><input id="nTel" class="mono"></label>
+      </div>
+      <div class="g2">
+        <label class="f"><span>種類</span><input id="nBreed"></label>
+        <label class="f"><span>犬の名</span><input id="nDog"></label>
+      </div>
+      <div class="g3">
+        <label class="f"><span>生まれた年</span><input id="nBy" class="mono" inputmode="numeric"></label>
+        <label class="f"><span>月</span><input id="nBm" class="mono" inputmode="numeric"></label>
+        <label class="f"><span>日</span><input id="nBd" class="mono" inputmode="numeric"></label>
+      </div>
+      <div class="g3">
+        <label class="f"><span>毛色</span><input id="nColor"></label>
+        <label class="f"><span>性別</span>
+          <select id="nSex"><option>オス</option><option>メス</option></select></label>
+        <label class="f"><span>特徴</span><input id="nMark"></label>
+      </div>
+    </div>
+    <div class="act">
+      <button class="btn" id="nCancel">やめる</button>
+      <button class="btn go" id="nOk">台帳に足す</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const esc = s => String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let tT; const toast = m => { const e=$("toast"); e.textContent=m; e.classList.add("on");
+  clearTimeout(tT); tT=setTimeout(()=>e.classList.remove("on"),2200); };
+const pad2 = n => String(n).padStart(2,"0");
+
+/* ══════════════════════════════════════════════════════════
+   ZIP（外部ライブラリなし）
+   xlsx は ZIP なので、展開して中の XML を書き換え、詰め直します。
+   ══════════════════════════════════════════════════════════ */
+const DEC = new TextDecoder(), ENC = new TextEncoder();
+const dvOf = b => new DataView(b.buffer, b.byteOffset, b.byteLength);
+
+async function unzip(u8){
+  const d = dvOf(u8);
+  let eo = -1;
+  for(let i = u8.length - 22; i >= 0 && i > u8.length - 66000; i--){
+    if(d.getUint32(i, true) === 0x06054b50){ eo = i; break; }
+  }
+  if(eo < 0) throw new Error("xlsx として読めません");
+  const n = d.getUint16(eo + 10, true);
+  let p = d.getUint32(eo + 16, true);
+  const out = {};
+  for(let i = 0; i < n; i++){
+    if(d.getUint32(p, true) !== 0x02014b50) throw new Error("ファイルが壊れています");
+    const method = d.getUint16(p + 10, true);
+    const csize  = d.getUint32(p + 20, true);
+    const nlen   = d.getUint16(p + 28, true);
+    const elen   = d.getUint16(p + 30, true);
+    const clen   = d.getUint16(p + 32, true);
+    const lho    = d.getUint32(p + 42, true);
+    const name   = DEC.decode(u8.subarray(p + 46, p + 46 + nlen));
+    const lnlen  = d.getUint16(lho + 26, true);
+    const lelen  = d.getUint16(lho + 28, true);
+    const st     = lho + 30 + lnlen + lelen;
+    const raw    = u8.subarray(st, st + csize);
+    out[name] = method === 0 ? raw : await inflateRaw(raw);
+    p += 46 + nlen + elen + clen;
+  }
+  return out;
+}
+async function inflateRaw(u8){
+  if(typeof DecompressionStream !== "function")
+    throw new Error("この端末では xlsx を開けません（ブラウザが古い可能性があります）");
+  const s = new Blob([u8]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+  return new Uint8Array(await new Response(s).arrayBuffer());
+}
+const CRCT = (()=>{ const t = new Uint32Array(256);
+  for(let i=0;i<256;i++){ let c=i; for(let k=0;k<8;k++) c = c&1 ? 0xEDB88320 ^ (c>>>1) : c>>>1; t[i]=c>>>0; }
+  return t; })();
+function crc32(u8){ let c = 0xFFFFFFFF;
+  for(let i=0;i<u8.length;i++) c = CRCT[(c ^ u8[i]) & 0xFF] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0; }
+function zipStore(files){
+  const parts = [], dir = []; let off = 0;
+  for(const name in files){
+    const data = files[name], nb = ENC.encode(name), crc = crc32(data), sz = data.length;
+    const lh = new Uint8Array(30 + nb.length), l = dvOf(lh);
+    l.setUint32(0, 0x04034b50, true); l.setUint16(4, 20, true);
+    l.setUint32(14, crc, true); l.setUint32(18, sz, true); l.setUint32(22, sz, true);
+    l.setUint16(26, nb.length, true); lh.set(nb, 30);
+    parts.push(lh, data);
+    const ch = new Uint8Array(46 + nb.length), c = dvOf(ch);
+    c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true);
+    c.setUint32(16, crc, true); c.setUint32(20, sz, true); c.setUint32(24, sz, true);
+    c.setUint16(28, nb.length, true); c.setUint32(42, off, true); ch.set(nb, 46);
+    dir.push(ch); off += lh.length + sz;
+  }
+  let dlen = 0; for(const x of dir) dlen += x.length;
+  const eo = new Uint8Array(22), e = dvOf(eo);
+  e.setUint32(0, 0x06054b50, true);
+  e.setUint16(8, dir.length, true); e.setUint16(10, dir.length, true);
+  e.setUint32(12, dlen, true); e.setUint32(16, off, true);
+  const all = parts.concat(dir, [eo]);
+  let total = 0; for(const x of all) total += x.length;
+  const out = new Uint8Array(total); let q = 0;
+  for(const x of all){ out.set(x, q); q += x.length; }
+  return out;
+}
+
+/* ══ xlsx のセル読み書き ══════════════════════════════════ */
+const unesc = s => s.replace(/&lt;/g,"<").replace(/&gt;/g,">")
+                    .replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&amp;/g,"&");
+const xesc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")
+                    .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+function readShared(u8){
+  if(!u8) return [];
+  const x = DEC.decode(u8), out = [];
+  for(const m of x.matchAll(/<si>([\s\S]*?)<\/si>/g)){
+    let s = "";
+    for(const t of m[1].matchAll(/<t[^>]*>([\s\S]*?)<\/t>/g)) s += unesc(t[1]);
+    out.push(s);
+  }
+  return out;
+}
+function readCells(xml, shared){
+  const cells = {};
+  for(const m of xml.matchAll(/<c r="([A-Z]+\d+)"([^>]*?)(\/>|>([\s\S]*?)<\/c>)/g)){
+    const ref = m[1], attr = m[2] || "", body = m[4] || "";
+    if(!body) continue;
+    const t = (attr.match(/t="([^"]+)"/) || [])[1];
+    let v = null;
+    if(t === "s"){ v = shared[+(body.match(/<v>(\d+)<\/v>/)||[])[1]]; }
+    else if(t === "inlineStr"){
+      let s = ""; for(const q of body.matchAll(/<t[^>]*>([\s\S]*?)<\/t>/g)) s += unesc(q[1]); v = s;
+    }else{
+      const q = (body.match(/<v>([\s\S]*?)<\/v>/) || [])[1];
+      if(q != null) v = isNaN(q) ? unesc(q) : Number(q);
+    }
+    if(v !== null && v !== "") cells[ref] = v;
+  }
+  return cells;
+}
+function setCell(xml, ref, val){
+  const re = new RegExp('<c r="' + ref + '"([^>]*?)(\\/>|>[\\s\\S]*?<\\/c>)');
+  const m = xml.match(re);
+  if(!m) return xml;
+  const s = (m[1].match(/ s="\d+"/) || [""])[0];
+  let cell;
+  if(val === "" || val == null) cell = '<c r="' + ref + '"' + s + '/>';
+  else if(typeof val === "number") cell = '<c r="' + ref + '"' + s + '><v>' + val + '</v></c>';
+  else cell = '<c r="' + ref + '"' + s + ' t="inlineStr"><is><t xml:space="preserve">' +
+              xesc(val) + '</t></is></c>';
+  return xml.slice(0, m.index) + cell + xml.slice(m.index + m[0].length);
+}
+/* Excel の日付は 1899-12-30 からの日数 */
+const toSerial = ymd => {
+  const [y,m,d] = ymd.split("-").map(Number);
+  return Math.round((Date.UTC(y, m-1, d) - Date.UTC(1899,11,30)) / 86400000);
+};
+
+/* ══ 様式の列の割り当て（千葉市 様式第1号）══════════════
+   1件が2行。上の行を r、下の行を r+1 とします。 */
+const FORM = {
+  first: 9, step: 2, slots: 340,
+  up:   { no:"A", ku:"B", regY:"C", addr:"E", nm:"F", tel:"G", breed:"H", dog:"I",
+          bY:"J", color:"N", sex:"O", mark:"P", noteY:"Q", shot:"S", chk:"T" },
+  down: { regN:"C", bM:"J", bD:"L", noteN:"Q" },
+  head: { city:"A3", date:"Q3", vet:"O4" }
+};
+
+/* ══ 端末内の保存 ══════════════════════════════════════ */
+const DB = { h:null, ok:false };
+function dbOpen(){
+  return new Promise(res=>{
+    let q; try{ q = indexedDB.open("vetss_rabies", 1); }catch(e){ return res(null); }
+    q.onupgradeneeded = e=>{ const d = e.target.result;
+      if(!d.objectStoreNames.contains("kv")) d.createObjectStore("kv"); };
+    q.onsuccess=()=>res(q.result); q.onerror=()=>res(null); q.onblocked=()=>res(null);
+    setTimeout(()=>res(null), 3000);
+  });
+}
+const kvGet = k => new Promise(r=>{ if(!DB.ok) return r(null);
+  try{ const q = DB.h.transaction("kv","readonly").objectStore("kv").get(k);
+    q.onsuccess=()=>r(q.result ?? null); q.onerror=()=>r(null); }catch(e){ r(null); } });
+const kvPut = (k,v) => new Promise(r=>{ if(!DB.ok) return r(false);
+  try{ const q = DB.h.transaction("kv","readwrite").objectStore("kv").put(v,k);
+    q.onsuccess=()=>r(true); q.onerror=()=>r(false); }catch(e){ r(false); } });
+const kvDel = k => new Promise(r=>{ if(!DB.ok) return r(false);
+  try{ const q = DB.h.transaction("kv","readwrite").objectStore("kv").delete(k);
+    q.onsuccess=()=>r(true); q.onerror=()=>r(false); }catch(e){ r(false); } });
+
+/* ══ 台帳 ══════════════════════════════════════════════
+   LED[登録番号] = { regY, regN, addr, nm, tel, breed, dog, bY, bM, bD,
+                     color, sex, mark, hist:[{date, noteY, noteN, ku, chk}] } */
+let LED = {};        /* 台帳 */
+let TPL = null;      /* 書き出しの雛形（読み込んだ様式そのまま） */
+let CFG = { city:"", vet:"", year:"", seq:"", chk:"通知書", date:"" };
+const keyOf = (y,n) => String(y) + "-" + String(n);
+
+async function save(){
+  await kvPut("ledger", LED);
+  await kvPut("config", CFG);
+  drawInfo();
+}
+async function boot(){
+  DB.h = await dbOpen(); DB.ok = !!DB.h;
+  if(DB.ok){
+    LED = (await kvGet("ledger")) || {};
+    CFG = Object.assign(CFG, (await kvGet("config")) || {});
+    TPL = await kvGet("template");
+  }
+  const now = new Date();
+  if(!CFG.year) CFG.year = String(now.getFullYear());
+  if(!CFG.date) CFG.date = now.getFullYear()+"-"+pad2(now.getMonth()+1)+"-"+pad2(now.getDate());
+  $("oCity").value = CFG.city; $("oVet").value = CFG.vet;
+  $("oYear").value = CFG.year; $("oSeq").value = CFG.seq;
+  $("oChk").value  = CFG.chk;  $("oDate").value = CFG.date;
+  $("oMon").value  = now.getFullYear()+"-"+pad2(now.getMonth()+1);
+  if(!DB.ok){
+    $("warn").innerHTML = '<div class="warnbox">この環境では台帳を端末に保存できません。'+
+      '作業のたびに「台帳をファイルに保存」をお使いください。</div>';
+  }
+  if(typeof DecompressionStream !== "function"){
+    $("warn").innerHTML += '<div class="warnbox">このブラウザでは Excel ファイルを開けません。'+
+      'Safari 16.4 以降、または新しい Chrome / Edge をお使いください。</div>';
+  }
+  draw();
+}
+["oCity","oVet","oYear","oSeq","oChk","oDate"].forEach(id=>{
+  $(id).oninput = ()=>{
+    CFG.city = $("oCity").value; CFG.vet = $("oVet").value;
+    CFG.year = $("oYear").value; CFG.seq = $("oSeq").value;
+    CFG.chk  = $("oChk").value;  CFG.date = $("oDate").value;
+    save();
+  };
+});
+
+/* ══ 様式を読み込んで台帳に足す ══════════════════════════ */
+$("fLed").onchange = async e=>{
+  const files = [...e.target.files]; if(!files.length) return;
+  let added = 0, updated = 0, shots = 0, err = 0;
+  for(const f of files){
+    try{
+      const buf = new Uint8Array(await f.arrayBuffer());
+      const zf  = await unzip(buf);
+      const sheetName = Object.keys(zf).find(k=>/^xl\/worksheets\/sheet\d+\.xml$/.test(k));
+      if(!sheetName) throw new Error("シートが見つかりません");
+      const shared = readShared(zf["xl/sharedStrings.xml"]);
+      const xml = DEC.decode(zf[sheetName]);
+      const cells = readCells(xml, shared);
+      /* 雛形が無ければ、最初のファイルを雛形として覚えます */
+      if(!TPL){ TPL = buf; await kvPut("template", buf); }
+      /* ヘッダから提出先・獣医師名を拾います */
+      if(!CFG.city && cells[FORM.head.city]) CFG.city = String(cells[FORM.head.city]).replace(/[　\s]+$/,"");
+      if(!CFG.vet  && cells[FORM.head.vet])  CFG.vet  = String(cells[FORM.head.vet]);
+      for(let i=0;i<FORM.slots;i++){
+        const r = FORM.first + i*FORM.step, d = r+1;
+        const regY = cells[FORM.up.regY + r], regN = cells[FORM.down.regN + d];
+        if(regY == null || regN == null) continue;
+        const k = keyOf(regY, regN);
+        const rec = LED[k] || { hist:[] };
+        Object.assign(rec, {
+          regY: regY, regN: regN,
+          addr: cells[FORM.up.addr+r] ?? rec.addr ?? "",
+          nm:   cells[FORM.up.nm+r]   ?? rec.nm   ?? "",
+          tel:  String(cells[FORM.up.tel+r] ?? rec.tel ?? "").trim(),
+          breed:cells[FORM.up.breed+r]?? rec.breed?? "",
+          dog:  cells[FORM.up.dog+r]  ?? rec.dog  ?? "",
+          bY:   cells[FORM.up.bY+r]   ?? rec.bY   ?? "",
+          bM:   cells[FORM.down.bM+d] ?? rec.bM   ?? "",
+          bD:   cells[FORM.down.bD+d] ?? rec.bD   ?? "",
+          color:cells[FORM.up.color+r]?? rec.color?? "",
+          sex:  cells[FORM.up.sex+r]  ?? rec.sex  ?? "",
+          mark: cells[FORM.up.mark+r] ?? rec.mark ?? ""
+        });
+        if(!LED[k]){ LED[k] = rec; added++; } else updated++;
+        const shot = cells[FORM.up.shot+r];
+        if(shot){
+          const ds = normDate(shot);
+          if(ds && !rec.hist.some(h=>h.date === ds)){
+            rec.hist.push({ date:ds,
+              noteY: cells[FORM.up.noteY+r] ?? "", noteN: cells[FORM.down.noteN+d] ?? "",
+              ku:    cells[FORM.up.ku+r] ?? "", chk: cells[FORM.up.chk+r] ?? "" });
+            rec.hist.sort((a,b)=> a.date < b.date ? -1 : 1);
+            shots++;
+          }
+        }
+      }
+    }catch(x){ err++; toast(f.name + "：" + x.message); }
+  }
+  await save();
+  $("oCity").value = CFG.city; $("oVet").value = CFG.vet;
+  draw();
+  toast("読み込みました　犬 " + added + " 件を追加／" + updated + " 件を更新　接種 " + shots + " 件");
+  e.target.value = "";
+};
+/* "2026/03/06" や 45688（Excelの日付）を "2026-03-06" に揃えます */
+function normDate(v){
+  if(typeof v === "number"){
+    const ms = Date.UTC(1899,11,30) + v*86400000, d = new Date(ms);
+    return d.getUTCFullYear()+"-"+pad2(d.getUTCMonth()+1)+"-"+pad2(d.getUTCDate());
+  }
+  const s = String(v).trim().replace(/[年月]/g,"/").replace(/日/,"");
+  const m = s.match(/(\d{4})\D+(\d{1,2})\D+(\d{1,2})/);
+  return m ? m[1]+"-"+pad2(+m[2])+"-"+pad2(+m[3]) : "";
+}
+
+/* ══ 一覧 ══════════════════════════════════════════════ */
+const yearOf = k => { const r = LED[k]; return r; };
+function shotOfYear(rec, year){
+  return rec.hist.find(h => String(h.noteY) === String(year)) ||
+         rec.hist.find(h => h.date.slice(0,4) === String(year)) || null;
+}
+function filtered(){
+  const q  = $("q").value.replace(/[\s\u3000]/g,"");
+  const st = $("fSt").value, year = $("oYear").value;
+  const out = [];
+  for(const k in LED){
+    const r = LED[k];
+    if(q){
+      const hay = (k + r.addr + r.nm + r.dog + r.breed + r.tel).replace(/[\s\u3000]/g,"");
+      if(hay.indexOf(q) < 0) continue;
+    }
+    const done = !!shotOfYear(r, year);
+    if(st === "yet"  && done) continue;
+    if(st === "done" && !done) continue;
+    out.push(k);
+  }
+  return out.sort((a,b)=>{
+    const x = LED[a], y = LED[b];
+    return (x.nm||"") < (y.nm||"") ? -1 : (x.nm||"") > (y.nm||"") ? 1 : 0;
+  });
+}
+function draw(){
+  const year = $("oYear").value;
+  const all  = Object.keys(LED);
+  $("cntLed").textContent = all.length ? all.length + " 頭" : "";
+  const list = filtered();
+  $("qn").textContent = list.length + " / " + all.length;
+  if(!all.length){
+    $("list").innerHTML = '<div class="none">台帳がまだありません。上の「様式を読み込む」から始めてください。</div>';
+  }else if(!list.length){
+    $("list").innerHTML = '<div class="none">該当する犬がいません。</div>';
+  }else{
+    $("list").innerHTML = list.slice(0,400).map(k=>{
+      const r = LED[k], h = shotOfYear(r, year);
+      return '<div class="row'+(h?" done":"")+'">'+
+        '<span class="id">'+esc(k)+'</span>'+
+        '<span class="nm"><b>'+esc(r.nm)+'</b> の '+esc(r.dog)+
+          '<span>'+esc(r.breed)+'　'+esc(r.sex)+'</span></span>'+
+        '<span class="st">'+(h ? esc(h.date)+'<br>'+esc(h.noteN) : "—")+'</span>'+
+        '<button class="go" data-k="'+esc(k)+'">'+(h ? "直す" : "接種")+'</button>'+
+      '</div>';
+    }).join("") + (list.length > 400 ? '<div class="none">ほか '+(list.length-400)+' 頭（絞り込んでください）</div>' : "");
+  }
+  drawInfo(); drawMonth();
+}
+function drawInfo(){
+  const all = Object.keys(LED), year = $("oYear").value;
+  let done = 0;
+  for(const k of all) if(shotOfYear(LED[k], year)) done++;
+  $("infoLed").innerHTML = all.length
+    ? '台帳 <b>'+all.length+'</b> 頭　'+esc(year)+'年度 接種済 <b>'+done+'</b> 頭　'+
+      '未接種 <b>'+(all.length-done)+'</b> 頭' +
+      (TPL ? '　雛形あり' : '　<b>雛形がありません</b>（様式を1つ読み込んでください）')
+    : '様式（.xlsx）を読み込むと、飼主さんと犬の情報が台帳になります。';
+  $("cntShot").textContent = done ? done + " 頭 済" : "";
+}
+$("q").oninput = draw;
+$("fSt").onchange = draw;
+$("oYear").addEventListener("input", draw);
+
+/* ══ 接種の記録 ══════════════════════════════════════ */
+let CUR = "";
+$("list").addEventListener("click", e=>{
+  const b = e.target.closest("[data-k]"); if(!b) return;
+  openShot(b.dataset.k);
+});
+function nextSeq(){
+  const s = parseInt($("oSeq").value, 10);
+  if(!isNaN(s)) return s;
+  let mx = 0;
+  for(const k in LED) for(const h of LED[k].hist){
+    const n = parseInt(h.noteN, 10); if(!isNaN(n) && n > mx) mx = n;
+  }
+  return mx ? mx + 1 : "";
+}
+function openShot(k){
+  CUR = k;
+  const r = LED[k], year = $("oYear").value, h = shotOfYear(r, year);
+  $("dlgP").textContent = k + "　" + r.nm + " の " + r.dog + "（" + r.breed + "・" + r.sex + "）";
+  $("sDate").value  = h ? h.date : ($("oMon").value ? $("oMon").value + "-01" : "");
+  $("sNoteY").value = h ? h.noteY : year;
+  $("sNoteN").value = h ? h.noteN : nextSeq();
+  $("sKu").value    = h && h.ku ? h.ku : (r.hist.length ? "登録済" : "新規");
+  $("sChk").value   = h ? (h.chk || "") : ($("sKu").value === "新規" ? "" : $("oChk").value);
+  $("sDel").style.display = h ? "" : "none";
+  $("dlg").classList.add("on");
+  setTimeout(()=>$("sDate").focus(), 50);
+}
+$("sCancel").onclick = ()=> $("dlg").classList.remove("on");
+$("sOk").onclick = async ()=>{
+  const r = LED[CUR]; if(!r) return;
+  const date = $("sDate").value;
+  if(!date){ toast("注射年月日を入れてください"); return; }
+  const year = $("oYear").value;
+  const old = shotOfYear(r, year);
+  const rec = { date:date, noteY:$("sNoteY").value, noteN:$("sNoteN").value,
+                ku:$("sKu").value, chk:$("sChk").value };
+  if(old) Object.assign(old, rec);
+  else r.hist.push(rec);
+  r.hist.sort((a,b)=> a.date < b.date ? -1 : 1);
+  /* 次の番号をひとつ進めます */
+  const n = parseInt(rec.noteN, 10);
+  if(!isNaN(n)){ $("oSeq").value = n + 1; CFG.seq = String(n + 1); }
+  await save(); draw();
+  $("dlg").classList.remove("on");
+  toast("記録しました　" + r.dog + "　" + date);
+};
+$("sDel").onclick = async ()=>{
+  const r = LED[CUR]; if(!r) return;
+  const year = $("oYear").value, h = shotOfYear(r, year);
+  if(!h) return;
+  if(!confirm("この接種の記録を消します。よろしいですか？")) return;
+  r.hist = r.hist.filter(x=>x !== h);
+  await save(); draw();
+  $("dlg").classList.remove("on");
+  toast("消しました");
+};
+
+/* ══ 新規の犬 ══════════════════════════════════════════ */
+$("bNew").onclick = ()=>{
+  ["nRegY","nRegN","nAddr","nNm","nTel","nBreed","nDog","nBy","nBm","nBd","nColor","nMark"]
+    .forEach(id=> $(id).value = "");
+  $("nRegY").value = $("oYear").value;
+  $("dlgN").classList.add("on");
+  setTimeout(()=>$("nRegN").focus(), 50);
+};
+$("nCancel").onclick = ()=> $("dlgN").classList.remove("on");
+$("nOk").onclick = async ()=>{
+  const regY = $("nRegY").value.trim(), regN = $("nRegN").value.trim();
+  if(!regY || !regN){ toast("登録番号を入れてください"); return; }
+  const k = keyOf(regY, regN);
+  if(LED[k] && !confirm("同じ登録番号が台帳にあります。上書きしますか？")) return;
+  LED[k] = Object.assign(LED[k] || { hist:[] }, {
+    regY:isNaN(regY)?regY:+regY, regN:isNaN(regN)?regN:+regN,
+    addr:$("nAddr").value.trim(), nm:$("nNm").value.trim(), tel:$("nTel").value.trim(),
+    breed:$("nBreed").value.trim(), dog:$("nDog").value.trim(),
+    bY:$("nBy").value.trim(), bM:$("nBm").value.trim(), bD:$("nBd").value.trim(),
+    color:$("nColor").value.trim(), sex:$("nSex").value, mark:$("nMark").value.trim()
+  });
+  await save(); draw();
+  $("dlgN").classList.remove("on");
+  toast("台帳に足しました");
+  openShot(k);
+};
+
+/* ══ 月の集計と書き出し ══════════════════════════════════ */
+function monthList(){
+  const m = $("oMon").value; if(!m) return [];
+  const out = [];
+  for(const k in LED) for(const h of LED[k].hist)
+    if(String(h.date).slice(0,7) === m) out.push({ k:k, h:h });
+  return out.sort((a,b)=> a.h.date < b.h.date ? -1 :
+                          a.h.date > b.h.date ? 1 :
+                          (parseInt(a.h.noteN,10)||0) - (parseInt(b.h.noteN,10)||0));
+}
+function drawMonth(){ $("oMonN").value = monthList().length + " 件"; }
+$("oMon").onchange = drawMonth;
+
+function dl(blob, name){
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 1500);
+}
+$("bOut").onclick = async ()=>{
+  if(!TPL){ toast("先に様式を1つ読み込んでください（雛形として使います）"); return; }
+  const rows = monthList();
+  if(!rows.length){ toast("この月の接種がありません"); return; }
+  if(rows.length > FORM.slots){
+    toast("この月は " + rows.length + " 件で、様式の " + FORM.slots + " 枠を超えています"); return;
+  }
+  try{
+    const zf = await unzip(new Uint8Array(TPL));
+    const sheetName = Object.keys(zf).find(k=>/^xl\/worksheets\/sheet\d+\.xml$/.test(k));
+    let xml = DEC.decode(zf[sheetName]);
+    /* いったん全部の枠を空にします */
+    for(let i=0;i<FORM.slots;i++){
+      const r = FORM.first + i*FORM.step, d = r+1;
+      for(const c in FORM.up)   xml = setCell(xml, FORM.up[c] + r, "");
+      for(const c in FORM.down) xml = setCell(xml, FORM.down[c] + d, "");
+    }
+    /* ヘッダ */
+    if(CFG.vet)  xml = setCell(xml, FORM.head.vet, CFG.vet);
+    if(CFG.date) xml = setCell(xml, FORM.head.date, toSerial(CFG.date));
+    /* 本体 */
+    rows.forEach((x, i)=>{
+      const rec = LED[x.k], h = x.h;
+      const r = FORM.first + i*FORM.step, d = r+1;
+      const S = (ref, v)=>{ xml = setCell(xml, ref, v); };
+      S(FORM.up.no+r, i+1);
+      S(FORM.up.ku+r, h.ku || "登録済");
+      S(FORM.up.regY+r, rec.regY);      S(FORM.down.regN+d, rec.regN);
+      S(FORM.up.addr+r, rec.addr);      S(FORM.up.nm+r, rec.nm);
+      S(FORM.up.tel+r, rec.tel);        S(FORM.up.breed+r, rec.breed);
+      S(FORM.up.dog+r, rec.dog);        S(FORM.up.bY+r, rec.bY);
+      S(FORM.down.bM+d, rec.bM);        S(FORM.down.bD+d, rec.bD);
+      S(FORM.up.color+r, rec.color);    S(FORM.up.sex+r, rec.sex);
+      S(FORM.up.mark+r, rec.mark);
+      S(FORM.up.noteY+r, h.noteY);      S(FORM.down.noteN+d, h.noteN);
+      S(FORM.up.shot+r, h.date.replace(/-/g, "/"));
+      S(FORM.up.chk+r, h.chk || "");
+    });
+    zf[sheetName] = ENC.encode(xml);
+    dl(new Blob([zipStore(zf)], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}),
+       "狂犬病_" + $("oMon").value.replace("-", "") + "_" + rows.length + "件.xlsx");
+    toast(rows.length + " 件を書き出しました");
+  }catch(e){ toast("書き出せませんでした：" + e.message); }
+};
+function csv(rows){
+  const cell = v => { const s = String(v==null?"":v);
+    return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s; };
+  return "\uFEFF" + rows.map(r=>r.map(cell).join(",")).join("\r\n");
+}
+$("bYet").onclick = ()=>{
+  const year = $("oYear").value;
+  const rows = [["登録番号","飼主名","犬の名","種類","性別","住所","電話番号","前回の接種日"]];
+  for(const k in LED){
+    const r = LED[k];
+    if(shotOfYear(r, year)) continue;
+    const last = r.hist.length ? r.hist[r.hist.length-1].date : "";
+    rows.push([k, r.nm, r.dog, r.breed, r.sex, r.addr, r.tel, last]);
+  }
+  if(rows.length === 1){ toast("未接種の犬はいません"); return; }
+  dl(new Blob([csv(rows)],{type:"text/csv"}), "未接種_" + year + "年度_" + (rows.length-1) + "頭.csv");
+  toast((rows.length-1) + " 頭を書き出しました");
+};
+$("bAllCsv").onclick = ()=>{
+  const rows = [["登録番号年度","登録番号","飼主名","犬の名","種類","性別","毛色","特徴",
+                 "生年","生月","生日","住所","電話番号","接種回数","最終接種日"]];
+  for(const k in LED){
+    const r = LED[k];
+    rows.push([r.regY, r.regN, r.nm, r.dog, r.breed, r.sex, r.color, r.mark,
+      r.bY, r.bM, r.bD, r.addr, r.tel, r.hist.length,
+      r.hist.length ? r.hist[r.hist.length-1].date : ""]);
+  }
+  if(rows.length === 1){ toast("台帳が空です"); return; }
+  dl(new Blob([csv(rows)],{type:"text/csv"}), "台帳_" + (rows.length-1) + "頭.csv");
+};
+
+/* ══ 台帳の保存と読み込み ══════════════════════════════ */
+$("bSaveLed").onclick = ()=>{
+  if(!Object.keys(LED).length){ toast("台帳が空です"); return; }
+  const o = { schema:"vetss-rabies/0.1", savedAt:new Date().toISOString().slice(0,10),
+              config:CFG, ledger:LED };
+  dl(new Blob([JSON.stringify(o)],{type:"application/json"}),
+     "狂犬病台帳_" + o.savedAt.replace(/-/g,"") + ".json");
+  toast("保存しました");
+};
+$("fJson").onchange = async e=>{
+  const f = e.target.files[0]; if(!f) return;
+  try{
+    const o = JSON.parse(await f.text());
+    if(!o.ledger) throw new Error("台帳のファイルではありません");
+    LED = o.ledger;
+    if(o.config) CFG = Object.assign(CFG, o.config);
+    $("oCity").value = CFG.city || ""; $("oVet").value = CFG.vet || "";
+    if(CFG.year) $("oYear").value = CFG.year;
+    if(CFG.seq)  $("oSeq").value  = CFG.seq;
+    await save(); draw();
+    toast(Object.keys(LED).length + " 頭を読み込みました");
+  }catch(x){ toast("読み込めませんでした：" + x.message); }
+  e.target.value = "";
+};
+$("bClrLed").onclick = async ()=>{
+  const n = Object.keys(LED).length;
+  if(!n){ toast("台帳は空です"); return; }
+  if(!confirm(n + " 頭の台帳を消します。戻せません。よろしいですか？")) return;
+  LED = {};
+  await kvDel("ledger");
+  draw();
+  toast("消しました");
+};
+
+document.addEventListener("keydown", e=>{
+  if(e.key === "Escape"){ $("dlg").classList.remove("on"); $("dlgN").classList.remove("on"); }
+});
+boot();
+</script>
+</body>
+</html>
