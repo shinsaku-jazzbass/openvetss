@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>獣医師 勤務シフト編集ツール ｜ OpenVetss</title>
+<!--
+  OpenVetss - 動物病院のためのオープンソース・ツール群
+  https://www.vetss-karte.net/
+
+  獣医師 勤務シフト編集ツール  v0.1
+  Copyright (c) 2026 OpenVetss Project
+
+  MIT ライセンスで配布しています。改変も再配布も自由ですが、
+  この著作権表示とライセンス表示は残してください。無保証です。
+
+  月間の獣医師シフト（午前・午後・当直、本院/分院の別）をマス目で組み、
+  ファイルに保存・読み込みして使います。医師リストも画面から編集できます。
+
+  ★ このツールは通信をしません。作ったデータは、お使いの端末から出ません。
+  　「指定URLへ送信」だけは例外で、使う場合のみ入力したURLへ通信します。
+-->
+<style>
+  :root{
+    --honin:#2f6f4f; --honin-bg:#e3f2ea; --mabori:#8a5a1e; --mabori-bg:#f6ead3;
+    --off:#cfd4da; --off-bg:#f6f7f9; --tou:#a3341f; --tou-bg:#fbe6e1;
+    --line:#dadfe4; --ink:#2b2f36; --head:#5b6572;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Meiryo",system-ui,sans-serif;
+       color:var(--ink);background:#fbfbfa;padding:16px;font-size:13px}
+  h1{font-size:17px;margin:0 0 4px}
+  .sub{color:var(--head);font-size:12px;margin:0 0 12px;line-height:1.65}
+  .toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+  .legend{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+  .chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--head);
+        border:1px solid var(--line);border-radius:20px;padding:3px 9px;background:#fff}
+  .sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+  button.act{font:inherit;font-size:12px;border:1px solid var(--line);background:#fff;
+       color:var(--ink);border-radius:7px;padding:6px 12px;cursor:pointer}
+  button.act:hover{background:#eef1f4}
+  button.act.primary{background:#2f6f4f;color:#fff;border-color:#2f6f4f}
+  button.act.primary:hover{background:#275f43}
+  button.act.j{background:#1f5673;color:#fff;border-color:#1f5673}
+  button.act.j:hover{background:#184557}
+  .wrap{overflow:auto;border:1px solid var(--line);border-radius:10px;background:#fff;
+        max-height:60vh;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  table{border-collapse:separate;border-spacing:0;white-space:nowrap}
+  th,td{border-right:1px solid var(--line);border-bottom:1px solid var(--line);text-align:center}
+  thead th{position:sticky;top:0;z-index:3;background:#eef1f4;color:var(--head);font-weight:600;padding:5px 4px;font-size:11px}
+  .sat{color:#1461c4}.sun{color:#c4143c}
+  th.rowhead{position:sticky;left:0;z-index:2;background:#f7f9fb;color:var(--ink);font-weight:600;padding:0 10px;text-align:left;min-width:66px;border-right:2px solid #c4ccd4}
+  thead th.corner{position:sticky;left:0;z-index:4;background:#e7ebef;border-right:2px solid #c4ccd4;text-align:left;padding-left:10px}
+  td.cell{padding:0;min-width:46px;height:54px;vertical-align:middle;user-select:none}
+  td.cell:hover{outline:2px solid #9fb4c8;outline-offset:-2px}
+  .stack{display:flex;flex-direction:column;height:54px}
+  .seg{flex:1;display:flex;align-items:center;justify-content:center;font-size:12px;line-height:1;cursor:pointer;gap:3px}
+  .seg .lb{font-size:8px;color:#aeb4bc;font-weight:400}
+  .seg.am,.seg.pm{border-bottom:1px dashed #e4e7eb}
+  .v-honin{background:var(--honin-bg);color:var(--honin);font-weight:700}
+  .v-mabori{background:var(--mabori-bg);color:var(--mabori);font-weight:700}
+  .v-off{background:var(--off-bg);color:#c2c8cf}
+  .seg.tou{font-size:11px;font-weight:700}
+  .t-on{background:var(--tou-bg);color:var(--tou)} .t-off{background:#fcfdfe;color:#d3d8de}
+  .hint{font-size:11px;color:#9aa2ab}
+  .count{font-size:11px;color:var(--head)}
+  b.hon{color:var(--honin)} b.mab{color:var(--mabori)} b.tou{color:var(--tou)}
+  .out{margin-top:12px;border:1px solid var(--line);border-radius:8px;background:#fff;overflow:hidden;display:none}
+  .out.show{display:block}
+  .out-head{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#f2f5f7;border-bottom:1px solid var(--line)}
+  .out-head b{font-size:12px}
+  .tab{font:inherit;font-size:12px;border:1px solid var(--line);background:#fff;border-radius:6px;padding:4px 10px;cursor:pointer}
+  .tab.on{background:#1f5673;color:#fff;border-color:#1f5673}
+  textarea{width:100%;height:300px;border:0;padding:12px;font-family:"SF Mono",Consolas,monospace;font-size:12px;line-height:1.55;resize:vertical;color:#243b46}
+  .copy{margin-left:auto}
+  #download{margin-left:8px}
+  .sendbox{border-top:1px solid var(--line);padding:12px;background:#f9fafb}
+  .sendrow{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+  .sendrow label{font-size:11px;color:var(--head);min-width:88px}
+  .sendrow input[type=text]{flex:1;min-width:220px;font:inherit;font-size:12px;border:1px solid var(--line);
+       border-radius:6px;padding:6px 9px;color:var(--ink)}
+  #sendStatus{font-size:12px}
+  #sendStatus.ok{color:var(--honin);font-weight:700}
+  #sendStatus.err{color:var(--tou);font-weight:700}
+
+  /* ===== 印刷用カレンダー（本院/馬堀PDF） ===== */
+  #printCal{display:none}
+  .pc-wrap{padding:0}
+  .pc-h2{text-align:center;color:#1B4332;font-size:20px;margin:0 0 16px}
+  .pc-table{width:100%;border-collapse:collapse;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+  .pc-table th{padding:8px 4px;font-size:13px;font-weight:700;background:#5BADDC;color:#fff;text-align:center;border:1px solid #4a9dc0}
+  .pc-table td{border:1px solid #e0e0e0;vertical-align:top;padding:4px;min-height:60px;width:14.28%;font-size:11px;background:#fff}
+  .pc-day{font-size:13px;font-weight:700;margin-bottom:4px}
+  .pc-am{color:#1B4332;font-size:11px;line-height:1.6}
+  .pc-pm{color:#0000CC;font-size:11px;line-height:1.6}
+  .pc-name{display:inline-block;margin:0 2px}
+  @media print{
+    body>*:not(#printCal){display:none !important}
+    #printCal{display:block !important}
+    .pc-table{box-shadow:none !important}
+    .pc-table th{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    @page{size:A4 landscape;margin:8mm}
+  }
+</style>
+</head>
+<body>
+<div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap">
+  <h1 style="margin:0">獣医師 勤務シフト編集ツール <span style="font-weight:400;color:#9aa2ab;font-size:13px">v0.1</span></h1>
+  <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--head)">
+    対象年月：<input type="month" id="ymPicker" style="font:inherit;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:4px 8px;color:var(--ink)">
+  </span>
+  <button class="act" id="staffToggle" style="margin-left:auto">👥 医師リストを編集</button>
+</div>
+<div id="staffPanel" style="display:none;border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:10px;background:#fff">
+  <div class="hint" style="margin-bottom:8px">ここで登録した医師が、下のマス目の行（または列）になります。ID は doctor_shifttb 転送用データの shifttb_doctorid にそのまま使われます。並び順を変えたいときは、下の一覧の行を上下に動かして調整してください（ドラッグではなく「↑」「↓」ボタンです）。</div>
+  <div id="staffList" style="display:flex;flex-direction:column;gap:4px;margin-bottom:8px"></div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+    <input type="text" id="newStaffName" placeholder="医師名（例：山田）" style="font:inherit;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:6px 9px;width:140px">
+    <input type="number" id="newStaffId" placeholder="ID（例：40）" style="font:inherit;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:6px 9px;width:100px">
+    <button class="act j" id="addStaff">＋ 追加</button>
+    <span class="hint" id="staffStatus"></span>
+  </div>
+</div>
+<p class="sub">
+  まず「👥 医師リストを編集」で医師を登録してから、マス目を編集してください。1マス3段：<b class="hon">午前</b>・<b class="hon">午後</b>・<b class="tou">当直</b>。午前/午後は<b>クリックで循環</b>（休→<b class="hon">本院</b>→<b class="mab">馬堀</b>→休）、当直はクリックで <b class="tou">当</b>/空。<br>
+  <span class="hint">「💾 編集データを保存（全月）」でファイルに保存し、「📂 編集データを読み込む」で開き直せます。「📄 データ出力」からは"人が読めるJSON"／CSV／doctor_shifttb転送用形式も確認できます。「指定URLへ送信」は使う場合だけ、入力したURLへ通信します。</span>
+</p>
+
+<div class="toolbar">
+  <button class="act primary" id="flip">⇄ 行と列を入れ替える</button>
+  <span class="hint" id="orient"></span>
+  <button class="act j" id="export">📄 データ出力</button>
+  <button class="act" id="undo">元に戻す</button>
+  <button class="act" id="reset">実データに戻す</button>
+  <span class="count" id="count"></span>
+  <button class="act j" id="saveAll">💾 編集データを保存（全月）</button>
+  <button class="act" id="loadAll">📂 編集データを読み込む</button>
+  <input type="file" id="loadFile" accept="application/json" style="display:none">
+  <span class="hint" id="loadStatus"></span>
+  <button class="act" id="pdfHonin" style="margin-left:auto">🖨️ 本院PDF</button>
+  <button class="act" id="pdfMabori">🖨️ 馬堀PDF</button>
+  <div class="legend">
+    <span class="chip"><span class="sw" style="background:var(--honin-bg);border:1px solid var(--honin)"></span>本院</span>
+    <span class="chip"><span class="sw" style="background:var(--mabori-bg);border:1px solid var(--mabori)"></span>馬堀</span>
+    <span class="chip"><span class="sw" style="background:var(--off-bg);border:1px solid var(--off)"></span>休</span>
+    <span class="chip"><span class="sw" style="background:var(--tou-bg);border:1px solid var(--tou)"></span>当直</span>
+  </div>
+</div>
+
+<div id="printCal"></div>
+
+<div class="wrap"><table id="grid"></table></div>
+
+<div class="out" id="outbox">
+  <div class="out-head">
+    <b>データ出力</b>
+    <button class="tab on" data-fmt="json">人が読めるJSON</button>
+    <button class="tab" data-fmt="csv">CSV（Excelで開ける）</button>
+    <button class="tab" data-fmt="transfer">転送用（doctor_shifttb形式）</button>
+    <button class="act copy" id="copy">コピー</button>
+    <button class="act copy" id="download">💾 ファイルに保存</button>
+  </div>
+  <textarea id="outtext" readonly spellcheck="false"></textarea>
+
+  <div class="sendbox">
+    <div class="sendrow">
+      <label>送信先URL</label>
+      <input type="text" id="sendUrl" placeholder="https://www.vetss-karte.net/healthpet/shift_receive.php">
+    </div>
+    <div class="sendrow">
+      <label>トークン（任意）</label>
+      <input type="text" id="sendToken" placeholder="受信側で発行したトークンがあれば入力">
+    </div>
+    <div class="sendrow">
+      <button class="act j" id="sendBtn">🚀 指定URLへ送信（転送用データ）</button>
+      <span class="hint" id="sendStatus"></span>
+    </div>
+    <p class="hint">送信するのは「転送用（doctor_shifttb形式）」の内容です。doctor_shifttbの4カラムに加え、本院/馬堀の区分（branch_am／branch_pm）も含めます。区分はVetssWeb側の別テーブルで受ける想定です（doctor_shifttb自体には院区分カラムが無いため）。フルオフの日は行を作りません。URL・トークンはこの端末のブラウザに保存され、次回入力を省けます。</p>
+  </div>
+</div>
+
+<script>
+let NAMES = []; // 医師名（画面の「医師リストを編集」から追加・削除）
+let DOCID = {}; // 医師名→doctor_shifttbのID
+const CYCLE=['／','本','マ'], DOW=['日','月','火','水','木','金','土'];
+function daysInMonth(y,m){ return new Date(y, m, 0).getDate(); }
+function blankState(days){
+  const s={};
+  NAMES.forEach(nm=>{ s[nm]=[]; for(let i=0;i<days;i++) s[nm].push(['／','／','／']); });
+  return s;
+}
+const today = new Date();
+let YEAR=today.getFullYear(), MONTH=today.getMonth()+1, DAYS=daysInMonth(YEAR,MONTH);
+let state=blankState(DAYS), history=[], docFirst=true, fmt='json';
+const ymKey=(y,m)=>`${y}-${pad(m)}`;
+let stateCache={}; // ブラウザを開いている間、月をまたいでも編集内容を保持（{"2026-10":{...state}} 形式）
+
+function dow(d){return new Date(YEAR,MONTH-1,d).getDay();}
+function cls(v){return v==='本'?'v-honin':v==='マ'?'v-mabori':'v-off';}
+function disp(v){return v==='本'?'本':v==='マ'?'マ':'・';}
+function cycle(v){return CYCLE[(CYCLE.indexOf(v)+1)%CYCLE.length];}
+function pad(n){return (n<10?'0':'')+n;}
+
+function cellHTML(ri,d){
+  const c=state[NAMES[ri]][d], tou=c[2]==='○';
+  return `<td class="cell" data-doc="${ri}" data-day="${d}"><div class="stack">
+    <div class="seg am ${cls(c[0])}" data-half="0"><span class="lb">前</span>${disp(c[0])}</div>
+    <div class="seg pm ${cls(c[1])}" data-half="1"><span class="lb">後</span>${disp(c[1])}</div>
+    <div class="seg tou ${tou?'t-on':'t-off'}" data-half="2">${tou?'当':'－'}</div></div></td>`;
+}
+function build(){
+  const t=document.getElementById('grid'); let h='';
+  if(NAMES.length===0){
+    t.innerHTML='';
+    document.getElementById('orient').textContent='';
+    document.getElementById('count').textContent='医師が登録されていません。「👥 医師リストを編集」から追加してください。';
+    return;
+  }
+  if(docFirst){
+    h+='<thead><tr><th class="corner">医師＼日</th>';
+    for(let d=1;d<=DAYS;d++){const w=dow(d),c=w===0?'sun':w===6?'sat':'';h+=`<th><div class="${c}">${d}</div><div class="${c}" style="font-size:10px">${DOW[w]}</div></th>`;}
+    h+='</tr></thead><tbody>';
+    NAMES.forEach((nm,ri)=>{h+=`<tr><th class="rowhead">${nm}</th>`;for(let d=0;d<DAYS;d++)h+=cellHTML(ri,d);h+='</tr>';});
+  }else{
+    h+='<thead><tr><th class="corner">日＼医師</th>';
+    NAMES.forEach(nm=>h+=`<th class="rowhead" style="position:sticky;top:0;background:#eef1f4">${nm}</th>`);
+    h+='</tr></thead><tbody>';
+    for(let d=0;d<DAYS;d++){const w=dow(d+1),c=w===0?'sun':w===6?'sat':'';
+      h+=`<tr><th class="rowhead"><span class="${c}">${d+1}(${DOW[w]})</span></th>`;
+      NAMES.forEach((nm,ri)=>h+=cellHTML(ri,d));h+='</tr>';}
+  }
+  h+='</tbody>'; t.innerHTML=h;
+  document.getElementById('orient').textContent=docFirst?'医師（縦）× 日付（横）':'日付（縦）× 医師（横）';
+  refresh();
+}
+function refresh(){
+  let hon=0,mab=0,tou=0;
+  NAMES.forEach(nm=>state[nm].forEach(c=>{[0,1].forEach(i=>{if(c[i]==='本')hon++;if(c[i]==='マ')mab++;});if(c[2]==='○')tou++;}));
+  document.getElementById('count').textContent=`本院 ${hon}／馬堀 ${mab}コマ・当直 ${tou}回`;
+  if(document.getElementById('outbox').classList.contains('show')) renderOut();
+}
+document.getElementById('grid').addEventListener('click',e=>{
+  const seg=e.target.closest('.seg'); if(!seg)return;
+  const td=seg.closest('td.cell'),ri=+td.dataset.doc,d=+td.dataset.day,hi=+seg.dataset.half,nm=NAMES[ri];
+  pushHistory();
+  if(hi===2) state[nm][d][2]=state[nm][d][2]==='○'?'／':'○';
+  else state[nm][d][hi]=cycle(state[nm][d][hi]);
+  const fresh=document.createElement('tbody');fresh.innerHTML='<tr>'+cellHTML(ri,d)+'</tr>';
+  td.replaceWith(fresh.querySelector('td')); refresh();
+});
+function pushHistory(){history.push(JSON.stringify(state));if(history.length>80)history.shift();}
+
+// ==== 医師リストの編集（追加・削除・並べ替え） ====
+document.getElementById('staffToggle').onclick=()=>{
+  const p=document.getElementById('staffPanel');
+  p.style.display = p.style.display==='none' ? 'block' : 'none';
+  if(p.style.display==='block') renderStaffList();
+};
+function renderStaffList(){
+  const box=document.getElementById('staffList');
+  if(NAMES.length===0){ box.innerHTML='<span class="hint">まだ医師が登録されていません。下から追加してください。</span>'; return; }
+  box.innerHTML = NAMES.map((nm,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;font-size:12px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
+      <span style="flex:1"><b>${nm}</b><span class="hint" style="margin-left:6px">ID: ${DOCID[nm]}</span></span>
+      <button class="act" data-mv="up" data-i="${i}" ${i===0?'disabled':''} style="padding:2px 8px">↑</button>
+      <button class="act" data-mv="down" data-i="${i}" ${i===NAMES.length-1?'disabled':''} style="padding:2px 8px">↓</button>
+      <button class="act" data-del="${i}" style="padding:2px 8px;color:var(--tou)">削除</button>
+    </div>`).join('');
+}
+document.getElementById('staffList').addEventListener('click', e=>{
+  const btn=e.target.closest('button'); if(!btn) return;
+  if(btn.dataset.mv){
+    const i=+btn.dataset.i, j = btn.dataset.mv==='up' ? i-1 : i+1;
+    if(j<0 || j>=NAMES.length) return;
+    [NAMES[i],NAMES[j]]=[NAMES[j],NAMES[i]];
+    renderStaffList(); build();
+  }else if(btn.dataset.del!==undefined){
+    const i=+btn.dataset.del, nm=NAMES[i];
+    if(!confirm(`「${nm}」を医師リストから削除します。この医師の全月の入力内容も消えます。よろしいですか？`)) return;
+    NAMES.splice(i,1); delete DOCID[nm]; delete state[nm];
+    Object.values(stateCache).forEach(s=>delete s[nm]);
+    renderStaffList(); build();
+  }
+});
+document.getElementById('addStaff').onclick=()=>{
+  const nameInput=document.getElementById('newStaffName'), idInput=document.getElementById('newStaffId');
+  const status=document.getElementById('staffStatus');
+  const nm=nameInput.value.trim(), id=idInput.value.trim();
+  status.textContent=''; status.style.color='';
+  if(!nm){ status.textContent='医師名を入力してください'; status.style.color='var(--tou)'; return; }
+  if(NAMES.includes(nm)){ status.textContent='同じ名前が既にあります'; status.style.color='var(--tou)'; return; }
+  if(!id || isNaN(Number(id))){ status.textContent='IDは数字で入力してください'; status.style.color='var(--tou)'; return; }
+  NAMES.push(nm); DOCID[nm]=Number(id);
+  state[nm]=[]; for(let i=0;i<DAYS;i++) state[nm].push(['／','／','／']);
+  Object.keys(stateCache).forEach(key=>{
+    const [y,m]=key.split('-').map(Number), d=daysInMonth(y,m);
+    stateCache[key][nm]=[]; for(let i=0;i<d;i++) stateCache[key][nm].push(['／','／','／']);
+  });
+  nameInput.value=''; idInput.value='';
+  renderStaffList(); build();
+};
+// ==== 本院/馬堀PDF（このアプリだけで完結。サーバー往復なし） ====
+const PC_WEEKDAYS=['日','月','火','水','木','金','土'];
+const PC_COLORS=['#CC0000','#333','#333','#333','#333','#333','#0000CC'];
+
+function buildBranchCalendarHTML(branchChar, branchLabel){
+  const firstDow = new Date(YEAR, MONTH-1, 1).getDay();
+  let rows='<tr>'+PC_WEEKDAYS.map((wd,i)=>`<th style="color:${PC_COLORS[i]}">${wd}</th>`).join('')+'</tr><tr>';
+  let col=0;
+  for(let i=0;i<firstDow;i++){ rows+='<td></td>'; col++; }
+  for(let d=1; d<=DAYS; d++){
+    if(col%7===0 && col>0) rows+='</tr><tr>';
+    const dowIdx=(firstDow + d - 1) % 7, color=PC_COLORS[dowIdx];
+    const idx=d-1;
+    const amNames=[], pmNames=[];
+    NAMES.forEach(nm=>{
+      const c=state[nm][idx];
+      if(c[0]===branchChar) amNames.push(nm);
+      if(c[1]===branchChar) pmNames.push(nm);
+    });
+    const both=amNames.filter(n=>pmNames.includes(n));
+    const onlyAm=amNames.filter(n=>!pmNames.includes(n));
+    const onlyPm=pmNames.filter(n=>!amNames.includes(n));
+    rows+=`<td><div class="pc-day" style="color:${color}">${d}</div>`;
+    if(both.length) rows+=`<div class="pc-am">${both.map(n=>`<span class="pc-name">${n}</span>`).join('')}</div>`;
+    if(onlyAm.length) rows+=`<div class="pc-am">午前:${onlyAm.map(n=>`<span class="pc-name">${n}</span>`).join('')}</div>`;
+    if(onlyPm.length) rows+=`<div class="pc-pm">午後:${onlyPm.map(n=>`<span class="pc-name">${n}</span>`).join('')}</div>`;
+    rows+='</td>';
+    col++;
+  }
+  while(col%7!==0){ rows+='<td></td>'; col++; }
+  return `<div class="pc-wrap">
+    <h2 class="pc-h2">🗓️ ${YEAR}年${MONTH}月 ${branchLabel} 診療担当医師シフト表</h2>
+    <table class="pc-table">${rows}</table>
+  </div>`;
+}
+function printBranch(branchChar, branchLabel){
+  document.getElementById('printCal').innerHTML = buildBranchCalendarHTML(branchChar, branchLabel);
+  setTimeout(()=>window.print(), 50);
+}
+document.getElementById('pdfHonin').onclick=()=>printBranch('本','本院');
+document.getElementById('pdfMabori').onclick=()=>printBranch('マ','馬堀分院');
+
+// ==== 編集データの保存・読み込み（今開いている月＋キャッシュ済みの他の月＋医師リストをまとめて1ファイルに） ====
+document.getElementById('saveAll').onclick=()=>{
+  stateCache[ymKey(YEAR,MONTH)] = JSON.parse(JSON.stringify(state)); // 今の月も含める
+  const doc={
+    "__type":"healthpet_shift_save", "__version":2,
+    "保存日時": new Date().toLocaleString('ja-JP'),
+    "names": NAMES,
+    "docid": DOCID,
+    "months": stateCache
+  };
+  const blob=new Blob([JSON.stringify(doc,null,2)], {type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`shift_save_${ymKey(YEAR,MONTH)}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+};
+
+document.getElementById('loadAll').onclick=()=>document.getElementById('loadFile').click();
+document.getElementById('loadFile').onchange=(e)=>{
+  const file=e.target.files[0]; if(!file) return;
+  const status=document.getElementById('loadStatus');
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const doc=JSON.parse(reader.result);
+      if(!doc.months || typeof doc.months!=='object') throw new Error('対応していない形式のファイルです（このアプリの「編集データを保存」で作ったファイルを選んでください）');
+      if(Array.isArray(doc.names) && doc.names.length){ NAMES = doc.names.slice(); }
+      if(doc.docid && typeof doc.docid==='object'){ DOCID = Object.assign({}, doc.docid); }
+      stateCache = Object.assign(stateCache, doc.months); // 既存キャッシュとマージ（同じ月は上書き）
+      const keys=Object.keys(doc.months).sort();
+      const firstKey = keys.includes(ymKey(YEAR,MONTH)) ? ymKey(YEAR,MONTH) : keys[0];
+      const [y,m]=firstKey.split('-').map(Number);
+      YEAR=y; MONTH=m; DAYS=daysInMonth(YEAR,MONTH);
+      state=JSON.parse(JSON.stringify(stateCache[firstKey]));
+      history=[];
+      ymPicker.value=firstKey;
+      document.getElementById('outbox').classList.remove('show');
+      renderStaffList();
+      build();
+      status.textContent=`読み込みました（${keys.join('、')}）`; status.style.color='var(--honin)';
+    }catch(err){
+      status.textContent='読み込み失敗：'+err.message; status.style.color='var(--tou)';
+    }
+  };
+  reader.readAsText(file);
+  e.target.value='';
+};
+
+document.getElementById('undo').onclick=()=>{if(history.length){state=JSON.parse(history.pop());build();}};
+document.getElementById('reset').onclick=()=>{
+  if(!confirm('この月の編集内容を空にします。よろしいですか？')) return;
+  pushHistory();
+  state=blankState(DAYS);
+  build();
+};
+document.getElementById('flip').onclick=()=>{docFirst=!docFirst;build();};
+
+// ==== 年月ピッカー（切り替えても編集内容はブラウザ内に保持） ====
+const ymPicker=document.getElementById('ymPicker');
+ymPicker.value = `${YEAR}-${pad(MONTH)}`;
+ymPicker.onchange=()=>{
+  const [y,m]=ymPicker.value.split('-').map(Number);
+  if(!y||!m) return;
+  // 今の月の編集内容をキャッシュへ退避
+  stateCache[ymKey(YEAR,MONTH)] = JSON.parse(JSON.stringify(state));
+
+  YEAR=y; MONTH=m; DAYS=daysInMonth(YEAR,MONTH);
+  history=[];
+  const key=ymKey(YEAR,MONTH);
+  state = stateCache[key] ? JSON.parse(JSON.stringify(stateCache[key])) : blankState(DAYS);
+  document.getElementById('outbox').classList.remove('show');
+  build();
+};
+
+// ==== データ出力 ====
+function label(v){return v==='本'?'本院':v==='マ'?'馬堀':'休';}
+function buildJSON(){
+  // 人が読める、自己説明的なドキュメント（Firebase的なまとまり）
+  const shifts=[];
+  for(let d=0;d<DAYS;d++){
+    const date=`${YEAR}-${pad(MONTH)}-${pad(d+1)}`, wd=DOW[dow(d+1)];
+    NAMES.forEach(nm=>{
+      const c=state[nm][d];
+      // 休みだけ・当直も無しの人は省く（読みやすさ優先）
+      if(c[0]==='／'&&c[1]==='／'&&c[2]!=='○') return;
+      shifts.push({
+        "日付":`${date}(${wd})`, "医師":nm, "doctid":DOCID[nm],
+        "午前":label(c[0]), "午後":label(c[1]), "当直": c[2]==='○'?"あり":"なし"
+      });
+    });
+  }
+  const doc={
+    "勤務表":"動物病院ヘルスペット 本院 獣医師勤務",
+    "年月":`${YEAR}年${MONTH}月`,
+    "記号の意味":{"本院":"本院で勤務","馬堀":"馬堀海岸分院で勤務","休":"勤務なし","当直":"夜間当直"},
+    "勤務":shifts
+  };
+  return JSON.stringify(doc,null,2);
+}
+function buildCSV(){
+  let rows=['日付,曜日,doctid,医師名,午前,午後,当直'];
+  for(let d=0;d<DAYS;d++){
+    const date=`${YEAR}-${pad(MONTH)}-${pad(d+1)}`, wd=DOW[dow(d+1)];
+    NAMES.forEach(nm=>{
+      const c=state[nm][d];
+      rows.push([date,wd,DOCID[nm],nm,label(c[0]),label(c[1]),c[2]==='○'?'あり':'なし'].join(','));
+    });
+  }
+  return rows.join('\n');
+}
+// ==== doctor_shifttb 転送用（同日重複なし前提。当直が立つ日はku=1のみ、日中勤務の日はku=0で午前/午後の別をampmkuに） ====
+function buildShiftRows(){
+  const rows=[];
+  const branchName={'本':'本院','マ':'馬堀'};
+  for(let d=0;d<DAYS;d++){
+    const date=`${YEAR}-${pad(MONTH)}-${pad(d+1)}`;
+    NAMES.forEach(nm=>{
+      const c=state[nm][d], am=c[0]!=='／', pm=c[1]!=='／', tou=c[2]==='○';
+      if(tou){
+        rows.push({shifttb_yymmdd:date, shifttb_doctorid:DOCID[nm], shifttb_ampmku:0, shifttb_ku:1,
+                    branch_am:null, branch_pm:null});
+      }else if(am||pm){
+        const ampmku = (am&&pm)?3:(am?1:2);
+        rows.push({shifttb_yymmdd:date, shifttb_doctorid:DOCID[nm], shifttb_ampmku:ampmku, shifttb_ku:0,
+                    branch_am: am?branchName[c[0]]:null, branch_pm: pm?branchName[c[1]]:null});
+      }
+      // 終日休みは行を作らない
+    });
+  }
+  return rows;
+}
+function buildTransferJSON(){ return JSON.stringify(buildShiftRows(), null, 2); }
+
+function renderOut(){
+  document.getElementById('outtext').value =
+    fmt==='json'?buildJSON(): fmt==='csv'?buildCSV(): buildTransferJSON();
+}
+document.getElementById('export').onclick=()=>{
+  const box=document.getElementById('outbox'); box.classList.add('show'); renderOut();
+  box.scrollIntoView({behavior:'smooth',block:'nearest'});
+};
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); fmt=b.dataset.fmt; renderOut();
+});
+document.getElementById('copy').onclick=()=>{
+  const t=document.getElementById('outtext'); t.select(); document.execCommand('copy');
+  const btn=document.getElementById('copy'); const o=btn.textContent; btn.textContent='コピーしました'; setTimeout(()=>btn.textContent=o,1200);
+};
+
+// ==== ローカル保存（ファイルダウンロード） ====
+document.getElementById('download').onclick=()=>{
+  const ext = fmt==='csv'?'csv':'json';
+  const mime = fmt==='csv'?'text/csv':'application/json';
+  const name = `shift_${YEAR}${pad(MONTH)}_${fmt}.${ext}`;
+  const blob = new Blob([document.getElementById('outtext').value], {type:mime});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name;
+  document.body.appendChild(a); a.click(); a.remove();
+};
+
+// ==== 指定URLへ送信（送信内容は常に転送用JSON。表示中のタブが何であっても関係ない） ====
+const urlInput=document.getElementById('sendUrl'), tokenInput=document.getElementById('sendToken');
+urlInput.value = localStorage.getItem('shift_send_url') || '';
+tokenInput.value = localStorage.getItem('shift_send_token') || '';
+document.getElementById('sendBtn').onclick=async ()=>{
+  const url=urlInput.value.trim(), token=tokenInput.value.trim();
+  const status=document.getElementById('sendStatus');
+  status.className=''; status.textContent='';
+  if(!url){ status.textContent='送信先URLを入力してください'; status.className='err'; return; }
+  localStorage.setItem('shift_send_url',url);
+  localStorage.setItem('shift_send_token',token);
+  const rows=buildShiftRows();
+  if(!confirm(`${rows.length}件のシフト行を\n${url}\nへ送信します。よろしいですか？`)) return;
+  status.textContent='送信中…'; status.className='';
+  try{
+    const headers={'Content-Type':'application/json'};
+    if(token) headers['Authorization']='Bearer '+token;
+    const res=await fetch(url,{method:'POST',headers,body:JSON.stringify({year:YEAR,month:MONTH,shifts:rows})});
+    const text=await res.text();
+    if(res.ok){ status.textContent=`送信完了（${rows.length}件）：${text.slice(0,80)}`; status.className='ok'; }
+    else{ status.textContent=`送信失敗（HTTP ${res.status}）：${text.slice(0,120)}`; status.className='err'; }
+  }catch(err){
+    status.textContent='通信エラー：'+err.message; status.className='err';
+  }
+};
+
+build();
+</script>
+</body>
+</html>

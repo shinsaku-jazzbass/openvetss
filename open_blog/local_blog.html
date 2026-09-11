@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ローカルブログ ｜ OpenVetssサンプル</title>
+<!--
+  OpenVetss - 動物病院のためのオープンソース・ツール群
+  https://www.vetss-karte.net/
+
+  ローカルブログ（試作サンプル）  v0.1
+  Copyright (c) 2026 OpenVetss Project
+
+  MIT ライセンスで配布しています。改変も再配布も自由ですが、
+  この著作権表示とライセンス表示は残してください。無保証です。
+
+  月単位で投稿をためて、ファイルに保存します。SNSへ出したい投稿は
+  「SNS用にコピー」でそのまま貼り付けられます。
+
+  ★ このツールは通信をしません。書いた内容は、お使いの端末から出ません。
+  　「SNS用にコピー」を実際に貼り付けるかどうかは、あなた次第です。
+-->
+<style>
+  :root{
+    --line:#dadfe4; --ink:#2b2f36; --head:#5b6572; --accent:#2f6f4f; --accent-bg:#e3f2ea;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Meiryo",system-ui,sans-serif;
+       color:var(--ink);background:#fbfbfa;padding:20px;max-width:760px;margin-inline:auto}
+  h1{font-size:19px;margin:0 0 6px}
+  .explain{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin-bottom:18px}
+  .explain h2{font-size:14px;margin:0 0 8px;color:var(--accent)}
+  .explain p{font-size:13px;line-height:1.8;color:#444;margin:0 0 6px}
+  .panel{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:16px}
+  .toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+  .act{font:inherit;font-size:13px;background:#fff;border:1px solid var(--line);border-radius:7px;
+       padding:8px 16px;cursor:pointer;color:var(--ink)}
+  .act:hover{background:#f2f4f6}
+  .act.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .act.danger{color:#a3341f;border-color:#e6b3a8}
+  .act.sm{padding:5px 10px;font-size:12px}
+  .hint{color:var(--head);font-size:12px}
+  input[type=text],input[type=month],textarea{
+    width:100%;box-sizing:border-box;font:inherit;font-size:13px;border:1px solid var(--line);
+    border-radius:6px;padding:8px 10px}
+  textarea{resize:vertical;min-height:90px;line-height:1.7}
+  label{font-size:12px;color:var(--head);display:block;margin-bottom:4px}
+  .field{margin-bottom:10px}
+  .post{border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:10px;background:#fafafa}
+  .post .meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .post .meta .date{font-size:11px;color:var(--head)}
+  .post .actions{display:flex;gap:6px}
+  .charcount{font-size:11px;color:var(--head);text-align:right;margin-top:2px}
+  .photo-thumb{position:relative;width:80px;height:80px}
+  .photo-thumb img{width:100%;height:100%;object-fit:cover;border-radius:6px;border:1px solid var(--line);cursor:zoom-in}
+  .photo-thumb .del{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;
+       background:#a3341f;color:#fff;border:2px solid #fff;font-size:12px;line-height:1;cursor:pointer;
+       display:flex;align-items:center;justify-content:center;padding:0}
+  .charcount.over{color:#a3341f;font-weight:700}
+  #status{margin-top:8px;font-size:12px;color:var(--accent)}
+</style>
+</head>
+<body>
+
+<h1>ローカルブログ <span style="font-weight:400;color:#9aa2ab;font-size:13px">v0.1・試作サンプル</span></h1>
+
+<div class="explain">
+  <h2>これは何のためのツールですか</h2>
+  <p>
+    月ごとに投稿をためて、ファイルに保存する「自分専用の下書き帳」です。写真も添えられます。SNSへ出したい投稿は「📋 SNS用にコピー」（文章のみ）や「📤 文章＋写真を共有」（写真がある投稿）で、そのまま渡せる形にできます。
+  </p>
+  <p>
+    サーバーはありません。投稿はこの端末の中と、あなたが保存したファイルにだけ残ります。SNSへ実際に貼り付けるかどうかは、
+    そのつどあなたが選べます（自動では投稿されません）。
+  </p>
+</div>
+
+<div class="panel">
+  <div class="field">
+    <label>対象月</label>
+    <input type="month" id="periodInput">
+  </div>
+
+  <div class="field">
+    <label>タイトル（任意）</label>
+    <input type="text" id="newTitle" placeholder="例：今日の診療で感じたこと">
+  </div>
+  <div class="field">
+    <label>本文</label>
+    <textarea id="newBody" placeholder="自由に書いてください"></textarea>
+    <div class="charcount" id="newCharCount">0文字</div>
+  </div>
+  <div class="field">
+    <label>写真（任意・複数可）</label>
+    <div class="toolbar" style="margin-bottom:6px">
+      <label class="act sm" style="cursor:pointer">🖼️ 写真を選ぶ（複数選択可）
+        <input type="file" id="newPhoto" accept="image/*" multiple style="display:none">
+      </label>
+      <label style="font-size:12px;color:var(--head);display:flex;align-items:center;gap:4px;margin:0">
+        画質：
+        <select id="photoQuality" style="font:inherit;font-size:12px;border:1px solid var(--line);border-radius:5px;padding:3px 6px">
+          <option value="900,0.85">大きめ（きれい・容量大）</option>
+          <option value="700,0.8" selected>標準（おすすめ）</option>
+          <option value="500,0.6">コンパクト（容量小）</option>
+        </select>
+      </label>
+      <span class="hint" id="photoSizeHint"></span>
+    </div>
+    <div id="newPhotoList" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+  </div>
+  <button class="act primary" id="bAddPost">＋ この内容を追加</button>
+</div>
+
+<div class="panel">
+  <div class="toolbar">
+    <b style="font-size:13px" id="listTitle">投稿一覧</b>
+    <span class="hint" id="postCount"></span>
+  </div>
+  <div id="postList"></div>
+  <p class="hint" id="emptyMsg">まだ投稿がありません。上のフォームから追加してください。</p>
+</div>
+
+<div class="panel">
+  <div class="toolbar">
+    <button class="act primary" id="bSave">💾 この月をファイルに保存</button>
+    <button class="act primary" id="bShare">📤 共有（iPad/iPhoneはこちら）</button>
+    <button class="act" id="bLoad">📂 保存したファイルを読み込む</button>
+    <input type="file" id="fileInput" accept="application/json" style="display:none">
+  </div>
+  <span class="hint" id="status"></span>
+  <p class="hint" id="dbNameHint" style="margin-top:6px;color:#999"></p>
+</div>
+
+<div id="copyPanel" style="display:none" class="panel">
+  <p class="hint" style="margin:0 0 8px">この内容をコピーしました。SNSアプリに貼り付けてください。</p>
+  <textarea id="copyText" readonly style="min-height:120px"></textarea>
+  <div class="toolbar" style="margin-top:8px;margin-bottom:0">
+    <button class="act primary" id="bCopyAgain">📋 もう一度コピー</button>
+    <button class="act" id="bCopyClose">閉じる</button>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+function thisMonth(){
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0");
+}
+let period = thisMonth();
+let posts = []; // {id, createdAt, title, body}
+let nextId = 1;
+
+$("periodInput").value = period;
+
+// ==== 自動保存（この端末のブラウザ自身が覚える。ファイル名＋対象月ごとに独立） ====
+function fileSlug(){
+  try{
+    const base = (location.pathname.split("/").pop() || "blog").replace(/\.html?$/i, "");
+    return base.replace(/[^\w\u3040-\u30FF\u4E00-\u9FFF-]/g, "_") || "blog";
+  }catch(e){ return "blog"; }
+}
+function dbNameFor(p){ return "openvetss_" + fileSlug() + "_" + p; }
+function autoDbOpen(name){
+  return new Promise(res=>{
+    let req;
+    try{ req = indexedDB.open(name, 1); }catch(e){ return res(null); }
+    req.onupgradeneeded = e=>{
+      const d = e.target.result;
+      if(!d.objectStoreNames.contains("posts")) d.createObjectStore("posts");
+    };
+    req.onsuccess = ()=>res(req.result);
+    req.onerror   = ()=>res(null);
+    setTimeout(()=>res(null), 3000);
+  });
+}
+let autoDb = null, autoDbPeriod = null;
+async function autoSave(){
+  if(autoDbPeriod !== period){ autoDb = null; }
+  if(!autoDb){ autoDb = await autoDbOpen(dbNameFor(period)); autoDbPeriod = period; }
+  if(!autoDb) return;
+  const tx = autoDb.transaction("posts","readwrite");
+  tx.objectStore("posts").put({posts, savedAt:new Date().toISOString()}, "current");
+  await new Promise(r=>{ tx.oncomplete=r; tx.onerror=r; });
+  $("dbNameHint").textContent = "（自動保存中：" + dbNameFor(period) + "）";
+}
+let autoSaveTimer = null;
+function autoSaveDebounced(){ clearTimeout(autoSaveTimer); autoSaveTimer = setTimeout(autoSave, 500); }
+
+async function autoLoadForPeriod(){
+  autoDb = await autoDbOpen(dbNameFor(period));
+  autoDbPeriod = period;
+  if(!autoDb){ $("dbNameHint").textContent = ""; return; }
+  const tx = autoDb.transaction("posts","readonly");
+  const req = tx.objectStore("posts").get("current");
+  const rec = await new Promise(r=>{ req.onsuccess=()=>r(req.result); req.onerror=()=>r(null); });
+  posts = (rec && Array.isArray(rec.posts)) ? rec.posts : [];
+  nextId = posts.reduce((m,p)=>Math.max(m, p.id||0), 0) + 1;
+  render();
+  $("dbNameHint").textContent = "（自動保存中：" + dbNameFor(period) + "）" + (rec ? "　前回の続きを復元しました" : "");
+}
+
+// ==== 一覧表示 ====
+function esc(s){ return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>"); }
+function fmtDate(iso){
+  const d = new Date(iso);
+  return d.getFullYear()+"/"+String(d.getMonth()+1).padStart(2,"0")+"/"+String(d.getDate()).padStart(2,"0")+" "
+       + String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+}
+// 以前のバージョン（1投稿1枚・photoDataUrl）で保存されたファイルも表示できるようにする
+function photosOf(p){
+  if(Array.isArray(p.photos)) return p.photos;
+  if(p.photoDataUrl) return [p.photoDataUrl];
+  return [];
+}
+function render(){
+  $("listTitle").textContent = period + " の投稿";
+  $("postCount").textContent = posts.length + "件";
+  $("emptyMsg").style.display = posts.length ? "none" : "block";
+  $("postList").innerHTML = posts.slice().reverse().map(p => {
+    const photos = photosOf(p);
+    return `
+    <div class="post" data-id="${p.id}">
+      <div class="meta">
+        <span class="date">${fmtDate(p.createdAt)}</span>
+        <span class="actions">
+          <button class="act sm" data-copy="${p.id}">📋 SNS用にコピー</button>
+          ${photos.length ? `<button class="act sm" data-share="${p.id}">📤 文章＋写真を共有</button>` : ""}
+          <button class="act sm danger" data-del="${p.id}">削除</button>
+        </span>
+      </div>
+      ${p.title ? `<b>${esc(p.title)}</b><br>` : ""}
+      ${photos.length ? `<div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0">` +
+        photos.map((url,i) => `<img src="${url}" data-viewphoto="${p.id}:${i}" style="width:120px;height:120px;object-fit:cover;border-radius:6px;cursor:zoom-in" title="クリックで別タブに拡大表示">`).join("") +
+        `</div>` : ""}
+      <div>${esc(p.body)}</div>
+    </div>
+  `;
+  }).join("");
+}
+
+$("newBody").addEventListener("input", () => {
+  const n = $("newBody").value.length;
+  const el = $("newCharCount");
+  el.textContent = n + "文字";
+  el.className = "charcount" + (n > 140 ? " over" : "");
+});
+
+// ==== 写真の選択（複数可。長辺900pxに縮小して保持。容量を抑えるため） ====
+let newPhotos = []; // [{ id, file, dataUrl }]
+let nextPhotoId = 1;
+function resizeImage(file, maxSide, quality){
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+      const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+      const canvas = document.createElement("canvas");
+      canvas.width = w; canvas.height = h;
+      canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL("image/jpeg", quality != null ? quality : 0.85));
+    };
+    img.onerror = reject;
+    img.src = URL.createObjectURL(file);
+  });
+}
+// data:URLのままだと、Chrome等が新しいタブでの直接表示をブロックするため、
+// クリックされた時点でBlob URLに変換してから開く（拡大表示用）。
+// Safari（特にiPad）は、クリックの瞬間から間に非同期処理を挟んでwindow.open()を
+// 呼ぶと「ユーザー操作からの直接呼び出しではない」とみなしてブロックすることがある。
+// そのため、①クリックの瞬間に空のタブを先に開いておき、②中身は後から差し込む、
+// という順序にして回避する。
+function openPhotoInNewTab(dataUrl){
+  const win = window.open("", "_blank");  // ①まず同期的に開く（ここがポイント）
+  if(!win){
+    $("status").textContent = "ポップアップがブロックされました。ブラウザの設定をご確認ください。";
+    return;
+  }
+  win.document.write("読み込み中…");
+  fetch(dataUrl).then(res => res.blob()).then(blob => {
+    const blobUrl = URL.createObjectURL(blob);
+    win.location.href = blobUrl;  // ②開いておいたタブへ、後から中身を差し込む
+    setTimeout(()=>URL.revokeObjectURL(blobUrl), 60000);
+  }).catch(err => {
+    try{ win.close(); }catch(e){}
+    $("status").textContent = "拡大表示に失敗しました：" + err.message;
+  });
+}
+function estimateSize(dataUrl){
+  return Math.floor(dataUrl.split(",")[1].length * 3/4);
+}
+function renderNewPhotoList(){
+  $("newPhotoList").innerHTML = newPhotos.map(p => `
+    <div class="photo-thumb">
+      <img src="${p.dataUrl}" data-viewnewphoto="${p.id}">
+      <button type="button" class="del" data-delnewphoto="${p.id}" title="この写真を外す">×</button>
+    </div>
+  `).join("");
+  const total = newPhotos.reduce((sum,p)=>sum + estimateSize(p.dataUrl), 0);
+  $("photoSizeHint").textContent = newPhotos.length
+    ? newPhotos.length + "枚・合計 約" + Math.round(total/1024) + "KB" : "";
+}
+async function addPhotoFiles(files){
+  const [maxSide, q] = $("photoQuality").value.split(",").map(Number);
+  for(const file of files){
+    try{
+      const dataUrl = await resizeImage(file, maxSide, q);
+      newPhotos.push({ id: nextPhotoId++, file, dataUrl });
+    }catch(err){
+      $("status").textContent = "写真の読み込みに失敗しました：" + err.message;
+    }
+  }
+  renderNewPhotoList();
+}
+$("newPhoto").onchange = async e => {
+  const files = Array.from(e.target.files || []);
+  if(!files.length) return;
+  await addPhotoFiles(files);
+  e.target.value = "";
+};
+// 画質を変えたら、今ためている写真を選び直したファイルから作り直す
+$("photoQuality").onchange = async () => {
+  const files = newPhotos.map(p => p.file);
+  newPhotos = [];
+  await addPhotoFiles(files);
+};
+$("newPhotoList").addEventListener("click", e => {
+  const view = e.target.closest("[data-viewnewphoto]");
+  if(view){
+    const p = newPhotos.find(p => p.id === +view.dataset.viewnewphoto);
+    if(p) openPhotoInNewTab(p.dataUrl);
+    return;
+  }
+  const del = e.target.closest("[data-delnewphoto]");
+  if(del){
+    newPhotos = newPhotos.filter(p => p.id !== +del.dataset.delnewphoto);
+    renderNewPhotoList();
+  }
+});
+
+$("bAddPost").onclick = () => {
+  const body = $("newBody").value.trim();
+  if(!body){ $("status").textContent = "本文を入力してください"; return; }
+  posts.push({ id: nextId++, createdAt: new Date().toISOString(), title: $("newTitle").value.trim(), body,
+               photos: newPhotos.map(p => p.dataUrl) });
+  $("newTitle").value = ""; $("newBody").value = ""; $("newCharCount").textContent = "0文字";
+  newPhotos = []; renderNewPhotoList();
+  render();
+  autoSave();
+  $("status").textContent = "追加しました";
+};
+
+$("postList").addEventListener("click", async e => {
+  const view = e.target.closest("[data-viewphoto]");
+  if(view){
+    const [postId, photoIdx] = view.dataset.viewphoto.split(":").map(Number);
+    const p = posts.find(p => p.id === postId);
+    const photos = p ? photosOf(p) : [];
+    if(photos[photoIdx]) openPhotoInNewTab(photos[photoIdx]);
+    return;
+  }
+  const del = e.target.closest("[data-del]");
+  if(del){
+    if(!confirm("この投稿を削除します。よろしいですか？")) return;
+    posts = posts.filter(p => p.id !== +del.dataset.del);
+    render(); autoSave();
+    return;
+  }
+  const copy = e.target.closest("[data-copy]");
+  if(copy){
+    const p = posts.find(p => p.id === +copy.dataset.copy);
+    if(!p) return;
+    const text = (p.title ? p.title + "\n\n" : "") + p.body;
+    doCopy(text);
+    return;
+  }
+  const share = e.target.closest("[data-share]");
+  if(share){
+    const p = posts.find(p => p.id === +share.dataset.share);
+    const photos = p ? photosOf(p) : [];
+    if(!p || !photos.length) return;
+    const text = (p.title ? p.title + "\n\n" : "") + p.body;
+    const files = await Promise.all(photos.map(async (url, i) => {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      return new File([blob], "photo_" + (i+1) + ".jpg", {type:"image/jpeg"});
+    }));
+    if(navigator.canShare && navigator.canShare({files})){
+      try{
+        await navigator.share({files, title:p.title || "投稿", text});
+        $("status").textContent = "文章と写真（" + files.length + "枚）を共有しました";
+      }catch(err){
+        if(err.name !== "AbortError") $("status").textContent = "共有失敗：" + err.message;
+      }
+    }else{
+      // 共有に対応していない環境：文章はコピー、写真は個別にダウンロード
+      doCopy(text);
+      photos.forEach((url, i) => {
+        const a = document.createElement("a");
+        a.href = url; a.download = "photo_" + p.id + "_" + (i+1) + ".jpg";
+        document.body.appendChild(a); a.click(); a.remove();
+      });
+      $("status").textContent = "この端末は共有に未対応のため、文章をコピーし写真（" + photos.length + "枚）は別途ダウンロードしました";
+    }
+  }
+});
+
+async function doCopy(text){
+  $("copyText").value = text;
+  $("copyPanel").style.display = "block";
+  $("copyPanel").scrollIntoView({behavior:"smooth", block:"nearest"});
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){ await navigator.clipboard.writeText(text); }
+    else{ $("copyText").select(); document.execCommand("copy"); }
+    $("status").textContent = "コピーしました（" + text.length + "文字）。SNSアプリに貼り付けてください。";
+  }catch(e){
+    $("copyText").select();
+    try{ document.execCommand("copy"); $("status").textContent = "コピーしました。"; }
+    catch(e2){ $("status").textContent = "自動コピーできませんでした。テキストを選んで手動でコピーしてください。"; }
+  }
+}
+$("bCopyAgain").onclick = () => doCopy($("copyText").value);
+$("bCopyClose").onclick = () => { $("copyPanel").style.display = "none"; };
+
+// ==== 月の切り替え ====
+$("periodInput").onchange = async () => {
+  const v = $("periodInput").value;
+  if(!v) return;
+  period = v;
+  await autoLoadForPeriod();
+};
+
+// ==== ファイル保存・共有・読み込み ====
+function buildDoc(){
+  return { schema:"vetss-local-blog/0.1", period, savedAt:new Date().toISOString(), posts };
+}
+function currentFileName(){
+  return "blog_" + period + ".json";
+}
+let savedFileHandle = null;
+$("bSave").onclick = async () => {
+  const text = JSON.stringify(buildDoc(), null, 2);
+  if(window.showSaveFilePicker){
+    try{
+      if(!savedFileHandle){
+        savedFileHandle = await window.showSaveFilePicker({
+          suggestedName: currentFileName(),
+          types: [{ description:"JSON", accept:{"application/json":[".json"]} }]
+        });
+      }
+      const w = await savedFileHandle.createWritable();
+      await w.write(text);
+      await w.close();
+      $("status").textContent = "保存しました（同じファイルに上書き）";
+      return;
+    }catch(err){
+      if(err.name === "AbortError") return;
+      savedFileHandle = null;
+    }
+  }
+  const blob = new Blob([text], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = currentFileName();
+  document.body.appendChild(a); a.click(); a.remove();
+  $("status").textContent = "保存しました（ダウンロード）";
+};
+$("bShare").onclick = async () => {
+  const text = JSON.stringify(buildDoc(), null, 2);
+  const filename = currentFileName();
+  const file = new File([text], filename, {type:"application/json"});
+  if(navigator.canShare && navigator.canShare({files:[file]})){
+    try{
+      await navigator.share({files:[file], title:"ローカルブログ", text:period + "の投稿データです。"});
+      $("status").textContent = "共有しました";
+    }catch(err){
+      if(err.name !== "AbortError") $("status").textContent = "共有失敗：" + err.message;
+    }
+  }else{
+    const blob = new Blob([text], {type:"application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    $("status").textContent = "この端末は共有に対応していないため、通常のダウンロードにしました";
+  }
+};
+$("bLoad").onclick = () => $("fileInput").click();
+$("fileInput").onchange = async e => {
+  const file = e.target.files[0]; if(!file) return;
+  try{
+    const text = await file.text();
+    const doc = JSON.parse(text);
+    if(!Array.isArray(doc.posts)) throw new Error("形式が違います");
+    period = doc.period || period;
+    posts = doc.posts;
+    nextId = posts.reduce((m,p)=>Math.max(m, p.id||0), 0) + 1;
+    $("periodInput").value = period;
+    render();
+    savedFileHandle = null;
+    autoDb = null;
+    await autoSave();
+    $("status").textContent = "読み込みました（保存日時：" + (doc.savedAt || "不明") + "）";
+  }catch(err){
+    $("status").textContent = "読み込み失敗：" + err.message;
+  }
+  e.target.value = "";
+};
+
+autoLoadForPeriod();
+render();
+</script>
+</body>
+</html>

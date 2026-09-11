@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>スタッフ勤務シフト編集ツール ｜ OpenVetss</title>
+<!--
+  OpenVetss - 動物病院のためのオープンソース・ツール群
+  https://www.vetss-karte.net/
+
+  スタッフ勤務シフト編集ツール（汎用版）  v0.1（設定＋編集まで・第1回）
+  Copyright (c) 2026 OpenVetss Project
+
+  MIT ライセンスで配布しています。改変も再配布も自由ですが、
+  この著作権表示とライセンス表示は残してください。無保証です。
+
+  獣医師だけでなくAHT・トリマー等も含めた月間勤務表を、
+  病院ごとに「区分・院/部門・時間帯・タグ」を設定してから編集します。
+  起動時は空データ。ファイルに保存・読み込みして使います。
+
+  ★ このツールは通信をしません。作ったデータは、お使いの端末から出ません。
+
+  未実装（次回以降の範囲）：
+  ・本院/馬堀のような院別PDF出力
+  ・doctor_shifttbへの転送
+  ・ホームページ公開用のビューア分離
+-->
+<style>
+  :root{
+    --line:#dadfe4; --ink:#2b2f36; --head:#5b6572; --accent:#2f6f4f; --accent-bg:#e3f2ea;
+    --tag:#8a5a1e; --tag-bg:#f6ead3; --off-bg:#f6f7f9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Meiryo",system-ui,sans-serif;
+       color:var(--ink);background:#fbfbfa;padding:16px;font-size:13px}
+  h1{font-size:17px;margin:0 0 4px}
+  h2{font-size:14px;margin:0 0 8px}
+  .sub{color:var(--head);font-size:12px;margin:0 0 12px;line-height:1.65}
+  .hint{color:var(--head);font-size:11px}
+  .toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+  .act{font:inherit;font-size:12px;background:#fff;border:1px solid var(--line);border-radius:7px;
+       padding:7px 14px;cursor:pointer;color:var(--ink)}
+  .act:hover{background:#f2f4f6}
+  .act.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .act.j{background:#2b4a7a;color:#fff;border-color:#2b4a7a}
+  .panel{border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:12px;background:#fff}
+  .master-row{display:flex;align-items:center;gap:8px;font-size:12px;padding:4px 6px;border:1px solid var(--line);
+       border-radius:6px;margin-bottom:4px}
+  .master-row input[type=text]{flex:1;font:inherit;font-size:12px;border:1px solid var(--line);border-radius:5px;padding:4px 7px}
+  .master-add{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+  .master-add input{font:inherit;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:6px 9px}
+  .grid-wrap{overflow:auto;max-height:75vh;border:1px solid var(--line);border-radius:8px}
+  table{border-collapse:collapse;width:max-content;min-width:100%}
+  th,td{border:1px solid var(--line);padding:0}
+  th{background:#eef1f4;font-size:11px;padding:5px 8px;position:sticky;top:0;z-index:2;line-height:1.3}
+  th.corner{position:sticky;left:0;top:0;z-index:3;background:#e4e8ec}
+  .rowhead{position:sticky;left:0;background:#eef1f4;z-index:1;padding:5px 8px;font-weight:700;font-size:12px;
+       text-align:left;white-space:nowrap}
+  .cat-badge{display:inline-block;font-size:9px;padding:1px 5px;border-radius:8px;margin-left:4px;color:#fff}
+  .cat-0{background:#9aa2ab}.cat-1{background:#2f6f4f}.cat-2{background:#2b6ba0}.cat-3{background:#a35a1e}
+  .daycell{padding:3px;vertical-align:top}
+  .segrow{display:flex;flex-direction:column;gap:2px}
+  .seg{font-size:10px;text-align:center;padding:3px 6px;border-radius:4px;cursor:pointer;
+       border:1px solid var(--line);background:var(--off-bg);user-select:none;white-space:nowrap;
+       color:#c3c8cd}
+  .seg.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent);font-weight:700}
+  .tagpop{margin-top:1px}
+  .tagpop summary{font-size:9px;color:var(--head);cursor:pointer;list-style:none;text-align:center}
+  .tagpop summary::-webkit-details-marker{display:none}
+  .tagpop[open] summary{color:var(--tag)}
+  .tagbox{border:1px solid var(--line);border-radius:5px;padding:4px;margin-top:2px;background:#fff}
+  .tagbox label{display:block;font-size:10px;padding:1px 2px;white-space:nowrap}
+  .tagchips{display:flex;flex-wrap:wrap;gap:2px;margin-top:2px}
+  .tagchip{font-size:9px;background:var(--tag-bg);color:var(--tag);border-radius:8px;padding:1px 6px}
+  #loadStatus.ok{color:var(--accent)}
+  #loadStatus.err{color:#a3341f}
+
+  /* ===== 印刷用カレンダー（院内用/院外用PDF） ===== */
+  #printCal{display:none}
+  .pc-h2{text-align:center;color:#1B4332;font-size:20px;margin:0 0 6px}
+  .pc-sub{text-align:center;color:#666;font-size:12px;margin:0 0 14px}
+  .pc-table{width:100%;border-collapse:collapse;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+  .pc-table th{padding:8px 4px;font-size:13px;font-weight:700;background:#5BADDC;color:#fff;text-align:center;border:1px solid #4a9dc0}
+  .pc-table td{border:1px solid #e0e0e0;vertical-align:top;padding:4px;min-height:60px;width:14.28%;font-size:11px;background:#fff}
+  .pc-day{font-size:13px;font-weight:700;margin-bottom:4px}
+  .pc-slot{font-size:11px;color:#1B4332;line-height:1.6}
+  .pc-name{display:inline-block;margin:0 2px}
+  .pc-tag{display:inline-block;font-size:9px;background:#f6ead3;color:#8a5a1e;border-radius:7px;padding:0 5px;margin:1px 2px 0 0}
+  @media print{
+    body>*:not(#printCal){display:none !important}
+    #printCal{display:block !important}
+    .pc-table{box-shadow:none !important}
+    .pc-table th{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    @page{size:A4 landscape;margin:8mm}
+  }
+</style>
+</head>
+<body>
+
+<div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap">
+  <h1 style="margin:0">スタッフ 勤務シフト編集ツール <span style="font-weight:400;color:#9aa2ab;font-size:13px">v0.1（汎用版・設定＋編集）</span></h1>
+  <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--head)">
+    対象年月：<input type="month" id="ymPicker" style="font:inherit;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:4px 8px">
+  </span>
+  <button class="act" id="settingsToggle" style="margin-left:auto">⚙️ 基本設定</button>
+</div>
+<p class="sub">
+  獣医師だけでなく、AHT・トリマー等も含めた勤務表を作れます。まず「⚙️ 基本設定」で院/部門・時間帯・タグと、スタッフ本人を登録してから編集してください。
+  マス目は各時間帯（例：午前／午後）ごとにクリックで院/部門を切替できます（休→院/部門→…→休）。未設定のマスには時間帯名が薄く表示されます。「全日」も使いたい場合は、基本設定の②時間帯に「全日」を追加してご利用ください。
+  <span class="hint">保存・読み込みで運用します（サーバーには何も残しません）。</span>
+</p>
+
+<div class="panel" id="settingsPanel" style="display:none">
+  <h2>⚙️ 基本設定</h2>
+
+  <div style="margin-bottom:14px">
+    <b style="font-size:12px">病院名</b>
+    <input type="text" id="hospitalName" placeholder="例：動物病院ヘルスペット" style="display:block;margin-top:4px;width:320px;max-width:100%;font:inherit;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:6px 9px">
+    <span class="hint">PDFのタイトルと保存ファイル名に使われます。</span>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px">
+    <div>
+      <b style="font-size:12px">① 院・部門</b>
+      <div id="branchList" style="margin-top:6px"></div>
+      <div class="master-add">
+        <input type="text" id="newBranchName" placeholder="院・部門名（例：本院）" style="flex:1">
+        <button class="act" data-addmaster="branches">＋追加</button>
+      </div>
+    </div>
+    <div>
+      <b style="font-size:12px">② 時間帯</b>
+      <div id="slotList" style="margin-top:6px"></div>
+      <div class="master-add">
+        <input type="text" id="newSlotName" placeholder="時間帯名（例：午前）" style="flex:1">
+        <button class="act" data-addmaster="slots">＋追加</button>
+      </div>
+    </div>
+    <div>
+      <b style="font-size:12px">③ タグ（複数選択可）</b>
+      <div id="tagList" style="margin-top:6px"></div>
+      <div class="master-add">
+        <input type="text" id="newTagName" placeholder="タグ名（例：当直）" style="flex:1">
+        <button class="act" data-addmaster="tags">＋追加</button>
+      </div>
+    </div>
+  </div>
+
+  <b style="font-size:12px">④ スタッフ</b>
+  <div class="hint" style="margin:4px 0 6px">区分は固定：<span class="cat-badge cat-1">獣医師</span><span class="cat-badge cat-2">AHT</span><span class="cat-badge cat-3">トリマー</span><span class="cat-badge cat-0">未定</span>。IDは獣医師のみ入力（doctor_shifttb連携用）。</div>
+  <div id="staffList"></div>
+  <div class="master-add">
+    <input type="text" id="newStaffName" placeholder="氏名" style="width:120px">
+    <select id="newStaffCat" style="font:inherit;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:6px 9px">
+      <option value="0">未定</option>
+      <option value="1" selected>獣医師</option>
+      <option value="2">AHT</option>
+      <option value="3">トリマー</option>
+    </select>
+    <input type="number" id="newStaffId" placeholder="ID（獣医師のみ）" style="width:120px">
+    <button class="act j" id="addStaff">＋スタッフ追加</button>
+  </div>
+  <div class="hint" id="staffStatus" style="margin-top:4px"></div>
+
+  <details style="margin-top:10px">
+    <summary style="cursor:pointer;font-size:12px;color:var(--head)">📋 まとめて追加（カンマ区切り貼り付け／CSV読み込み）</summary>
+    <div style="margin-top:8px;padding:10px;background:#f9fafb;border:1px solid var(--line);border-radius:6px">
+      <div class="hint" style="margin-bottom:6px">
+        名前だけをカンマ区切りで貼り付けると、区分「未定」で一括登録します（例：山田,佐藤,鈴木）。<br>
+        区分・IDまで指定したい場合は1行に「氏名,区分,ID」。doctorマスタのCSV（ID,"氏名" の並び。例：5,"賀久"）もそのまま貼り付け・読み込みできます（IDがある行は区分「獣医師」で登録されます）。
+      </div>
+      <textarea id="bulkStaffText" rows="3" style="width:100%;font:inherit;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:6px" placeholder="山田,獣医師,40&#10;佐藤,AHT&#10;鈴木"></textarea>
+      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;align-items:center">
+        <button class="act j" id="bulkAddStaff">この内容を一括追加</button>
+        <span class="hint">または</span>
+        <input type="file" id="staffCsvFile" accept=".csv,text/csv" style="font-size:12px">
+        <button class="act" id="loadStaffCsv">CSVを読み込む</button>
+      </div>
+      <div class="hint" id="bulkStaffStatus" style="margin-top:4px"></div>
+    </div>
+  </details>
+</div>
+
+<div class="toolbar">
+  <button class="act primary" id="undo">元に戻す</button>
+  <button class="act" id="resetMonth">この月を空にする</button>
+  <span class="hint" id="count"></span>
+  <button class="act j" id="saveAll" style="margin-left:auto">💾 保存（設定＋全月）</button>
+  <button class="act j" id="shareAll">📤 共有（AirDrop/Dropbox等）</button>
+  <button class="act" id="loadAll">📂 読み込む</button>
+  <input type="file" id="loadFile" accept="application/json" style="display:none">
+  <span class="hint" id="loadStatus"></span>
+</div>
+<p class="hint" style="margin:-6px 0 10px">
+  PCでの編集：「💾 保存」（Chromeなら初回選択後は同じファイルに上書き）→共有フォルダへ配置、が確実です。<br>
+  iPad/iPhoneでの編集：「📤 共有」なら、保存と同時にAirDrop・Dropboxアプリ・LINE・メール等へその場で渡せます（ダウンロードフォルダを探す手間がありません）。対応していない環境では通常のダウンロードになります。
+</p>
+
+<div class="toolbar" style="background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 12px">
+  <b style="font-size:12px">🖨️ PDF出力</b>
+  <span class="hint">院・部門：</span>
+  <select id="pdfBranch" style="font:inherit;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:5px 8px"></select>
+  <span class="hint">区分：</span>
+  <label style="font-size:12px"><input type="radio" name="pdfMode" value="internal" checked> 院内用（全員・全タグ）</label>
+  <label style="font-size:12px"><input type="radio" name="pdfMode" value="public"> 院外用（公開設定のみ）</label>
+  <button class="act j" id="pdfGo">PDFを開く</button>
+</div>
+
+<div id="printCal"></div>
+
+<div class="grid-wrap"><table id="grid"></table></div>
+
+<script>
+const DOW=['日','月','火','水','木','金','土'];
+const CAT_LABEL={0:'未定',1:'獣医師',2:'AHT',3:'トリマー'};
+
+let hospitalName='';
+
+// ==== マスタ（院/部門・時間帯・タグ） ====
+// tags の public: 院外PDFにこのタグを出すかどうか（既定true）
+let masters = {
+  branches: [{id:1,name:'本院'}],
+  slots: [{id:1,name:'午前'},{id:2,name:'午後'}],
+  tags: [{id:1,name:'当直',public:true},{id:2,name:'夜勤',public:true},{id:3,name:'外来無',public:true}]
+};
+let nextId = {branches:2, slots:3, tags:4};
+
+// ==== スタッフ。public: 院外PDFにこの人を出すかどうか（既定true） ====
+let staff = []; // [{id,name,category,doctorid,public}]
+let nextStaffId = 1;
+
+// ==== 状態：state[staffId][dayIndex] = { slotVals: {slotId: branchId|null}, tags: [tagId,...] } ====
+function daysInMonth(y,m){ return new Date(y,m,0).getDate(); }
+function blankDay(){
+  const slotVals={}; masters.slots.forEach(s=>slotVals[s.id]=null);
+  return {slotVals, tags:[]};
+}
+function blankState(days){
+  const s={};
+  staff.forEach(st=>{ s[st.id]=[]; for(let i=0;i<days;i++) s[st.id].push(blankDay()); });
+  return s;
+}
+const pad=n=>(n<10?'0':'')+n;
+const ymKey=(y,m)=>`${y}-${pad(m)}`;
+
+const today=new Date();
+let YEAR=today.getFullYear(), MONTH=today.getMonth()+1, DAYS=daysInMonth(YEAR,MONTH);
+let state=blankState(DAYS), history=[], stateCache={};
+
+function dow(d){return new Date(YEAR,MONTH-1,d).getDay();}
+function pushHistory(){history.push(JSON.stringify(state));if(history.length>80)history.shift();}
+
+// ==== 基本設定パネルの開閉 ====
+document.getElementById('settingsToggle').onclick=()=>{
+  const p=document.getElementById('settingsPanel');
+  p.style.display = p.style.display==='none' ? 'block' : 'none';
+  if(p.style.display==='block'){
+    document.getElementById('hospitalName').value=hospitalName;
+    renderMasterLists(); renderStaffList();
+  }
+};
+document.getElementById('hospitalName').oninput=(e)=>{ hospitalName=e.target.value; };
+
+// ==== マスタ（院/部門・時間帯・タグ）の一覧描画 ====
+function masterListId(kind){ return {branches:'branchList', slots:'slotList', tags:'tagList'}[kind]; }
+function renderMasterLists(){
+  ['branches','slots','tags'].forEach(kind=>{
+    const box=document.getElementById(masterListId(kind));
+    const items=masters[kind];
+    box.innerHTML = items.length ? items.map((it,i)=>`
+      <div class="master-row">
+        <span style="flex:1"><b>${it.name}</b></span>
+        ${kind==='tags' ? `<label style="font-size:10px;color:var(--head);white-space:nowrap"><input type="checkbox" data-tagpublic="${it.id}" ${it.public!==false?'checked':''}> 院外PDFに出す</label>` : ''}
+        <button class="act" data-mv="${kind}:up:${i}" ${i===0?'disabled':''} style="padding:2px 7px">↑</button>
+        <button class="act" data-mv="${kind}:down:${i}" ${i===items.length-1?'disabled':''} style="padding:2px 7px">↓</button>
+        <button class="act" data-del="${kind}:${it.id}" style="padding:2px 7px;color:#a3341f">削除</button>
+      </div>`).join('') : `<span class="hint">未登録です</span>`;
+  });
+}
+document.querySelectorAll('[data-addmaster]').forEach(btn=>{
+  btn.onclick=()=>{
+    const kind=btn.dataset.addmaster;
+    const inputId={branches:'newBranchName',slots:'newSlotName',tags:'newTagName'}[kind];
+    const input=document.getElementById(inputId);
+    const name=input.value.trim();
+    if(!name) return;
+    const id=nextId[kind]++;
+    const item = kind==='tags' ? {id,name,public:true} : {id,name};
+    masters[kind].push(item);
+    if(kind==='slots'){ addSlotToAllDays(id); }
+    input.value='';
+    renderMasterLists(); refreshPdfBranchOptions(); build();
+  };
+});
+function addSlotToAllDays(slotId){
+  Object.values(state).forEach(days=>days.forEach(d=>{ if(!(slotId in d.slotVals)) d.slotVals[slotId]=null; }));
+  Object.values(stateCache).forEach(cache=>Object.values(cache).forEach(days=>days.forEach(d=>{
+    if(!(slotId in d.slotVals)) d.slotVals[slotId]=null;
+  })));
+}
+document.getElementById('settingsPanel').addEventListener('click', e=>{
+  const mv=e.target.dataset.mv, del=e.target.dataset.del;
+  if(mv){
+    const [kind,dir,idxStr]=mv.split(':'); const i=+idxStr, j=dir==='up'?i-1:i+1;
+    const arr=masters[kind]; if(j<0||j>=arr.length) return;
+    [arr[i],arr[j]]=[arr[j],arr[i]]; renderMasterLists(); refreshPdfBranchOptions(); build();
+  }else if(del){
+    const [kind,idStr]=del.split(':'); const id=+idStr;
+    if(!confirm('削除します。この項目を使っているマス目の情報も消えます。よろしいですか？')) return;
+    masters[kind]=masters[kind].filter(it=>it.id!==id);
+    if(kind==='branches'){
+      Object.values(state).forEach(days=>days.forEach(d=>{ Object.keys(d.slotVals).forEach(sid=>{ if(d.slotVals[sid]===id) d.slotVals[sid]=null; }); }));
+    }else if(kind==='slots'){
+      Object.values(state).forEach(days=>days.forEach(d=>{ delete d.slotVals[id]; }));
+    }else if(kind==='tags'){
+      Object.values(state).forEach(days=>days.forEach(d=>{ d.tags=d.tags.filter(t=>t!==id); }));
+    }
+    renderMasterLists(); refreshPdfBranchOptions(); build();
+  }
+});
+document.getElementById('settingsPanel').addEventListener('change', e=>{
+  const tp=e.target.dataset.tagpublic;
+  if(tp!==undefined){
+    const tag=masters.tags.find(t=>t.id===+tp);
+    if(tag) tag.public = e.target.checked;
+  }
+});
+
+// ==== スタッフの一覧描画・追加・削除 ====
+let editingStaffId=null;
+function renderStaffList(){
+  const box=document.getElementById('staffList');
+  box.innerHTML = staff.length ? staff.map((st,i)=>{
+    if(st.id===editingStaffId){
+      return `<div class="master-row" style="background:#fffbea">
+        <input type="text" data-editname value="${st.name.replace(/"/g,'&quot;')}" style="width:110px;font:inherit;font-size:12px;border:1px solid var(--line);border-radius:5px;padding:4px 7px">
+        <select data-editcat style="font:inherit;font-size:12px;border:1px solid var(--line);border-radius:5px;padding:4px 7px">
+          <option value="0" ${st.category===0?'selected':''}>未定</option>
+          <option value="1" ${st.category===1?'selected':''}>獣医師</option>
+          <option value="2" ${st.category===2?'selected':''}>AHT</option>
+          <option value="3" ${st.category===3?'selected':''}>トリマー</option>
+        </select>
+        <input type="number" data-editid value="${st.doctorid!==null&&st.doctorid!==undefined?st.doctorid:''}" placeholder="ID" style="width:90px;font:inherit;font-size:12px;border:1px solid var(--line);border-radius:5px;padding:4px 7px">
+        <label style="font-size:10px;color:var(--head);white-space:nowrap"><input type="checkbox" data-editpublic ${st.public!==false?'checked':''}> 院外公開</label>
+        <button class="act j" data-editsave="${st.id}" style="padding:2px 10px">保存</button>
+        <button class="act" data-editcancel style="padding:2px 10px">取消</button>
+      </div>`;
+    }
+    return `
+    <div class="master-row">
+      <span style="flex:1"><b>${st.name}</b><span class="cat-badge cat-${st.category}">${CAT_LABEL[st.category]}</span>${st.doctorid?`<span class="hint" style="margin-left:6px">ID:${st.doctorid}</span>`:''}${st.public===false?`<span class="hint" style="margin-left:6px;color:#a3341f">院外非公開</span>`:''}</span>
+      <button class="act" data-sedit="${st.id}" style="padding:2px 7px">編集</button>
+      <button class="act" data-smv="up:${i}" ${i===0?'disabled':''} style="padding:2px 7px">↑</button>
+      <button class="act" data-smv="down:${i}" ${i===staff.length-1?'disabled':''} style="padding:2px 7px">↓</button>
+      <button class="act" data-sdel="${st.id}" style="padding:2px 7px;color:#a3341f">削除</button>
+    </div>`;
+  }).join('') : `<span class="hint">未登録です。下から追加してください。</span>`;
+}
+document.getElementById('staffList').addEventListener('click', e=>{
+  const smv=e.target.dataset.smv, sdel=e.target.dataset.sdel, sedit=e.target.dataset.sedit,
+        esave=e.target.dataset.editsave, ecancel=e.target.dataset.editcancel;
+  if(sedit!==undefined){ editingStaffId=+sedit; renderStaffList(); return; }
+  if(ecancel!==undefined){ editingStaffId=null; renderStaffList(); return; }
+  if(esave!==undefined){
+    const id=+esave, st=staff.find(s=>s.id===id);
+    const row=e.target.closest('.master-row');
+    const name=row.querySelector('[data-editname]').value.trim();
+    const category=+row.querySelector('[data-editcat]').value;
+    const idVal=row.querySelector('[data-editid]').value.trim();
+    const isPublic=row.querySelector('[data-editpublic]').checked;
+    if(!name){ alert('氏名を入力してください'); return; }
+    st.name=name; st.category=category; st.doctorid=idVal?Number(idVal):null; st.public=isPublic;
+    editingStaffId=null;
+    renderStaffList(); build();
+    return;
+  }
+  if(smv){
+    const [dir,idxStr]=smv.split(':'); const i=+idxStr, j=dir==='up'?i-1:i+1;
+    if(j<0||j>=staff.length) return;
+    [staff[i],staff[j]]=[staff[j],staff[i]]; renderStaffList(); build();
+  }else if(sdel){
+    const id=+sdel, st=staff.find(s=>s.id===id);
+    if(!confirm(`「${st.name}」を削除します。全月の入力内容も消えます。よろしいですか？`)) return;
+    staff=staff.filter(s=>s.id!==id);
+    delete state[id];
+    Object.values(stateCache).forEach(cache=>delete cache[id]);
+    renderStaffList(); build();
+  }
+});
+function addOneStaff(name, category, doctorid){
+  const id=nextStaffId++;
+  staff.push({id, name, category, doctorid: doctorid || null, public:true});
+  state[id]=[]; for(let i=0;i<DAYS;i++) state[id].push(blankDay());
+  Object.keys(stateCache).forEach(key=>{
+    const [y,m]=key.split('-').map(Number), d=daysInMonth(y,m);
+    stateCache[key][id]=[]; for(let i=0;i<d;i++) stateCache[key][id].push(blankDay());
+  });
+  return id;
+}
+document.getElementById('addStaff').onclick=()=>{
+  const nameInput=document.getElementById('newStaffName'), catSel=document.getElementById('newStaffCat'), idInput=document.getElementById('newStaffId');
+  const status=document.getElementById('staffStatus');
+  const name=nameInput.value.trim(), category=+catSel.value, idVal=idInput.value.trim();
+  status.textContent=''; status.style.color='';
+  if(!name){ status.textContent='氏名を入力してください'; status.style.color='#a3341f'; return; }
+  if(category===1 && (!idVal || isNaN(Number(idVal)))){ status.textContent='獣医師はIDを数字で入力してください'; status.style.color='#a3341f'; return; }
+  addOneStaff(name, category, idVal?Number(idVal):null);
+  nameInput.value=''; idInput.value='';
+  renderStaffList(); build();
+};
+
+// ==== まとめて追加（カンマ区切り貼り付け・CSV読み込み） ====
+const CAT_NAME_TO_NUM={'未定':0,'獣医師':1,'AHT':2,'トリマー':3};
+function parseCategory(token){
+  if(token===undefined || token===null || token.trim()==='') return 0;
+  const t=token.trim();
+  if(!isNaN(Number(t)) && [0,1,2,3].includes(Number(t))) return Number(t);
+  if(t in CAT_NAME_TO_NUM) return CAT_NAME_TO_NUM[t];
+  return 0; // 分からない値は未定扱い
+}
+function stripQuotes(s){ return s.replace(/^"(.*)"$/, '$1').trim(); }
+function isNumericStr(s){ return s!=='' && !isNaN(Number(s)); }
+function bulkParseLines(text){
+  // 対応する行の形式：
+  //  ・氏名だけ／氏名をカンマで複数並べた行
+  //  ・氏名,区分,ID（区分・IDは省略可）
+  //  ・ID,氏名（doctorマスタのCSVそのままの並び。例：5,"賀久"）
+  const lines = text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  const results=[];
+  lines.forEach(line=>{
+    const cols=line.split(',').map(c=>stripQuotes(c)).filter(c=>c!=='');
+    if(cols.length===0) return;
+    if(cols.length===1){
+      results.push({name:cols[0], category:0, doctorid:null});
+      return;
+    }
+    if(isNumericStr(cols[0])){
+      // ID,氏名[,区分] の並び（doctorマスタCSVと同じ形）。IDがある＝獣医師として登録し、
+      // 「会長」「メモ」等の実在しないダミー行が混じっていた場合は、登録後に一覧から削除・区分変更してください。
+      const id=Number(cols[0]), name=cols[1];
+      const category = cols[2]!==undefined ? parseCategory(cols[2]) : 1;
+      results.push({name, category, doctorid:id});
+      return;
+    }
+    // 2列目が区分として解釈できるかで判定。できなければ「名前を並べただけの行」とみなし全部を個別氏名として追加
+    const looksLikeCategory = cols[1]!==undefined && (
+      (!isNaN(Number(cols[1])) && [0,1,2,3].includes(Number(cols[1]))) || (cols[1] in CAT_NAME_TO_NUM)
+    );
+    if(looksLikeCategory){
+      const category=parseCategory(cols[1]);
+      const doctorid = cols[2] && !isNaN(Number(cols[2])) ? Number(cols[2]) : null;
+      results.push({name:cols[0], category, doctorid});
+    }else{
+      cols.forEach(nm=>results.push({name:nm, category:0, doctorid:null}));
+    }
+  });
+  return results;
+}
+function applyBulkStaff(entries){
+  const existing=new Set(staff.map(s=>s.name));
+  let added=0, skipped=0;
+  entries.forEach(e=>{
+    if(!e.name || existing.has(e.name)){ skipped++; return; }
+    if(e.category===1 && !e.doctorid){ /* 獣医師でIDが無ければ未定へ落として登録（後で編集可能） */ e.category=0; }
+    addOneStaff(e.name, e.category, e.doctorid);
+    existing.add(e.name);
+    added++;
+  });
+  return {added, skipped};
+}
+document.getElementById('bulkAddStaff').onclick=()=>{
+  const ta=document.getElementById('bulkStaffText');
+  const status=document.getElementById('bulkStaffStatus');
+  const entries=bulkParseLines(ta.value);
+  if(entries.length===0){ status.textContent='入力がありません'; status.style.color='#a3341f'; return; }
+  const {added,skipped}=applyBulkStaff(entries);
+  ta.value='';
+  renderStaffList(); build();
+  status.textContent=`${added}名追加しました${skipped?`（同名${skipped}件はスキップ）`:''}`;
+  status.style.color='var(--accent)';
+};
+document.getElementById('loadStaffCsv').onclick=()=>{
+  const fileInput=document.getElementById('staffCsvFile');
+  const status=document.getElementById('bulkStaffStatus');
+  const file=fileInput.files[0];
+  if(!file){ status.textContent='CSVファイルを選んでください'; status.style.color='#a3341f'; return; }
+  const reader=new FileReader();
+  reader.onload=()=>{
+    let text=reader.result;
+    // 先頭行が見出し（氏名/name等を含む）なら除く
+    const firstLine=text.split(/\r?\n/)[0] || '';
+    if(/氏名|名前|name/i.test(firstLine)){ text=text.split(/\r?\n/).slice(1).join('\n'); }
+    const entries=bulkParseLines(text);
+    if(entries.length===0){ status.textContent='CSVから読み取れませんでした'; status.style.color='#a3341f'; return; }
+    const {added,skipped}=applyBulkStaff(entries);
+    renderStaffList(); build();
+    status.textContent=`CSVから${added}名追加しました${skipped?`（同名${skipped}件はスキップ）`:''}`;
+    status.style.color='var(--accent)';
+    fileInput.value='';
+  };
+  reader.readAsText(file, 'UTF-8');
+};
+
+// ==== グリッド描画 ====
+function build(){
+  const t=document.getElementById('grid');
+  if(staff.length===0){
+    t.innerHTML='';
+    document.getElementById('count').textContent='スタッフが登録されていません。「⚙️ 基本設定」から登録してください。';
+    return;
+  }
+  let h='<thead><tr><th class="corner">スタッフ＼日</th>';
+  for(let d=1; d<=DAYS; d++){
+    const w=dow(d), c = w===0?'color:#CC0000':w===6?'color:#0000CC':'';
+    h+=`<th style="${c}">${d}<br>${DOW[w]}</th>`;
+  }
+  h+='</tr></thead><tbody>';
+  staff.forEach(st=>{
+    h+=`<tr><th class="rowhead" title="${st.name}">${st.name}<span class="cat-badge cat-${st.category}">${CAT_LABEL[st.category]}</span></th>`;
+    for(let d=0; d<DAYS; d++) h+=dayCellHTML(st.id, d);
+    h+='</tr>';
+  });
+  h+='</tbody>';
+  t.innerHTML=h;
+  refresh();
+}
+function dayCellHTML(staffId, d){
+  const day=state[staffId][d];
+  const segs = masters.slots.map(sl=>{
+    const bId=day.slotVals[sl.id];
+    const branch=masters.branches.find(b=>b.id===bId);
+    const label = branch ? branch.name : sl.name;
+    return `<div class="seg ${bId?'on':''}" data-staff="${staffId}" data-day="${d}" data-slot="${sl.id}" title="${sl.name}：クリックで院/部門を切替">${label}</div>`;
+  }).join('');
+  const chips = day.tags.map(tid=>{
+    const tag=masters.tags.find(t=>t.id===tid);
+    return tag ? `<span class="tagchip">${tag.name}</span>` : '';
+  }).join('');
+  const tagOptions = masters.tags.map(t=>`
+    <label><input type="checkbox" data-tagchk="${staffId}:${d}:${t.id}" ${day.tags.includes(t.id)?'checked':''}> ${t.name}</label>`).join('');
+  return `<td class="daycell">
+    <div class="segrow">${segs}</div>
+    <details class="tagpop"><summary>🏷${day.tags.length?`(${day.tags.length})`:''}</summary>
+      <div class="tagbox">${tagOptions || '<span class="hint">タグ未登録</span>'}</div>
+    </details>
+    ${chips?`<div class="tagchips">${chips}</div>`:''}
+  </td>`;
+}
+document.getElementById('grid').addEventListener('click', e=>{
+  const seg=e.target.closest('.seg'); if(!seg) return;
+  const staffId=+seg.dataset.staff, d=+seg.dataset.day, slotId=+seg.dataset.slot;
+  pushHistory();
+  const day=state[staffId][d];
+  const cur=day.slotVals[slotId];
+  const branches=masters.branches;
+  if(branches.length===0){ day.slotVals[slotId]=null; }
+  else{
+    const idx = cur===null ? -1 : branches.findIndex(b=>b.id===cur);
+    const next = idx+1 < branches.length ? branches[idx+1].id : null;
+    day.slotVals[slotId]=next;
+  }
+  build();
+});
+document.getElementById('grid').addEventListener('change', e=>{
+  const chk=e.target.closest('[data-tagchk]'); if(!chk) return;
+  const [staffId,d,tagId]=chk.dataset.tagchk.split(':').map(Number);
+  pushHistory();
+  const day=state[staffId][d];
+  if(chk.checked){ if(!day.tags.includes(tagId)) day.tags.push(tagId); }
+  else{ day.tags=day.tags.filter(t=>t!==tagId); }
+  build();
+});
+function refresh(){
+  let filled=0, total=0;
+  staff.forEach(st=>state[st.id].forEach(d=>{ Object.values(d.slotVals).forEach(v=>{total++; if(v) filled++;}); }));
+  document.getElementById('count').textContent = `${YEAR}年${MONTH}月　登録スタッフ ${staff.length}名　入力済み枠 ${filled}/${total}`;
+}
+
+// ==== 年月ピッカー ====
+const ymPicker=document.getElementById('ymPicker');
+ymPicker.value=`${YEAR}-${pad(MONTH)}`;
+ymPicker.onchange=()=>{
+  const [y,m]=ymPicker.value.split('-').map(Number); if(!y||!m) return;
+  stateCache[ymKey(YEAR,MONTH)]=JSON.parse(JSON.stringify(state));
+  YEAR=y; MONTH=m; DAYS=daysInMonth(YEAR,MONTH);
+  history=[];
+  const key=ymKey(YEAR,MONTH);
+  state = stateCache[key] ? JSON.parse(JSON.stringify(stateCache[key])) : blankState(DAYS);
+  build();
+};
+document.getElementById('undo').onclick=()=>{ if(history.length){ state=JSON.parse(history.pop()); build(); } };
+document.getElementById('resetMonth').onclick=()=>{
+  if(!confirm('この月の入力内容を空にします。よろしいですか？')) return;
+  pushHistory(); state=blankState(DAYS); build();
+};
+
+// ==== 保存・読み込み（設定マスタ＋スタッフ＋全月） ====
+let savedFileHandle=null; // File System Access API対応ブラウザ（Chrome等）で、一度選んだファイルへ次回から上書き保存する
+function buildSaveDoc(){
+  stateCache[ymKey(YEAR,MONTH)]=JSON.parse(JSON.stringify(state));
+  return {
+    "__type":"openvetss_staffshift_save", "__version":1,
+    "保存日時": new Date().toLocaleString('ja-JP'),
+    hospitalName, masters, staff, nextId, nextStaffId,
+    "months": stateCache
+  };
+}
+function saveFileName(){
+  return `${(hospitalName||'staffshift').replace(/[\\/:*?"<>|]/g,'_')}_save_${ymKey(YEAR,MONTH)}.json`;
+}
+function fallbackDownload(doc){
+  const blob=new Blob([JSON.stringify(doc,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=saveFileName();
+  document.body.appendChild(a); a.click(); a.remove();
+}
+document.getElementById('saveAll').onclick=async ()=>{
+  const doc=buildSaveDoc();
+  const status=document.getElementById('loadStatus');
+  if(window.showSaveFilePicker){
+    try{
+      if(!savedFileHandle){
+        savedFileHandle = await window.showSaveFilePicker({
+          suggestedName: saveFileName(),
+          types: [{description:'JSON', accept:{'application/json':['.json']}}]
+        });
+      }
+      const writable = await savedFileHandle.createWritable();
+      await writable.write(JSON.stringify(doc,null,2));
+      await writable.close();
+      status.textContent='保存しました（同じファイルに上書き）'; status.className='ok';
+      return;
+    }catch(err){
+      if(err.name==='AbortError') return; // キャンセル
+      savedFileHandle=null;
+      fallbackDownload(doc); // 失敗時は通常のダウンロードにフォールバック
+      return;
+    }
+  }
+  fallbackDownload(doc);
+};
+
+// ==== 共有（OS標準の共有シート。iPad/iPhone・Android等でAirDrop/Dropboxアプリ/LINE/メール等へ直接渡せる） ====
+document.getElementById('shareAll').onclick=async ()=>{
+  const doc=buildSaveDoc();
+  const status=document.getElementById('loadStatus');
+  const file=new File([JSON.stringify(doc,null,2)], saveFileName(), {type:'application/json'});
+  if(navigator.canShare && navigator.canShare({files:[file]})){
+    try{
+      await navigator.share({
+        files:[file],
+        title: `${hospitalName||'スタッフシフト'} ${ymKey(YEAR,MONTH)}`,
+        text: `${hospitalName||''} ${YEAR}年${MONTH}月分の勤務シフトデータです。`
+      });
+      status.textContent='共有しました'; status.className='ok';
+    }catch(err){
+      if(err.name==='AbortError') return; // キャンセル
+      status.textContent='共有に失敗しました：'+err.message; status.className='err';
+    }
+  }else{
+    status.textContent='この端末・ブラウザは共有機能に対応していないため、通常のダウンロードにします'; status.className='';
+    fallbackDownload(doc);
+  }
+};
+
+document.getElementById('loadAll').onclick=()=>document.getElementById('loadFile').click();
+document.getElementById('loadFile').onchange=(e)=>{
+  const file=e.target.files[0]; if(!file) return;
+  const status=document.getElementById('loadStatus');
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const doc=JSON.parse(reader.result);
+      if(!doc.months || !doc.masters || !doc.staff) throw new Error('対応していない形式のファイルです');
+      hospitalName = doc.hospitalName || '';
+      masters=doc.masters; staff=doc.staff;
+      nextId=doc.nextId || nextId; nextStaffId=doc.nextStaffId || (Math.max(0,...staff.map(s=>s.id))+1);
+      stateCache=doc.months;
+      savedFileHandle=null; // 別ファイルを読み込んだので、次の保存はどこに保存するか再度聞く
+      const keys=Object.keys(doc.months).sort();
+      const firstKey = keys.includes(ymKey(YEAR,MONTH)) ? ymKey(YEAR,MONTH) : keys[0];
+      const [y,m]=firstKey.split('-').map(Number);
+      YEAR=y; MONTH=m; DAYS=daysInMonth(YEAR,MONTH);
+      state=JSON.parse(JSON.stringify(stateCache[firstKey]));
+      history=[];
+      ymPicker.value=firstKey;
+      renderMasterLists(); renderStaffList(); refreshPdfBranchOptions(); build();
+      status.textContent=`読み込みました（${keys.join('、')}）${doc.保存日時?`　保存日時:${doc.保存日時}`:''}`; status.className='ok';
+    }catch(err){
+      status.textContent='読み込み失敗：'+err.message; status.className='err';
+    }
+  };
+  reader.readAsText(file);
+  e.target.value='';
+};
+
+// ==== PDF出力（院内用／院外用） ====
+const PC_WEEKDAYS=['日','月','火','水','木','金','土'];
+const PC_COLORS=['#CC0000','#333','#333','#333','#333','#333','#0000CC'];
+function refreshPdfBranchOptions(){
+  const sel=document.getElementById('pdfBranch');
+  const cur=sel.value;
+  sel.innerHTML = masters.branches.map(b=>`<option value="${b.id}">${b.name}</option>`).join('') || '<option value="">（院・部門が未登録です）</option>';
+  if(masters.branches.some(b=>String(b.id)===cur)) sel.value=cur;
+}
+function buildPdfCalendarHTML(branchId, mode){
+  const branch=masters.branches.find(b=>b.id===branchId);
+  const branchName = branch ? branch.name : '';
+  const isPublic = mode==='public';
+  const firstDow = new Date(YEAR, MONTH-1, 1).getDay();
+  let rows='<tr>'+PC_WEEKDAYS.map((wd,i)=>`<th style="color:${PC_COLORS[i]}">${wd}</th>`).join('')+'</tr><tr>';
+  let col=0;
+  for(let i=0;i<firstDow;i++){ rows+='<td></td>'; col++; }
+  for(let d=1; d<=DAYS; d++){
+    if(col%7===0 && col>0) rows+='</tr><tr>';
+    const dowIdx=(firstDow+d-1)%7, color=PC_COLORS[dowIdx], idx=d-1;
+    let cellHtml='';
+    masters.slots.forEach(slot=>{
+      const names=[];
+      staff.forEach(st=>{
+        if(isPublic && st.public===false) return;
+        const day=state[st.id] && state[st.id][idx];
+        if(day && day.slotVals[slot.id]===branchId) names.push(st.name);
+      });
+      if(names.length) cellHtml+=`<div class="pc-slot">${slot.name}:${names.map(n=>`<span class="pc-name">${n}</span>`).join('')}</div>`;
+    });
+    // タグ（院外用は public=true のタグのみ。対象は当日そのdayNameがブランチに一致するスタッフに限らず、当日タグを持つ全スタッフ分をまとめて表示）
+    const tagSet=new Set();
+    staff.forEach(st=>{
+      if(isPublic && st.public===false) return;
+      const day=state[st.id] && state[st.id][idx];
+      if(!day) return;
+      const inBranch = Object.values(day.slotVals).includes(branchId);
+      if(!inBranch) return;
+      day.tags.forEach(tid=>{
+        const tag=masters.tags.find(t=>t.id===tid);
+        if(!tag) return;
+        if(isPublic && tag.public===false) return;
+        tagSet.add(tag.name);
+      });
+    });
+    if(tagSet.size) cellHtml+=`<div>${[...tagSet].map(n=>`<span class="pc-tag">${n}</span>`).join('')}</div>`;
+    rows+=`<td><div class="pc-day" style="color:${color}">${d}</div>${cellHtml}</td>`;
+    col++;
+  }
+  while(col%7!==0){ rows+='<td></td>'; col++; }
+  return `<h2 class="pc-h2">🗓️ ${hospitalName?hospitalName+' ':''}${YEAR}年${MONTH}月 ${branchName} 勤務シフト表</h2>
+    <p class="pc-sub">${isPublic?'院外公開用':'院内管理用'}</p>
+    <table class="pc-table">${rows}</table>`;
+}
+document.getElementById('pdfGo').onclick=()=>{
+  const branchId=+document.getElementById('pdfBranch').value;
+  if(!branchId){ alert('院・部門が登録されていません。基本設定から登録してください。'); return; }
+  const mode=document.querySelector('input[name="pdfMode"]:checked').value;
+  document.getElementById('printCal').innerHTML = buildPdfCalendarHTML(branchId, mode);
+  setTimeout(()=>window.print(), 50);
+};
+
+renderMasterLists();
+renderStaffList();
+refreshPdfBranchOptions();
+build();
+</script>
+
+</body>
+</html>

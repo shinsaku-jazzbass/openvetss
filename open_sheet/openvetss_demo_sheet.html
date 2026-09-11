@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenVetssの仕組み ｜ 最小サンプル</title>
+<!--
+  OpenVetss - 動物病院のためのオープンソース・ツール群
+  https://www.vetss-karte.net/
+
+  OpenVetssの仕組みを説明する最小サンプル  v0.1
+  Copyright (c) 2026 OpenVetss Project
+
+  MIT ライセンスで配布しています。改変も再配布も自由ですが、
+  この著作権表示とライセンス表示は残してください。無保証です。
+
+  これは業務用のツールではなく、「OpenVetssとは何か」を説明するための
+  最小のデモです。スプレッドシート風の表に自由に入力し、
+  ①好きな場所へ保存 ②画面をクリア ③保存したファイルを読み込む、
+  という3つの動きだけを見せます。狂犬病台帳・お薬手帳・staffshift等、
+  実在する全てのツールは、これと同じ「保存・クリア・読み込み」の
+  骨組みに、業務ごとの入力項目を足したものに過ぎません。
+
+  ★ このツールは通信をしません。入力した内容は、お使いの端末から出ません。
+-->
+<style>
+  :root{
+    --line:#dadfe4; --ink:#2b2f36; --head:#5b6572; --accent:#2f6f4f; --accent-bg:#e3f2ea;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Meiryo",system-ui,sans-serif;
+       color:var(--ink);background:#fbfbfa;padding:20px}
+  h1{font-size:19px;margin:0 0 6px}
+  .explain{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin-bottom:18px}
+  .explain h2{font-size:14px;margin:0 0 8px;color:var(--accent)}
+  .explain p{font-size:13px;line-height:1.8;color:#444;margin:0 0 8px}
+  .explain ol{font-size:13px;line-height:1.9;color:#444;margin:8px 0 0;padding-left:20px}
+  .toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+  .act{font:inherit;font-size:13px;background:#fff;border:1px solid var(--line);border-radius:7px;
+       padding:8px 16px;cursor:pointer;color:var(--ink)}
+  .act:hover{background:#f2f4f6}
+  .act.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .act.danger{color:#a3341f;border-color:#e6b3a8}
+  .hint{color:var(--head);font-size:12px}
+  table{border-collapse:collapse;width:100%;background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  th,td{border:1px solid var(--line);padding:0}
+  th input, td input{
+    width:100%;box-sizing:border-box;border:none;padding:8px 10px;font:inherit;font-size:13px;background:transparent}
+  th input{font-weight:700;background:#eef1f4}
+  th input:focus, td input:focus{outline:2px solid var(--accent);outline-offset:-2px;background:#fff}
+  .rownum{width:34px;text-align:center;color:var(--head);font-size:12px;background:#f7f8f9;user-select:none}
+  .rowdel{width:34px;text-align:center;cursor:pointer;color:#a3341f;background:#f7f8f9;font-size:14px}
+  .addrow{margin-top:10px}
+  #status{margin-top:10px;font-size:12px;color:var(--accent)}
+</style>
+</head>
+<body>
+
+<h1>OpenVetssの仕組み ｜ 最小サンプル</h1>
+
+<div class="explain">
+  <h2>これは何のためのツールですか</h2>
+  <p>
+    OpenVetssの実際のツール（狂犬病台帳・お薬手帳・勤務シフト編集…）は、機能が多くて仕組みが分かりにくいかもしれません。
+    このサンプルは、それら全部に共通する「一番小さな骨組み」だけを取り出したものです。
+  </p>
+  <ol>
+    <li>下の表に、好きな内容を自由に入力してください（見出し・中身、どちらも書き換えられます）</li>
+    <li>「💾 好きな場所に保存」を押すと、この端末の好きな場所（デスクトップでも、Dropboxのフォルダでも）にファイルとして保存されます（Mac・Windowsのブラウザ向けです）</li>
+    <li>iPad・iPhoneのSafariは「好きな場所を選ぶ」操作に対応していないため、代わりに「📤 共有」を使ってください。AirDrop・Filesアプリ・Dropboxアプリ・LINEなど、渡したい先をその場で選べます</li>
+    <li>「🗑 画面をクリア」を押すと、画面の中身だけが消えます（保存したファイルは消えません）</li>
+    <li>「📂 保存したファイルを読み込む」で、さっき保存したファイルを選ぶと、元の内容がそのまま戻ります</li>
+    <li>「📋 テキストに変換してコピー」を押すと、Excel・メール・LINEなど<b>他のどんなアプリにも貼り付けられる形</b>で取り出せます</li>
+  </ol>
+  <p style="margin-top:10px">
+    <b>ここにサーバーは一切登場しません。</b> データは「今開いているこの画面」と「あなたが選んだ保存先」の間だけを行き来します。
+    狂犬病台帳もお薬手帳も、扱うデータの種類が違うだけで、やっていることの骨組みはこれと全く同じです。
+  </p>
+  <p style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)">
+    <b>もう1つ、別の「覚える」仕組みもお見せします。</b> 何も押さなくても、入力するそばから<b>この端末のブラウザ自身</b>が内容を覚えます（ページを閉じて開き直しても残ります）。
+    ただしこれは「①ファイル保存」とは別物で、<b>この端末・このブラウザだけの記憶</b>です。別の端末には引き継がれず、ブラウザの閲覧データを消せば一緒に消えます。
+    「正式な控え」は、あくまで①のファイル保存の方です。<br>
+    この記憶は<b>「このファイル自身の名前」ごとに別々</b>に持たせています。このHTMLファイルをコピーして名前を変えるだけで、コードを書き換えなくても、同じ端末の中に自分専用の記憶を持てます（例：<code>openvetss_kobayashi_sheet.html</code>）。
+  </p>
+</div>
+
+<div class="toolbar" style="margin-top:-4px">
+  <label style="font-size:12px;color:var(--head);display:flex;align-items:center;gap:6px">
+    保存ファイル名：
+    <input type="text" id="fileNameInput" value="openvetss_demo_sheet" style="font:inherit;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:5px 8px;width:220px">
+    <span class="hint">.json</span>
+  </label>
+</div>
+
+<div class="toolbar">
+  <button class="act primary" id="bSave">💾 好きな場所に保存</button>
+  <button class="act primary" id="bShare">📤 共有（iPad/iPhoneはこちら）</button>
+  <button class="act" id="bLoad">📂 保存したファイルを読み込む</button>
+  <input type="file" id="fileInput" accept="application/json" style="display:none">
+  <button class="act" id="bCopyText">📋 テキストに変換してコピー</button>
+  <button class="act danger" id="bClear">🗑 画面をクリア</button>
+  <span class="hint" id="status"></span>
+</div>
+
+<div id="copyPanel" style="display:none;background:#fff;border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:12px">
+  <p class="hint" style="margin:0 0 8px">
+    この内容を、Excel・メール・LINEなど、<b>他のアプリにそのまま貼り付けられます。</b>
+    OpenVetssはファイル・共有だけでなく、こういう「ただのコピペ」でもデータを外へ持ち出せます。
+  </p>
+  <textarea id="copyText" readonly style="width:100%;height:140px;font-family:monospace;font-size:12px;
+       border:1px solid var(--line);border-radius:6px;padding:8px;box-sizing:border-box"></textarea>
+  <div class="toolbar" style="margin-top:8px;margin-bottom:0">
+    <button class="act primary" id="bCopyNow">📋 コピーする</button>
+    <button class="act" id="bCopyClose">閉じる</button>
+    <span class="hint" id="copyStatus"></span>
+  </div>
+</div>
+
+<div class="toolbar" style="margin-top:-4px">
+  <span class="hint" id="autosaveStatus">自動保存：確認中…</span>
+  <span class="hint" id="dbNameHint" style="color:#999"></span>
+  <button class="act danger" id="bWipeAuto" style="margin-left:auto">🧹 この端末の記憶を消す（画面もリセット）</button>
+</div>
+
+<table id="sheet"></table>
+<button class="act addrow" id="bAddRow">＋ 行を追加</button>
+
+<script>
+const COLS = 5;
+let headers = ["項目1","項目2","項目3","項目4","項目5"];
+let rows = Array.from({length:10}, () => Array(COLS).fill(""));
+
+const $ = id => document.getElementById(id);
+
+// ==== 自動保存（この端末のブラウザ自身が覚える仕組み。IndexedDB） ====
+// ファイル保存（①）とは完全に別の仕組みで、この端末・このブラウザだけに残ります。
+// データベース名は、このファイル自身の名前から自動的に作ります。
+// つまり openvetss_demo_sheet.html をコピーして openvetss_kobayashi_sheet.html に
+// 名前を変えて置くだけで、コードを一切書き換えずに独立した記憶領域になります
+// （同じタブレット・同じPCの中でも、コピーごとに別々のデータを持てます）。
+function fileSlug(){
+  try{
+    const base = (location.pathname.split("/").pop() || "sheet").replace(/\.html?$/i, "");
+    return base.replace(/[^\w\u3040-\u30FF\u4E00-\u9FFF-]/g, "_") || "sheet";
+  }catch(e){ return "sheet"; }
+}
+const AUTO_DB_NAME = "openvetss_" + fileSlug();
+function autoDbOpen(){
+  return new Promise(res=>{
+    let req;
+    try{ req = indexedDB.open(AUTO_DB_NAME, 1); }catch(e){ return res(null); }
+    req.onupgradeneeded = e=>{
+      const d = e.target.result;
+      if(!d.objectStoreNames.contains("sheet")) d.createObjectStore("sheet");
+    };
+    req.onsuccess = ()=>res(req.result);
+    req.onerror   = ()=>res(null);
+    setTimeout(()=>res(null), 3000);
+  });
+}
+let autoDb = null;
+async function autoSave(){
+  if(!autoDb) autoDb = await autoDbOpen();
+  const status = $("autosaveStatus");
+  if(!autoDb){ if(status) status.textContent = "自動保存：この環境では使えません"; return; }
+  try{
+    const tx = autoDb.transaction("sheet","readwrite");
+    tx.objectStore("sheet").put({headers, rows, savedAt:new Date().toISOString()}, "current");
+    await new Promise(r=>{ tx.oncomplete=r; tx.onerror=r; });
+    if(status) status.textContent = "自動保存：この端末に記憶しました（" + new Date().toLocaleTimeString('ja-JP') + "）";
+  }catch(e){
+    if(status) status.textContent = "自動保存：失敗しました";
+  }
+}
+async function autoLoad(){
+  autoDb = await autoDbOpen();
+  const status = $("autosaveStatus");
+  if(!autoDb){ if(status) status.textContent = "自動保存：この環境では使えません"; return; }
+  try{
+    const tx = autoDb.transaction("sheet","readonly");
+    const req = tx.objectStore("sheet").get("current");
+    const rec = await new Promise(r=>{ req.onsuccess=()=>r(req.result); req.onerror=()=>r(null); });
+    if(rec && Array.isArray(rec.rows)){
+      headers = rec.headers || headers;
+      rows = rec.rows;
+      render();
+      if(status) status.textContent = "自動保存：前回の続きを復元しました（" + new Date(rec.savedAt).toLocaleString('ja-JP') + "）";
+    }else{
+      if(status) status.textContent = "自動保存：有効（まだ記憶はありません）";
+    }
+  }catch(e){
+    if(status) status.textContent = "自動保存：確認できませんでした";
+  }
+}
+let autoSaveTimer = null;
+function autoSaveDebounced(){
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(autoSave, 500);
+}
+
+function render(){
+  const table = $("sheet");
+  let html = "<thead><tr><th class='rownum'></th>";
+  headers.forEach((h,c) => { html += `<th><input type="text" data-h="${c}" value="${esc(h)}"></th>`; });
+  html += "<th></th></tr></thead><tbody>";
+  rows.forEach((row,r) => {
+    html += `<tr><td class="rownum">${r+1}</td>`;
+    row.forEach((v,c) => { html += `<td><input type="text" data-r="${r}" data-c="${c}" value="${esc(v)}"></td>`; });
+    html += `<td class="rowdel" data-delrow="${r}" title="この行を削除">×</td></tr>`;
+  });
+  html += "</tbody>";
+  table.innerHTML = html;
+}
+function esc(s){ return (s==null?"":String(s)).replace(/"/g,"&quot;"); }
+
+$("sheet").addEventListener("input", e => {
+  const h = e.target.dataset.h, r = e.target.dataset.r, c = e.target.dataset.c;
+  if(h !== undefined){ headers[+h] = e.target.value; }
+  else if(r !== undefined && c !== undefined){ rows[+r][+c] = e.target.value; }
+  autoSaveDebounced();
+});
+$("sheet").addEventListener("click", e => {
+  const del = e.target.closest("[data-delrow]");
+  if(!del) return;
+  rows.splice(+del.dataset.delrow, 1);
+  render();
+  autoSave();
+});
+
+$("bAddRow").onclick = () => {
+  rows.push(Array(COLS).fill(""));
+  render();
+  autoSave();
+};
+
+$("bWipeAuto").onclick = async () => {
+  if(!confirm("この端末が覚えている内容を消し、画面もリセットします（保存したファイルには影響しません）。よろしいですか？")) return;
+  if(!autoDb) autoDb = await autoDbOpen();
+  if(autoDb){
+    const tx = autoDb.transaction("sheet","readwrite");
+    tx.objectStore("sheet").delete("current");
+    await new Promise(r=>{ tx.oncomplete=r; tx.onerror=r; });
+  }
+  headers = ["項目1","項目2","項目3","項目4","項目5"];
+  rows = Array.from({length:10}, () => Array(COLS).fill(""));
+  render();
+  $("autosaveStatus").textContent = "自動保存：この端末の記憶を消しました";
+  $("status").textContent = "画面もリセットしました";
+};
+
+$("bClear").onclick = () => {
+  if(!confirm("画面の入力内容を消します（保存したファイルは消えません）。よろしいですか？")) return;
+  headers = ["項目1","項目2","項目3","項目4","項目5"];
+  rows = Array.from({length:10}, () => Array(COLS).fill(""));
+  render();
+  $("status").textContent = "画面をクリアしました";
+  autoSave();
+};
+
+let savedFileHandle = null;
+function buildDoc(){
+  return { schema:"vetss-demo-sheet/0.1", savedAt:new Date().toISOString(), headers, rows };
+}
+function currentFileName(){
+  let name = $("fileNameInput").value.trim() || "openvetss_demo_sheet";
+  name = name.replace(/[\\/:*?"<>|]/g, "_");  // ファイル名に使えない記号を置き換え
+  if(!/\.json$/i.test(name)) name += ".json";
+  return name;
+}
+$("bSave").onclick = async () => {
+  const text = JSON.stringify(buildDoc(), null, 2);
+  if(window.showSaveFilePicker){
+    try{
+      if(!savedFileHandle){
+        savedFileHandle = await window.showSaveFilePicker({
+          suggestedName: currentFileName(),
+          types: [{ description:"JSON", accept:{"application/json":[".json"]} }]
+        });
+      }
+      const w = await savedFileHandle.createWritable();
+      await w.write(text);
+      await w.close();
+      $("status").textContent = "保存しました（同じファイルに上書き）";
+      return;
+    }catch(err){
+      if(err.name === "AbortError") return;
+      savedFileHandle = null;
+    }
+  }
+  const blob = new Blob([text], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = currentFileName();
+  document.body.appendChild(a); a.click(); a.remove();
+  $("status").textContent = "保存しました（ダウンロード）";
+};
+
+// ファイル名を変更したら、次の保存では改めて保存先を選び直す（別名保存として扱う）
+$("fileNameInput").addEventListener("input", () => { savedFileHandle = null; });
+
+// iPad/iPhone Safari向け：OS標準の共有シート（AirDrop・Filesアプリ・LINE等へその場で渡せる）
+$("bShare").onclick = async () => {
+  const text = JSON.stringify(buildDoc(), null, 2);
+  const filename = currentFileName();
+  const file = new File([text], filename, {type:"application/json"});
+  if(navigator.canShare && navigator.canShare({files:[file]})){
+    try{
+      await navigator.share({files:[file], title:"OpenVetssデモ", text:"表のデータです。"});
+      $("status").textContent = "共有しました";
+    }catch(err){
+      if(err.name !== "AbortError") $("status").textContent = "共有失敗：" + err.message;
+    }
+  }else{
+    const blob = new Blob([text], {type:"application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    $("status").textContent = "この端末は共有に対応していないため、通常のダウンロードにしました";
+  }
+};
+
+// ==== テキストに変換してコピー（TSV＝タブ区切り。Excel等に貼るとそのままセルへ入る） ====
+function buildTsv(){
+  const lines = [headers.join("\t")];
+  rows.forEach(row => lines.push(row.join("\t")));
+  return lines.join("\n");
+}
+$("bCopyText").onclick = () => {
+  $("copyText").value = buildTsv();
+  $("copyPanel").style.display = "block";
+  $("copyStatus").textContent = "";
+  $("copyPanel").scrollIntoView({behavior:"smooth", block:"nearest"});
+};
+$("bCopyClose").onclick = () => { $("copyPanel").style.display = "none"; };
+$("bCopyNow").onclick = async () => {
+  const text = $("copyText").value;
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      await navigator.clipboard.writeText(text);
+    }else{
+      $("copyText").select();
+      document.execCommand("copy");
+    }
+    $("copyStatus").textContent = "コピーしました。他のアプリに貼り付けてください。";
+  }catch(err){
+    $("copyText").select();
+    try{
+      document.execCommand("copy");
+      $("copyStatus").textContent = "コピーしました。";
+    }catch(e2){
+      $("copyStatus").textContent = "自動コピーできませんでした。テキストを選んで手動でコピーしてください。";
+    }
+  }
+};
+
+$("bLoad").onclick = () => $("fileInput").click();
+$("fileInput").onchange = async e => {
+  const file = e.target.files[0]; if(!file) return;
+  try{
+    const text = await file.text();
+    const doc = JSON.parse(text);
+    if(!Array.isArray(doc.rows)) throw new Error("形式が違います");
+    headers = doc.headers || headers;
+    rows = doc.rows;
+    render();
+    $("status").textContent = "読み込みました（保存日時：" + (doc.savedAt || "不明") + "）";
+    savedFileHandle = null;
+    autoSave();
+  }catch(err){
+    $("status").textContent = "読み込み失敗：" + err.message;
+  }
+  e.target.value = "";
+};
+
+$("dbNameHint").textContent = "（記憶領域：" + AUTO_DB_NAME + "）";
+autoLoad();
+render();
+</script>
+</body>
+</html>
